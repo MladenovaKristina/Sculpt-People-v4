@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <!-- chinese -->
+<!-- <html lang="zh-cn"> -->
+  <!-- japanese -->
+<!-- <html lang="ja"> -->
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <title><%= htmlWebpackPlugin.options.title %></title>
+  <script>
+    var needStart = true;
+    function gameStart() { 
+      if (needStart) {
+        needStart = false;
+        document.getElementById("appContainer").setAttribute('data-ready', 'true');
+      }
+    }
+    function gameClose() { 
+      
+    }
+  </script>
+</head>
+
+
+<body>
+  <div id="appContainer" class="main">
+  </div>
+  <div id="appInnerContainer" class="main">
+  </div>
+</body>
+
+</html>
