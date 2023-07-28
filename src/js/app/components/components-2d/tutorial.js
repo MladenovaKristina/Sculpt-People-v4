@@ -16,13 +16,7 @@ export default class Tutorial extends DisplayObject {
   }
 
   onAdded() {
-    this._bg = new Graphics();
-    this._bg.fillStyle(0x000000, 0.5);
-    const w = 2000;
-    const h = 350;
-    this._bg.rect(-w / 2, -h / 2, w, h);
-    this._bg.fill();
-    this.add(this._bg);
+
 
     this._sign = new Sprite('infinity_sign');
     this._sign.alignAnchor(0.5, 0.5);
@@ -60,8 +54,8 @@ export default class Tutorial extends DisplayObject {
     }, 2, { ease: Ease.sinusoidalOut, delay: 1 });
     this._sign.add(scaleTw);
 
-    const handMove = { v: 1.6  };
-    const handUpdateTween = new UTween(handMove, { v: 1.6 - Math.PI * 2  }, 1.5, { ease: Ease.sinusoidalInOut });
+    const handMove = { v: 1.6 };
+    const handUpdateTween = new UTween(handMove, { v: 1.6 - Math.PI * 2 }, 1.5, { ease: Ease.sinusoidalInOut });
     handUpdateTween.on('update', msg => {
       this._hand.update(handMove.v);
     });

@@ -65,6 +65,22 @@ export default class Layout3D extends THREE.Object3D {
       this.clay.add(plane);
     }
   }
+  _initDock() {
+    const width = 8;
+    const geo = new THREE.PlaneGeometry(width, 3, 20, 20)
+    const mat = new THREE.MeshBasicMaterial({ color: 0x834333, transparent: true, opacity: 0.7 });
+    const dock = new THREE.Mesh(geo, mat);
+    dock.position.set(-width / 4, -3.5, 2);
+    this.add(dock)
+
+    const offset = width / (this.headDecor.length + 2)
+    for (let i = 0; i < this.headDecor.length; i++) {
+      let object = this.headDecor[i];
+      object.visible = true;
+    }
+  }
+
+
   _initSculpt(clayMaterial) {
     const radius = 1;
     const geometry = new THREE.BoxGeometry(radius, radius, radius, 20, 20);

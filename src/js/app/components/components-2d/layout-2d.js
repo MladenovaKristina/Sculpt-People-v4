@@ -33,9 +33,6 @@ export default class Layout2D extends DisplayObject {
     this._refPhoto = new ReferencePhoto();
     this.add(this._refPhoto);
 
-    this._tutorial = new Tutorial();
-    this.add(this._tutorial);
-
     this._selectHint = new SelectHint();
     this.add(this._selectHint);
 
@@ -60,12 +57,8 @@ export default class Layout2D extends DisplayObject {
     if (this._topText.visible)
       this._refPhoto.y = this._topText.y + this._topText.height + Number(ConfigurableParams.getData()["reference_photo"]["offset"]["y"]);
 
-
     this._selectHint.x = bb.left;
     this._selectHint.y = Black.stage.centerY;
-
-    this._tutorial.x = Black.stage.centerX;
-    this._tutorial.y = Black.stage.centerY + bb.height * 0.18;
 
     this._endScreen.onResize(bb);
 
@@ -112,6 +105,11 @@ export default class Layout2D extends DisplayObject {
   }
 
   startHint() {
+    this._tutorial = new Tutorial();
+    this.add(this._tutorial);
+    this._tutorial.x = Black.stage.centerX;
+    this._tutorial.y = Black.stage.centerY + 200;
+
     this._tutorial.show();
   }
 
@@ -129,7 +127,6 @@ export default class Layout2D extends DisplayObject {
     const ifDownloadButtonClicked = this._ifDownloadButtonClicked(blackPos.x, blackPos.y);
     if (ifDownloadButtonClicked) return true;
 
-    this._tutorial.hide();
     this._endScreen.onDown(blackPos.x, blackPos.y);
   }
 

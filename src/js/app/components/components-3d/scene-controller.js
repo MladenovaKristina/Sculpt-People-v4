@@ -61,7 +61,7 @@ export default class SceneController extends THREE.Object3D {
     onMove(x, y) {
         if (this.sceneNumber == 1) {
             if (this.sculptFinish < 1) {
-                this._layout3d.sphere.rotation.x += x / 10000;
+                this._layout3d.sphere.rotation.x -= x / 10000;
                 this._layout3d.sphere.rotation.y += y / 10000;
                 this.sculptFinish += 0.005;
             }
@@ -77,14 +77,20 @@ export default class SceneController extends THREE.Object3D {
     scene1(clayMaterial) {
         this.sceneNumber = 1;
         this.setCam(-2, () => {
+            this._layout2d.startHint();
             this._layout3d._initSculpt(clayMaterial);
         });
     }
+
     scene2() {
         this.sceneNumber = 2;
+        this._layout2d._tutorial.hide();
+
         this._layout3d.sphere.visible = false;
-        this._layout3d.head.visible = true;
         this._layout3d.head.rotation.set(Math.PI / 2, 0, 0)
+        this._layout3d.head.visible = true;
+
+        this._layout3d._initDock();
     }
 
     setCam(setX, callback) {
