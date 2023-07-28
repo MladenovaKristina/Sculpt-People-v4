@@ -14,7 +14,7 @@ export default class TemplateGameController {
   goToStore() {
     console.log("Go to store");
     if (ConfigurableParams.getData()["store_link"]["android"]["value"] !== "" && ConfigurableParams.getData()["store_link"]["ios"]["value"] !== "") {
-      if ( Model.operatingSystem === "ios" ) {
+      if (Model.operatingSystem === "ios") {
         location.href = ConfigurableParams.getData()["store_link"]["ios"]["value"];
       } else {
         location.href = ConfigurableParams.getData()["store_link"]["android"]["value"];

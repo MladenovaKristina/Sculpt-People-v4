@@ -13,7 +13,7 @@ export default class Camera {
 
     if (window.innerWidth >= window.innerHeight) {
       this._orientation = "lanscape";
-    } 
+    }
     else {
       this._orientation = "portrait";
     }
@@ -28,7 +28,7 @@ export default class Camera {
   updateSize(renderer) {
     if (window.innerWidth >= window.innerHeight) {
       this._orientation = "lanscape";
-    } 
+    }
     else {
       this._orientation = "portrait";
     }

@@ -2,7 +2,7 @@ import { AmbientLight, DirectionalLight } from 'three';
 
 export default class Light {
   constructor(scene) {
-    
+
     this._scene = scene;
     this._init();
   }
