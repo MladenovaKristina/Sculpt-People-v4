@@ -118,6 +118,9 @@ export default class Layout2D extends DisplayObject {
   _startClayHint() {
     this._selectHint.show();
   }
+  _hideClayHint() {
+    this._selectHint.hide();
+  }
 
   onDown(x, y) {
     const defaultPos = { x: x, y: y };

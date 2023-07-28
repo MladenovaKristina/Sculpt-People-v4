@@ -45,8 +45,6 @@ export default class Game {
   }
 
   start() {
-    this._layout2d.showHint();
-
     this._startTime = Date.now();
 
     if (ConfigurableParams.isXTime()) {
