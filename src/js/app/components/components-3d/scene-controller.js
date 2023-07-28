@@ -11,46 +11,47 @@ export default class SceneController extends THREE.Object3D {
         this._layout3d = layout3d;
         this.sceneNumber = 0;
         this.scene0();
+        this.sculptFinish = 0;
     }
 
     onDown(x, y) {
-        if (this.sceneNumber == 0) {
+        if (this.sceneNumber === 0) {
             this.getClayAtPosition(x, y, () => {
+                console.log("aaa")
                 this._layout2d._hideClayHint();
                 this._layout3d.hideClay();
-                this.setCam(-2, () => {
-                    this.scene1(this.selectedClayMaterial);
-                });
-
+                this.scene1(this.selectedClayMaterial);
             });
-
         }
     }
     getClayAtPosition(x, y, callback) {
+        console.log("bbb")
+
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
 
-        // Convert screen coordinates (x, y) to normalized device coordinates (-1 to +1)
         mouse.x = (x / window.innerWidth) * 2 - 1;
         mouse.y = -(y / window.innerHeight) * 2 + 1;
 
-        // Update the picking ray with the camera and mouse position
         raycaster.setFromCamera(mouse, this._camera.threeCamera);
 
-        // Array to store objects intersected by the ray
         const intersects = [];
-        // Traverse through the children of this._layout3d.clay
         this._layout3d.clay.traverse((child) => {
-            if (child.isMesh) {
-                const intersect = raycaster.intersectObject(child);
-                if (intersect.length > 0 && !this.selectedClayMaterial) {
-                    this.selectedClayMaterial = intersect[0].object.material;
-                    callback();
-                    return;
-                }
+            console.log("ccc")
+
+            const intersect = raycaster.intersectObject(child);
+            if (intersect.length > 0 && !this.selectedClayMaterial) {
+                console.log("ddd")
+
+                this.selectedClayMaterial = intersect[0].object.material;
+                callback()
+
             }
         });
+
+        return null; // Return null if no intersected object found
     }
+
 
 
     onUp() {
@@ -58,7 +59,14 @@ export default class SceneController extends THREE.Object3D {
     }
 
     onMove(x, y) {
-
+        if (this.sceneNumber == 1) {
+            if (this.sculptFinish < 1) {
+                this._layout3d.sphere.rotation.x += x / 10000;
+                this._layout3d.sphere.rotation.y += y / 10000;
+                this.sculptFinish += 0.005;
+            }
+            else this.scene2();
+        }
     }
 
     scene0() {
@@ -68,8 +76,15 @@ export default class SceneController extends THREE.Object3D {
 
     scene1(clayMaterial) {
         this.sceneNumber = 1;
-        console.log("selected", clayMaterial)
-        this._layout3d._initSculpt(clayMaterial);
+        this.setCam(-2, () => {
+            this._layout3d._initSculpt(clayMaterial);
+        });
+    }
+    scene2() {
+        this.sceneNumber = 2;
+        this._layout3d.sphere.visible = false;
+        this._layout3d.head.visible = true;
+        this._layout3d.head.rotation.set(Math.PI / 2, 0, 0)
     }
 
     setCam(setX, callback) {

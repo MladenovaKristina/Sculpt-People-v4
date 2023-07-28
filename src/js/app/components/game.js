@@ -63,6 +63,7 @@ export default class Game {
       this.messageDispatcher.post(this.onFinishEvent);
     });
   }
+
   _initLayout3D() {
     this._layout3d = new Layout3D(this._camera);
     this._scene.add(this._layout3d);
@@ -72,6 +73,7 @@ export default class Game {
     this._sceneController = new SceneController(this._camera, this._layout2d, this._layout3d);
     this._scene.add(this._layout3d);
   }
+
   onDown(x, y) {
     const downloadBtnClicked = this._layout2d.onDown(x, y);
     if (downloadBtnClicked) return;

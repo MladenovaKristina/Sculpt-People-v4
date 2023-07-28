@@ -6,10 +6,11 @@ export default class Layout3D extends THREE.Object3D {
   constructor() {
     super();
     this._initBg();
+    this._initAsset();
     this._initStand();
+    this.headDecor = [];
   }
   _initBg() {
-
     const backgroundGeometry = new THREE.PlaneGeometry(20, 25);
     const backgroundMaterial = new THREE.MeshPhongMaterial({ map: THREE.Cache.get("bg_image") });
 
@@ -20,8 +21,8 @@ export default class Layout3D extends THREE.Object3D {
     backgroundMesh.rotation.z = Math.PI;
     backgroundMesh.rotation.y = Math.PI;
     this.add(backgroundMesh);
-
   }
+
   _initStand() {
     this.stand = new THREE.Group();
     this.stand.position.x = -2;
@@ -46,7 +47,6 @@ export default class Layout3D extends THREE.Object3D {
     this.asset = THREE.Cache.get('assets').scene;
     this.asset.position.x = 0;
     this.asset.position.y = -2;
-    this.add(this.asset);
   }
 
   _initClay() {
@@ -67,12 +67,30 @@ export default class Layout3D extends THREE.Object3D {
   }
   _initSculpt(clayMaterial) {
     const radius = 1;
-    const geometry = new THREE.SphereGeometry(radius, 20, 20);
-    this.head = new THREE.Mesh(geometry, clayMaterial);
-    this.head.position.set(this.stand.position.x, this.stand.position.y + radius, 0)
-    this.add(this.head)
-  }
+    const geometry = new THREE.BoxGeometry(radius, radius, radius, 20, 20);
+    this.sphere = new THREE.Mesh(geometry, clayMaterial)
+    this.sphere.position.set(this.stand.position.x, this.stand.position.y + radius, 0)
+    this.add(this.sphere);
 
+    this.asset.traverse((child) => {
+      if (child.name === "HEAD") {
+        this.head = child;
+
+        this.head.traverse((child) => {
+          if (child.name != "HEAD") {
+            child.visible = false;
+            this.headDecor.push(child)
+          }
+        })
+      }
+    })
+    console.log(this.headDecor)
+    this.head.position.set(this.stand.position.x, this.stand.position.y + radius, 0)
+    this.head.material = clayMaterial;
+    this.head.scale.set(10, 10, 10)
+    this.add(this.head)
+    this.head.visible = false;
+  }
 
   hideClay() {
     this.hide(this.clay);
