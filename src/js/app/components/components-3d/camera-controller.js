@@ -33,7 +33,6 @@ export default class CameraController {
 
     position = this._startPosition;
     rotationX = this._startRotation;
-
     this._camera.position.x = position.x;
     this._camera.position.y = position.y;
     this._camera.position.z = position.z;

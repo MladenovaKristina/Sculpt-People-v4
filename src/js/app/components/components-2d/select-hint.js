@@ -1,0 +1,60 @@
+import ConfigurableParams from '../../../data/configurable_params';
+import { Tween, Black, Graphics, Sprite, DisplayObject, TextField, Ease, Timer } from '../../../utils/black-engine.module';
+import UTween from '../../helpers/../../utils/utween';
+import { TutorialHand } from './tutorial-hand';
+
+export default class SelectHint extends DisplayObject {
+  constructor() {
+    super();
+
+    this.scaleX = 1;
+    this.scaleY = 1;
+
+    this.visible = false;
+  }
+
+  onAdded() {
+
+    // this._sign.blendMode = 'mask';
+    this.startX = 0 + Black.stage.bounds.width / 5;
+    this.offset = Black.stage.bounds.width / 5;
+
+
+    this._hand = new TutorialHand();
+    this._hand.x = this.startX;
+    this._hand.y = -30;
+    this.add(this._hand);
+
+    if (ConfigurableParams.getData()['hint']['starting_hint_type']['value'] === 'INFINITY ONLY') this._hand.visible = false;
+  }
+
+  show() {
+    if (ConfigurableParams.getData()['hint']['starting_hint_type']['value'] === 'NONE') return;
+
+    console.log('show')
+    this.visible = true;
+
+    this._hand.start();
+
+    this._makeStep();
+  }
+
+  _makeStep() {
+    const slidetween = new Tween({
+      x: [this.startX, this.startX + this.offset * 3, this.startX]
+    }, 2, { ease: Ease.linear, delay: 1, loop: Infinity });
+    this._hand.add(slidetween);
+
+  }
+
+  hide() {
+    const hideTween = new Tween({
+      y: Black.stage.bounds.bottom + 250
+    }, 0.2);
+
+    this.add(hideTween);
+
+    hideTween.on('complete', msg => this.visible = false);
+  }
+}
+

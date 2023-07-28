@@ -7,6 +7,7 @@ import ConfigurableParams from '../../../data/configurable_params';
 import TopText from './top-text';
 import Tutorial from './tutorial';
 import ReferencePhoto from './ref-photo';
+import SelectHint from './select-hint';
 
 // works as a main class in 2D playables
 export default class Layout2D extends DisplayObject {
@@ -35,6 +36,9 @@ export default class Layout2D extends DisplayObject {
     this._tutorial = new Tutorial();
     this.add(this._tutorial);
 
+    this._selectHint = new SelectHint();
+    this.add(this._selectHint);
+
     this._createEndscreen();
 
     this._createLogo();
@@ -55,6 +59,10 @@ export default class Layout2D extends DisplayObject {
     this._refPhoto.y = bb.top + Number(ConfigurableParams.getData()["reference_photo"]["offset"]["y"]);
     if (this._topText.visible)
       this._refPhoto.y = this._topText.y + this._topText.height + Number(ConfigurableParams.getData()["reference_photo"]["offset"]["y"]);
+
+
+    this._selectHint.x = bb.left;
+    this._selectHint.y = Black.stage.centerY;
 
     this._tutorial.x = Black.stage.centerX;
     this._tutorial.y = Black.stage.centerY + bb.height * 0.18;
@@ -103,8 +111,12 @@ export default class Layout2D extends DisplayObject {
     }
   }
 
-  showHint() {
+  startHint() {
     this._tutorial.show();
+  }
+
+  _startClayHint() {
+    this._selectHint.show();
   }
 
   onDown(x, y) {
