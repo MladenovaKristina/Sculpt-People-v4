@@ -2,6 +2,8 @@ import { TextureLoader, Cache } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import assets from '../../../data/textures/3d/fourCharacters_assets.glb';
 import bg_image from '../../../data/textures/bg_image.png';
+import arm from '../../../data/textures/3d/hand_Sculpting.glb';
+import fingerprint from '../../../data/textures/3d/fingerprints.png';
 
 export default class Loader3D {
   constructor() {
@@ -13,10 +15,13 @@ export default class Loader3D {
 
   load() {
     const objects = [
-      { name: 'assets', asset: assets }
+      { name: 'assets', asset: assets },
+      { name: 'arm', asset: arm }
+
     ];
     const textures = [
-      { name: 'bg_image', asset: bg_image }
+      { name: 'bg_image', asset: bg_image },
+      { name: 'fingerprint', asset: fingerprint }
 
     ];
 

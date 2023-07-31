@@ -1,6 +1,7 @@
 import * as THREE from "three";
 
 import * as TWEEN from "@tweenjs/tween.js";
+import Head from "./head";
 
 export default class Layout3D extends THREE.Object3D {
   constructor() {
@@ -11,12 +12,12 @@ export default class Layout3D extends THREE.Object3D {
     this.headDecor = [];
   }
   _initBg() {
-    const backgroundGeometry = new THREE.PlaneGeometry(20, 25);
+    const backgroundGeometry = new THREE.PlaneGeometry(30, 35);
     const backgroundMaterial = new THREE.MeshPhongMaterial({ map: THREE.Cache.get("bg_image") });
 
     backgroundMaterial.side = THREE.DoubleSide;
     const backgroundMesh = new THREE.Mesh(backgroundGeometry, backgroundMaterial);
-    backgroundMesh.position.set(0, 0, -5);
+    backgroundMesh.position.set(0, 0, -15);
 
     backgroundMesh.rotation.z = Math.PI;
     backgroundMesh.rotation.y = Math.PI;
@@ -82,30 +83,8 @@ export default class Layout3D extends THREE.Object3D {
 
 
   _initSculpt(clayMaterial) {
-    const radius = 1;
-    const geometry = new THREE.BoxGeometry(radius, radius, radius, 20, 20);
-    this.sphere = new THREE.Mesh(geometry, clayMaterial)
-    this.sphere.position.set(this.stand.position.x, this.stand.position.y + radius, 0)
-    this.add(this.sphere);
-
-    this.asset.traverse((child) => {
-      if (child.name === "HEAD") {
-        this.head = child;
-
-        this.head.traverse((child) => {
-          if (child.name != "HEAD") {
-            child.visible = false;
-            this.headDecor.push(child)
-          }
-        })
-      }
-    })
-    console.log(this.headDecor)
-    this.head.position.set(this.stand.position.x, this.stand.position.y + radius, 0)
-    this.head.material = clayMaterial;
-    this.head.scale.set(10, 10, 10)
-    this.add(this.head)
-    this.head.visible = false;
+    this._sculpt = new Head(clayMaterial, this.asset, this.stand);
+    this.add(this._sculpt)
   }
 
   hideClay() {
