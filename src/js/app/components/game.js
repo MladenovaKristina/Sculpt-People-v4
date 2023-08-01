@@ -101,6 +101,7 @@ export default class Game {
     this._isDown = false;
 
     this._layout2d.onUp();
+    this._sceneController.onUp();
   }
 
   _countClicks() {

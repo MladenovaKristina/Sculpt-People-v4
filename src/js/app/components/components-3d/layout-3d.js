@@ -6,10 +6,10 @@ import Head from "./head";
 export default class Layout3D extends THREE.Object3D {
   constructor() {
     super();
+    this.positionInDock = [];
     this._initBg();
     this._initAsset();
     this._initStand();
-    this.headDecor = [];
   }
   _initBg() {
     const backgroundGeometry = new THREE.PlaneGeometry(30, 35);
@@ -68,7 +68,7 @@ export default class Layout3D extends THREE.Object3D {
   }
   _initDock() {
     const width = 8;
-    const geo = new THREE.PlaneGeometry(width, 3, 20, 20)
+    const geo = new THREE.PlaneGeometry(width, 1, 20, 20)
     const mat = new THREE.MeshBasicMaterial({ color: 0x834333, transparent: true, opacity: 1 });
     this.dock = new THREE.Mesh(geo, mat);
     this.dock.position.set(-width / 4, -3.5, 2);
@@ -80,11 +80,13 @@ export default class Layout3D extends THREE.Object3D {
 
     for (let i = 1; i < numberOfElements; i++) {
       const element = this._sculpt.head.children[i].clone();
-      element.scale.set(10, 10, 10)
+      element.scale.set(2, 2, 2)
+      let pos = -2 + (distanceBetweenElements * i);
+      element.position.set(pos, 1.8, 4)
+      this.positionInDock.push(pos);
       element.visible = true;
       this.dock.add(element);
-    } this.dock.children[0].position.set(-1, 1.5, 2);
-    this.dock.children[1].position.set(0, -0.5, 3);
+    }
 
     console.log(this.dock.children[0].position);
   }

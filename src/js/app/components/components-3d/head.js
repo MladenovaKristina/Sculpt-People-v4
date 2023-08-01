@@ -102,9 +102,9 @@ export default class Head extends Group {
 
         this.customMaterial = new THREE.MeshPhongMaterial({
             map: fingerprintTexture,
-            blending: THREE.AdditiveBlending,
+            blending: THREE.NormalBlending,
             transparent: true,
-            opacity: 0.8
+            opacity: 0.4
         });
 
         this.sphere = new THREE.Mesh(geometry, this.clayMaterial)
@@ -282,7 +282,7 @@ export default class Head extends Group {
             })
             .start();
 
-        if (this.groupTweenRotation.isPlaying && this.groupTweenPosition.isPlaying) {
+        if (this.groupTweenRotation && this.groupTweenPosition) {
             this.groupTweenPosition.end();
             this.groupTweenRotation.end();
             this.groupTweenPosition = null;
