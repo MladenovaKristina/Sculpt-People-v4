@@ -1,7 +1,7 @@
+
 import * as THREE from "three";
 import * as TWEEN from "@tweenjs/tween.js";
-import Helpers from "../../helpers/helpers";
-import { Vector3 } from "three";
+
 
 export default class SceneController extends THREE.Object3D {
     constructor(camera, layout2d, layout3d) {
@@ -100,91 +100,93 @@ export default class SceneController extends THREE.Object3D {
             this.selectedDecoration = null;
         }
     }
-}
 
 
-onMove(x, y) {
-    if (this.sceneNumber === 1) {
 
-        if (this.sculptFinish < 1) {
-            this._layout3d._sculpt.playAnim('sculpt');
-            this._layout3d._sculpt.smooth(x, y, this.sculptFinish);
-            this.sculptFinish += 0.005;
+    onMove(x, y) {
+        if (this.sceneNumber === 1) {
+
+            if (this.sculptFinish < 1) {
+                this._layout3d._sculpt.playAnim('sculpt');
+                this._layout3d._sculpt.smooth(x, y, this.sculptFinish);
+                this.sculptFinish += 0.005;
+            }
+            else {
+                this.scene2();
+            }
         }
-        else {
-            this.scene2();
+
+        if (this.sceneNumber === 2) {
+            const mouse = new THREE.Vector2();
+            mouse.x = (x / window.innerWidth) * 2 - 1;
+            mouse.y = -(y / window.innerHeight) * 2 + 1;
+
+            this.getElementAtPosition(mouse.x, mouse.y)
+
+            if (this.selectedDecoration) {
+                this.selectedDecoration.position.x = mouse.x;
+                this.selectedDecoration.position.y = mouse.y + 3;
+                this.selectedDecoration.position.z = -1;
+
+            }
         }
     }
 
-    if (this.sceneNumber === 2) {
-        const mouse = new THREE.Vector2();
-        mouse.x = (x / window.innerWidth) * 2 - 1;
-        mouse.y = -(y / window.innerHeight) * 2 + 1;
 
-        this.getElementAtPosition(mouse.x, mouse.y)
 
-        if (this.selectedDecoration) {
-            this.selectedDecoration.position.x = mouse.x;
-            this.selectedDecoration.position.y = mouse.y + 3;
-            this.selectedDecoration.position.z = -1;
-
-        }
+    scene0() {
+        this._layout3d._initClay();
+        this._layout2d._startClayHint();
     }
-}
 
-scene0() {
-    this._layout3d._initClay();
-    this._layout2d._startClayHint();
-}
+    scene1(clayMaterial) {
+        this.sceneNumber = 1;
+        this._layout3d._initSculpt(clayMaterial);
 
-scene1(clayMaterial) {
-    this.sceneNumber = 1;
-    this._layout3d._initSculpt(clayMaterial);
+        this.setCam(-2, () => {
+            this._layout2d.startHint();
+        });
+    }
 
-    this.setCam(-2, () => {
-        this._layout2d.startHint();
-    });
-}
+    scene2() {
+        this._layout3d._initDock();
+        this.numberOfDecorations = this._layout3d.dock.children.length;
 
-scene2() {
-    this._layout3d._initDock();
-    this.numberOfDecorations = this._layout3d.dock.children.length;
+        this.sceneNumber = 2;
+        this._layout2d._tutorial.hide();
 
-    this.sceneNumber = 2;
-    this._layout2d._tutorial.hide();
+        this._layout3d._sculpt.head.rotation.set(Math.PI / 2, 0, 0)
+        this._layout3d._sculpt.head.visible = true;
 
-    this._layout3d._sculpt.head.rotation.set(Math.PI / 2, 0, 0)
-    this._layout3d._sculpt.head.visible = true;
+        this._layout3d._sculpt.hide(this._layout3d._sculpt.arm);
+        this._layout3d._sculpt.hide(this._layout3d._sculpt.rightArm);
 
-    this._layout3d._sculpt.hide(this._layout3d._sculpt.arm);
-    this._layout3d._sculpt.hide(this._layout3d._sculpt.rightArm);
+    }
+    scene3() {
+        this.sceneNumber = 3;
+        console.log("scene", this.sceneNumber);
+    }
 
-}
-scene3() {
-    this.sceneNumber = 3;
-    console.log("scene", this.sceneNumber);
-}
+    setCam(setX, callback) {
+        const tempCameraPosition = { x: this._camera.threeCamera.position.x }; // Temporary object to hold camera position
 
-setCam(setX, callback) {
-    const tempCameraPosition = { x: this._camera.threeCamera.position.x }; // Temporary object to hold camera position
+        const tween = new TWEEN.Tween(tempCameraPosition) // Use the temporary object for tweening
+            .to({ x: setX }, 400)
+            .easing(TWEEN.Easing.Quadratic.Out)
+            .onUpdate(() => {
+                this._camera.threeCamera.position.x = tempCameraPosition.x;
+            })
+            .onComplete(() => {
+                if (this._camera.threeCamera.position.x == setX)
+                    callback();
+            })
+            .start();
 
-    const tween = new TWEEN.Tween(tempCameraPosition) // Use the temporary object for tweening
-        .to({ x: setX }, 400)
-        .easing(TWEEN.Easing.Quadratic.Out)
-        .onUpdate(() => {
-            this._camera.threeCamera.position.x = tempCameraPosition.x;
-        })
-        .onComplete(() => {
-            if (this._camera.threeCamera.position.x == setX)
-                callback();
-        })
-        .start();
+        this.animate();
+    }
 
-    this.animate();
-}
-
-animate() {
-    TWEEN.update();
-    requestAnimationFrame(() => this.animate());
-}
+    animate() {
+        TWEEN.update();
+        requestAnimationFrame(() => this.animate());
+    }
 }
