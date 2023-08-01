@@ -69,18 +69,25 @@ export default class Layout3D extends THREE.Object3D {
   _initDock() {
     const width = 8;
     const geo = new THREE.PlaneGeometry(width, 3, 20, 20)
-    const mat = new THREE.MeshBasicMaterial({ color: 0x834333, transparent: true, opacity: 0.7 });
-    const dock = new THREE.Mesh(geo, mat);
-    dock.position.set(-width / 4, -3.5, 2);
-    this.add(dock)
+    const mat = new THREE.MeshBasicMaterial({ color: 0x834333, transparent: true, opacity: 1 });
+    this.dock = new THREE.Mesh(geo, mat);
+    this.dock.position.set(-width / 4, -3.5, 2);
+    this.add(this.dock);
 
-    const offset = width / (this.headDecor.length + 2)
-    for (let i = 0; i < this.headDecor.length; i++) {
-      let object = this.headDecor[i];
-      object.visible = true;
-    }
+    const numberOfElements = this._sculpt.head.children.length;
+    const distanceBetweenElements = 1; // Adjust this value as needed for the spacing between elements in the dock.
+    const rowStartPosition = -1;
+
+    for (let i = 1; i < numberOfElements; i++) {
+      const element = this._sculpt.head.children[i].clone();
+      element.scale.set(10, 10, 10)
+      element.visible = true;
+      this.dock.add(element);
+    } this.dock.children[0].position.set(-1, 1.5, 2);
+    this.dock.children[1].position.set(0, -0.5, 3);
+
+    console.log(this.dock.children[0].position);
   }
-
 
   _initSculpt(clayMaterial) {
     this._sculpt = new Head(clayMaterial, this.asset, this.stand);

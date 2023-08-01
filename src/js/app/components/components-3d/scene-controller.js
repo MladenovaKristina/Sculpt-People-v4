@@ -10,25 +10,34 @@ export default class SceneController extends THREE.Object3D {
         this._layout2d = layout2d;
         this._layout3d = layout3d;
         this.sceneNumber = 0;
-        // this.scene0();
-        const mat = new THREE.MeshPhysicalMaterial({ color: 0xff00ff });
-        this.scene1(mat);
-
+        this.scene0();
+        // const mat = new THREE.MeshPhysicalMaterial({ color: 0xff00ff });
+        // this.scene1(mat);
         this.sculptFinish = 0;
     }
 
     onDown(x, y) {
         if (this.sceneNumber === 0) {
             this.getClayAtPosition(x, y, () => {
-                console.log("aaa")
                 this._layout2d._hideClayHint();
                 this._layout3d.hideClay();
                 this.scene1(this.selectedClayMaterial);
             });
         }
+        // if (this.sceneNumber == 1) {
+        //     this._layout3d._sculpt.hide(this._layout3d._sculpt.group)
+        //     this.scene2();
+        // }
+
+        if (this.sceneNumber == 2) {
+            this.getElementAtPosition(x, y, () => {
+                console.log(this.selectedDecorationMaterial.name)
+            })
+        }
+
+
     }
     getClayAtPosition(x, y, callback) {
-        console.log("bbb")
 
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
@@ -40,11 +49,9 @@ export default class SceneController extends THREE.Object3D {
 
         const intersects = [];
         this._layout3d.clay.traverse((child) => {
-            console.log("ccc")
 
             const intersect = raycaster.intersectObject(child);
             if (intersect.length > 0 && !this.selectedClayMaterial) {
-                console.log("ddd")
 
                 this.selectedClayMaterial = intersect[0].object.material;
                 callback()
@@ -52,10 +59,33 @@ export default class SceneController extends THREE.Object3D {
             }
         });
 
-        return null; // Return null if no intersected object found
+        return null;
     }
 
+    getElementAtPosition(x, y, callback) {
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
 
+        mouse.x = (x / window.innerWidth) * 2 - 1;
+        mouse.y = -(y / window.innerHeight) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, this._camera.threeCamera);
+        const intersects = [];
+        this._layout3d.dock.traverse((child) => {
+            console.log("dock", child.name)
+
+            const intersect = raycaster.intersectObject(child);
+            if (intersect.length > 0 && !this.selectedDecorationMaterial) {
+
+                this.selectedDecorationMaterial = intersect[0].object.material;
+                callback()
+
+            }
+        });
+
+        return null;
+
+    }
 
     onUp() {
 
@@ -66,13 +96,12 @@ export default class SceneController extends THREE.Object3D {
 
             if (this.sculptFinish < 1) {
                 this._layout3d._sculpt.playAnim('sculpt');
-                this._layout3d._sculpt.smooth(x, y);
+                this._layout3d._sculpt.smooth(x, y, this.sculptFinish);
                 this.sculptFinish += 0.005;
             }
             else {
+
                 this.scene2();
-                this._layout3d._sculpt.hide(this._layout3d._sculpt.sphere)
-                this._layout3d._sculpt.hide(this._layout3d._sculpt.fingerprintSphere)
 
             }
         }
@@ -85,9 +114,9 @@ export default class SceneController extends THREE.Object3D {
 
     scene1(clayMaterial) {
         this.sceneNumber = 1;
+        this._layout3d._initSculpt(clayMaterial);
         this.setCam(-2, () => {
             this._layout2d.startHint();
-            this._layout3d._initSculpt(clayMaterial);
         });
     }
 
@@ -95,9 +124,10 @@ export default class SceneController extends THREE.Object3D {
         this.sceneNumber = 2;
         this._layout2d._tutorial.hide();
 
-        this._layout3d._sculpt.sphere.visible = false;
         this._layout3d._sculpt.head.rotation.set(Math.PI / 2, 0, 0)
         this._layout3d._sculpt.head.visible = true;
+        this._layout3d._sculpt.hide(this._layout3d._sculpt.arm);
+        this._layout3d._sculpt.hide(this._layout3d._sculpt.rightArm);
 
         this._layout3d._initDock();
     }
