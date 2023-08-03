@@ -1,5 +1,5 @@
 
-import { Object3D, Raycaster, Vector2 } from "three";
+import { Object3D, Raycaster, Vector2, Vector3 } from "three";
 import TWEEN from "@tweenjs/tween.js";
 import { Black } from "../../../utils/black-engine.module";
 
@@ -194,8 +194,9 @@ export default class SceneController extends Object3D {
         this.sceneNumber = 1;
         this._layout3d._initSculpt(clayMaterial);
         this._layout3d.model3d.show();
-        this.setCam(-2, () => {
-            this._layout2d.startHint();
+        this.setCam(2, null, null, () => {
+            this._layout2d.startHint()
+
         });
     }
 
@@ -204,11 +205,11 @@ export default class SceneController extends Object3D {
         this._layout2d._cheers.show(0, Black.stage.centerX - 1, Black.stage.centerY + 1);
 
         this._layout2d._tutorial.hide();
-
         this._layout3d._sculpt.head.rotation.set(Math.PI / 2, 0, 0)
         this._layout3d._sculpt.head.visible = true;
-        this._layout3d.model3d.hide(this._layout3d.model3d.arm);
-        this._layout3d.model3d.hide(this._layout3d.model3d.rightArm);
+
+        this._layout3d.model3d.hide(this._layout3d.model3d.group);
+
         this.canMove = false;
         console.log("scene", this.sceneNumber);
     }
@@ -230,36 +231,47 @@ export default class SceneController extends Object3D {
 
         console.log("painting scene implement pls", this.sceneNumber);
     }
+
     scene5() {
         this.sceneNumber = 5;
-        this.setCam(0, () => {
+        this.setCam(-1, 2, -2, () => {
             this._layout2d._confetti.show()
         });
-        this._cameraController.setLookingAt(this._layout3d.stand.position)
+        const standVector = new Vector3(this._layout3d.stand.position.x, this._layout3d.stand.position.y - 1, this._layout3d.stand.position.z)
+        this._cameraController.setLookingAt(standVector)
 
         console.log("celebrate scene", this.sceneNumber);
         setTimeout(() => { this.scene6() }, 3000)
     }
-    scene6() {
-        // this._layout2d._cheers.show(4, Black.stage.centerX + 1, Black.stage.centerY - 1);
 
+    scene6() {
         this.sceneNumber = 6;
         this._layout3d._initDock("body");
-
-        console.log("body scene implement pls", this.sceneNumber);
+        this._layout3d.bg.rotation.y = this._camera.threeCamera.rotation.y;
+        this._layout3d.bg.position.y -= 2;
+        this._layout3d.bg.position.x += 1;
     }
 
-    setCam(setX, callback) {
-        const tempCameraPosition = { x: this._camera.threeCamera.position.x }; // Temporary object to hold camera position
+    setCam(setX, setY, setZ, callback) {
+        let targetX = setX, targetY = setY, targetZ = setZ;
+        const tempCameraPosition = { x: this._camera.threeCamera.position.x, y: this._camera.threeCamera.position.y, z: this._camera.threeCamera.position.z }; // Temporary object to hold camera position
+        if (!setX) targetX = this._camera.threeCamera.position.x; else targetX = this._camera.threeCamera.position.x - setX;
+
+        if (!setY) targetY = this._camera.threeCamera.position.y; else targetY = this._camera.threeCamera.position.y - setY;
+        if (!setZ) targetZ = this._camera.threeCamera.position.z; else targetZ = this._camera.threeCamera.position.z - setZ;
 
         const tween = new TWEEN.Tween(tempCameraPosition) // Use the temporary object for tweening
-            .to({ x: setX }, 400)
+            .to({ x: targetX, y: targetY, z: targetZ }, 400)
             .easing(TWEEN.Easing.Quadratic.Out)
             .onUpdate(() => {
                 this._camera.threeCamera.position.x = tempCameraPosition.x;
+                this._camera.threeCamera.position.y = tempCameraPosition.y;
+
+                this._camera.threeCamera.position.z = tempCameraPosition.z;
+
             })
             .onComplete(() => {
-                if (this._camera.threeCamera.position.x == setX)
+                if (this._camera.threeCamera.position.x == targetX)
                     callback();
             })
             .start();

@@ -36,7 +36,7 @@ export default class Models3D extends Group {
     _initTexture(clayMaterial) {
         this.clayMaterial = clayMaterial;
         this.asset.traverse((child) => {
-            console.log(child.name)
+            // console.log(child.name)
             if (child.name === "ears" || child.name === "EARS" || child.name === "ear_l" || child.name === "ear_r") {
                 child.material = clayMaterial;
             }
@@ -251,11 +251,18 @@ export default class Models3D extends Group {
             .to({ target }, 200)
             .easing(TWEEN.Easing.Sinusoidal.InOut)
             .onUpdate(() => {
-                object.position.y -= 1 / 10;
-                object.position.x -= 3 / 100;
+                object.position.y -= 3 / 10;
+                object.position.x -= 5 / 100;
                 if (object.position.y <= target) object.visible = false;
             })
+            .onComplete(() => {
+                object.visible = false;
+            })
             .start();
+    }
+
+    stopAnim(name) {
+        if (this._animations[name].tween != null) this._animations[name].tween.stop();
 
         if (this.groupTweenRotation && this.groupTweenPosition) {
             this.groupTweenPosition.end();
@@ -264,10 +271,6 @@ export default class Models3D extends Group {
             this.groupTweenRotation = null;
             this.group.visible = false;
         }
-    }
-
-    stopAnim(name) {
-        if (this._animations[name].tween != null) this._animations[name].tween.stop();
     }
 
     changeAnim(oldAnimName, newAnimName) {

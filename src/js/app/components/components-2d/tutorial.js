@@ -16,8 +16,6 @@ export default class Tutorial extends DisplayObject {
   }
 
   onAdded() {
-
-
     this._sign = new Sprite('infinity_sign');
     this._sign.alignAnchor(0.5, 0.5);
     this._sign.y = 0;
@@ -38,7 +36,6 @@ export default class Tutorial extends DisplayObject {
 
   show() {
     if (ConfigurableParams.getData()['hint']['starting_hint_type']['value'] === 'NONE') return;
-
     console.log('show')
     this.visible = true;
 

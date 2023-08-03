@@ -27,6 +27,11 @@ export default class Layout2D extends DisplayObject {
   }
 
   onAdded() {
+    this._tutorial = new Tutorial();
+    this.add(this._tutorial);
+
+    this._tutorial.x = Black.stage.centerX;
+    this._tutorial.y = Black.stage.centerY + 200;
 
     this._topText = new TopText();
     this.add(this._topText);
@@ -108,11 +113,6 @@ export default class Layout2D extends DisplayObject {
   }
 
   startHint() {
-    this._tutorial = new Tutorial();
-    this.add(this._tutorial);
-    this._tutorial.x = Black.stage.centerX;
-    this._tutorial.y = Black.stage.centerY + 200;
-
     this._tutorial.show();
   }
 
