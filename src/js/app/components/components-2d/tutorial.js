@@ -9,8 +9,8 @@ export default class Tutorial extends DisplayObject {
 
     this._sign = null;
 
-    this.scaleX = 2;
-    this.scaleY = 2;
+    this.scaleX = 1;
+    this.scaleY = 1;
 
     this.visible = false;
   }
@@ -21,8 +21,8 @@ export default class Tutorial extends DisplayObject {
     this._sign = new Sprite('infinity_sign');
     this._sign.alignAnchor(0.5, 0.5);
     this._sign.y = 0;
-    this._sign.scaleX = 0.35;
-    this._sign.scaleY = 0.35;
+    this._sign.scaleX = 1;
+    this._sign.scaleY = 1;
     this._sign.color = 0xffffff;
     this.add(this._sign);
 
@@ -49,8 +49,8 @@ export default class Tutorial extends DisplayObject {
 
   _makeStep() {
     const scaleTw = new Tween({
-      scaleX: [0.33, 0.45, 0.33, 0.4, 0.33, 0.35, 0.35],
-      scaleY: [0.38, 0.28, 0.38, 0.3, 0.38, 0.35, 0.35],
+      scaleX: [1.33, 1.45, 1.33, 1.4, 1.33, 1.35, 1.35],
+      scaleY: [1.38, 1.28, 1.38, 1.3, 1.38, 1.35, 1.35],
     }, 2, { ease: Ease.sinusoidalOut, delay: 1 });
     this._sign.add(scaleTw);
 

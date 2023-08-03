@@ -2,16 +2,21 @@ import TWEEN from "@tweenjs/tween.js";
 import { Object3D, PlaneGeometry, MeshPhysicalMaterial, Mesh, CylinderGeometry, Cache, DoubleSide, Group } from 'three';
 import { Black } from "../../../utils/black-engine.module";
 import Head from '../components-3d/head'
-
-
+import Models3D from "./3d-models";
+import ConfigurableParams from "../../../data/configurable_params";
 export default class Layout3D extends Object3D {
   constructor() {
     super();
     this.positionInDock = [];
-    this._initBg();
-    this._initAsset();
-    this._initStand();
+    this._init();
+
   }
+  _init() {
+    this._initBg();
+    this._initStand();
+    this._initAsset();
+  }
+
   _initBg() {
     const backgroundGeometry = new PlaneGeometry(35, 35);
     const backgroundMaterial = new MeshPhysicalMaterial({ map: Cache.get("bg_image") });
@@ -46,18 +51,10 @@ export default class Layout3D extends Object3D {
   }
 
   _initAsset() {
-    this.asset = Cache.get('assets').scene;
-    this.asset.position.x = 0;
-    this.asset.position.y = -2;
-
-
-    this.asset.traverse((child) => {
-      if (child.name === "Armature") {
-        this.body = child;
-
-      }
-    })
+    this.model3d = new Models3D(this.stand);
+    this.add(this.model3d)
   }
+
   _initClay() {
     const numberOfClay = 3;
     this.clay = new Group()
@@ -65,12 +62,17 @@ export default class Layout3D extends Object3D {
     this.clay.position.set(0 - numberOfClay / numberOfClay, 0)
 
     const offset = Black.stage.bounds.width / 2 / (numberOfClay + 2) / 100;
-    const colors = [0xE4DFDA, 0xD4B483, 0x48A9A6]
+    const colors = [ConfigurableParams.getData()['clay']['clay1']['value'],
+    ConfigurableParams.getData()['clay']['clay2']['value'],
+    ConfigurableParams.getData()['clay']['clay3']['value']]
+
+
+
     for (let i = 0; i < 3; i++) {
       const geometry = new PlaneGeometry(0.5, 0.5);
       const material = new MeshPhysicalMaterial({ color: colors[i], side: DoubleSide });
       const plane = new Mesh(geometry, material);
-      plane.position.set(offset * i, 0)
+      plane.position.set(offset * i, 0, 4)
       this.clay.add(plane);
     }
   }
@@ -80,7 +82,7 @@ export default class Layout3D extends Object3D {
     if (bodyPart === "head") {
       dockelements = this._sculpt.head
     } else {
-      dockelements = this.body;
+      dockelements = this.model3d.body;
       this.add(dockelements)
     }
     const width = 8;
@@ -110,11 +112,11 @@ export default class Layout3D extends Object3D {
       this.dock.add(element);
     }
 
-    console.log(this.dock.children[0].position);
   }
 
   _initSculpt(clayMaterial) {
-    this._sculpt = new Head(clayMaterial, this.asset, this.stand);
+    this.model3d._initTexture(clayMaterial);
+    this._sculpt = new Head(clayMaterial, this.model3d.head, this.stand);
     this.add(this._sculpt)
   }
 

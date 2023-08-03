@@ -114,6 +114,39 @@ export default class ConfigurableParams {
         "assetName": null
       }
     },
+    "clay": {
+      "clay1": {
+        "label": "Clay1 color",
+        "type": "color",
+        "value": "#c97c5d",
+        "descrition": "Clay1 color.",
+        "assetName": null
+      },
+      "clay2": {
+        "label": "Clay2 color",
+        "type": "color",
+        "value": "#eed7c5",
+        "descrition": "Clay2 color.",
+        "assetName": null
+      },
+      "clay3": {
+        "label": "Clay3 color",
+        "type": "color",
+        "value": "#c89f9c",
+        "descrition": "Clay3 color.",
+        "assetName": null
+      },
+    },
+    "character": {
+      "select_character": {
+        "label": "Select Character",
+        "type": "select",
+        "value": "Big",
+        "options": ["Big", "Bride", "Harley", "Tuxedo"],
+        "descrition": "Select character.",
+        "assetName": null
+      },
+    },
     "reference_photo": {
       "ref_photo_enabled": {
         "label": "Reference photo enabled",
