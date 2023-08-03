@@ -70,7 +70,7 @@ export default class Game {
   }
 
   _initSceneController() {
-    this._sceneController = new SceneController(this._camera, this._layout2d, this._layout3d);
+    this._sceneController = new SceneController(this._camera, this._cameraController, this._layout2d, this._layout3d);
     this._scene.add(this._layout3d);
   }
 

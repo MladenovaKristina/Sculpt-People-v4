@@ -1,6 +1,6 @@
 import { Black, Ease } from "../../../utils/black-engine.module";
 import * as THREE from "three";
-import UTween from "../../../utils/utween";
+import * as TWEEN from "@tweenjs/tween.js";
 import Helpers from "../../helpers/helpers";
 
 export default class CameraController {
@@ -27,6 +27,18 @@ export default class CameraController {
     this._camera.lookAt(new THREE.Vector3(0, 0, 0))
   }
 
+  setLookingAt(position) {
+    const lookAtTarget = new THREE.Vector3(position.x + 1, position.y - 0.5, position.z + 1);
+    const currentLookAt = this._camera.getWorldDirection(new THREE.Vector3());
+    const duration = 500;
+    // Create a new tween for the camera's lookAt position
+    const tween = new TWEEN.Tween(currentLookAt)
+      .to(lookAtTarget, duration)
+      .onUpdate(() => {
+        this._camera.lookAt(currentLookAt);
+      })
+      .start();
+  }
   _updateTransform() {
     let position = null;
     let rotationX = null;
