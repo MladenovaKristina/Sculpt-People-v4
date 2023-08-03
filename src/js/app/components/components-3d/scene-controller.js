@@ -186,7 +186,7 @@ export default class SceneController extends Object3D {
 
 
     scene0() {
-        this._layout2d._initClay();
+        this._layout3d._initClay();
         this._layout2d._startClayHint();
     }
 

@@ -130,22 +130,7 @@ export default class Layout2D extends DisplayObject {
     this._confetti = new Confetti();
     this.add(this._confetti)
   }
-  _initClay() {
-    const numberOfClay = 3;
-    this.clay = new Group()
-    this.add(this.clay);
-    this.clay.position.set(0 - numberOfClay / numberOfClay, 0)
 
-    const offset = Black.stage.bounds.width / 2 / (numberOfClay + 2) / 100;
-    const colors = [0xE4DFDA, 0xD4B483, 0x48A9A6]
-    for (let i = 0; i < 3; i++) {
-      const geometry = new PlaneGeometry(0.5, 0.5);
-      const material = new MeshPhysicalMaterial({ color: colors[i], side: DoubleSide });
-      const plane = new Mesh(geometry, material);
-      plane.position.set(offset * i, 0)
-      this.clay.add(plane);
-    }
-  }
 
   onDown(x, y) {
     const defaultPos = { x: x, y: y };
