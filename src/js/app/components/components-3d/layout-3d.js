@@ -53,10 +53,7 @@ export default class Layout3D extends THREE.Object3D {
     this.asset.traverse((child) => {
       if (child.name === "Armature") {
         this.body = child;
-        this.body.traverse((child) => {
-          console.log(child.name, child)
 
-        })
       }
     })
   }

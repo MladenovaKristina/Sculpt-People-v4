@@ -8,7 +8,8 @@ import TopText from './top-text';
 import Tutorial from './tutorial';
 import ReferencePhoto from './ref-photo';
 import SelectHint from './select-hint';
-
+import CheersText from './cheers-text';
+import Confetti from './confetti';
 // works as a main class in 2D playables
 export default class Layout2D extends DisplayObject {
   constructor() {
@@ -40,6 +41,8 @@ export default class Layout2D extends DisplayObject {
 
     this._createLogo();
     this._createDownloadBtn();
+    this._initCheers();
+    this._initConfetti();
 
     this.onResize();
     Black.stage.on('resize', this.onResize, this);
@@ -118,6 +121,14 @@ export default class Layout2D extends DisplayObject {
   }
   _hideClayHint() {
     this._selectHint.hide();
+  }
+  _initCheers() {
+    this._cheers = new CheersText();
+    this.add(this._cheers)
+  }
+  _initConfetti() {
+    this._confetti = new Confetti();
+    this.add(this._confetti)
   }
 
   onDown(x, y) {

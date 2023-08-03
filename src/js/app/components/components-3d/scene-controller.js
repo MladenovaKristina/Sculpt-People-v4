@@ -1,7 +1,7 @@
 
 import * as THREE from "three";
 import * as TWEEN from "@tweenjs/tween.js";
-
+import { Black } from "../../../utils/black-engine.module";
 
 export default class SceneController extends THREE.Object3D {
     constructor(camera, cameraController, layout2d, layout3d) {
@@ -201,6 +201,7 @@ export default class SceneController extends THREE.Object3D {
 
     scene2() {
         this.sceneNumber = 2;
+        this._layout2d._cheers.show(0, Black.stage.centerX - 1, Black.stage.centerY + 1);
 
         this._layout2d._tutorial.hide();
 
@@ -214,13 +215,18 @@ export default class SceneController extends THREE.Object3D {
 
     }
     scene3() {
+        this._layout2d._cheers.show(1, Black.stage.centerX + 1, Black.stage.centerY - 1);
+
         this.sceneNumber = 3;
+
         this.canMove = false;
         this._layout3d._initDock("head");
         this.numberOfDecorations = this._layout3d.dock.children.length;
     }
 
     scene4() {
+        this._layout2d._cheers.show(2, Black.stage.centerX + 1, Black.stage.centerY - 1);
+
         this.sceneNumber = 4;
         this._layout3d.hide(this._layout3d.bg);
 
@@ -229,13 +235,17 @@ export default class SceneController extends THREE.Object3D {
     scene5() {
         this.sceneNumber = 5;
         this.setCam(0, () => {
-            console.log("hooray")
+            this._layout2d._confetti.show()
+            // this._layout2d._cheers.show(3, Black.stage.centerX, Black.stage.centerY - 2);
+
         });
         this._cameraController.setLookingAt(this._layout3d.stand.position)
 
         console.log("celebrate scene", this.sceneNumber);
     }
     scene6() {
+        // this._layout2d._cheers.show(4, Black.stage.centerX + 1, Black.stage.centerY - 1);
+
         this.sceneNumber = 6;
         this._layout3d._initDock("body");
 
