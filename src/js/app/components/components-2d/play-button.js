@@ -20,6 +20,8 @@ export default class PlayButton extends DisplayObject {
     this._outline = new Sprite('btn_outline');
     this._outline.alignAnchor(0.5, 0.5);
     this._container.add(this._outline);
+    this._container.scaleX = 2;
+    this._container.scaleY = 2;
 
     this._back = new Sprite('btn_back');
     this._back.color = this._backColor;

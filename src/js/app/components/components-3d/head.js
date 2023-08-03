@@ -1,7 +1,5 @@
 import TWEEN from "@tweenjs/tween.js";
-import { Group, Cache, AnimationMixer, MeshStandardMaterial, DoubleSide } from "three";
-import * as THREE from 'three';
-import { BlendMode, MessageDispatcher } from "../../../utils/black-engine.module";
+import { Group, Cache, AnimationMixer, MeshPhysicalMaterial, Vector3, SphereGeometry, NormalBlending, Mesh } from "three";
 
 
 export default class Head extends Group {
@@ -57,14 +55,14 @@ export default class Head extends Group {
     }
     _init() {
         this.visible = false;
-        this.group = new THREE.Group();
+        this.group = new Group();
         this.add(this.group);
 
-        this.arm = THREE.Cache.get('arm').scene;
+        this.arm = Cache.get("arm").scene;
         this.arm.scale.set(15, 15, 15);
         this.arm.rotation.set(0.7, 4.8, 0);
         this.arm.traverse((child) => {
-            child.material = new THREE.MeshPhysicalMaterial({ color: 0xe5c59a, metalness: 0.2, reflectivity: 1 })
+            child.material = new MeshPhysicalMaterial({ color: 0xe5c59a, metalness: 0.2, reflectivity: 1 })
 
             if (child.name === "ref_position") {
                 this.armposition = child;
@@ -77,14 +75,14 @@ export default class Head extends Group {
 
         this.group.add(this.arm);
 
-        this.rightArm = THREE.Cache.get('rightArm').scene;
+        this.rightArm = Cache.get('rightArm').scene;
         this.rightArm.scale.set(15, 15, 15);
-        const scale = new THREE.Vector3(1, 1, -1)
+        const scale = new Vector3(1, 1, -1)
         this.rightArm.scale.multiply(scale);
 
         this.rightArm.rotation.set(this.arm.rotation.x, this.arm.rotation.y - 0.3, this.arm.rotation.z);
         this.rightArm.traverse((child) => {
-            child.material = new THREE.MeshPhysicalMaterial({ color: 0xe5c59a, metalness: 0.2, reflectivity: 1 })
+            child.material = new MeshPhysicalMaterial({ color: 0xe5c59a, metalness: 0.2, reflectivity: 1 })
             if (child.name === "ref_position") {
                 child.visible = false;
             }
@@ -96,25 +94,25 @@ export default class Head extends Group {
 
 
         const radius = 1.2;
-        const geometry = new THREE.SphereGeometry(radius, 5, 10);
-        const fingerprintTexture = THREE.Cache.get('fingerprint');
+        const geometry = new SphereGeometry(radius, 5, 10);
+        const fingerprintTexture = Cache.get('fingerprint');
 
 
-        this.customMaterial = new THREE.MeshPhongMaterial({
+        this.customMaterial = new MeshPhysicalMaterial({
             map: fingerprintTexture,
-            blending: THREE.NormalBlending,
+            blending: NormalBlending,
             transparent: true,
             opacity: 0.4
         });
 
-        this.sphere = new THREE.Mesh(geometry, this.clayMaterial)
+        this.sphere = new Mesh(geometry, this.clayMaterial)
 
 
         this.sphere.position.set(this.stand.position.x, this.stand.position.y + radius / 2, 0)
         this.group.add(this.sphere);
 
 
-        this.fingerprintSphere = new THREE.Mesh(geometry, this.customMaterial);
+        this.fingerprintSphere = new Mesh(geometry, this.customMaterial);
         this.fingerprintSphere.position.set(this.sphere.position.x, this.sphere.position.y, this.sphere.position.z);
 
         this.group.add(this.fingerprintSphere);

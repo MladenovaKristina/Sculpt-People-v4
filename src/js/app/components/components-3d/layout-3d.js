@@ -1,9 +1,10 @@
-import * as THREE from "three";
+import TWEEN from "@tweenjs/tween.js";
+import { Object3D, PlaneGeometry, MeshPhysicalMaterial, Mesh, CylinderGeometry, Cache, DoubleSide, Group } from 'three';
 import { Black } from "../../../utils/black-engine.module";
-import * as TWEEN from "@tweenjs/tween.js";
-import Head from "./head";
+import Head from '../components-3d/head'
 
-export default class Layout3D extends THREE.Object3D {
+
+export default class Layout3D extends Object3D {
   constructor() {
     super();
     this.positionInDock = [];
@@ -12,11 +13,11 @@ export default class Layout3D extends THREE.Object3D {
     this._initStand();
   }
   _initBg() {
-    const backgroundGeometry = new THREE.PlaneGeometry(35, 35);
-    const backgroundMaterial = new THREE.MeshPhongMaterial({ map: THREE.Cache.get("bg_image") });
+    const backgroundGeometry = new PlaneGeometry(35, 35);
+    const backgroundMaterial = new MeshPhysicalMaterial({ map: Cache.get("bg_image") });
 
-    backgroundMaterial.side = THREE.DoubleSide;
-    const backgroundMesh = new THREE.Mesh(backgroundGeometry, backgroundMaterial);
+    backgroundMaterial.side = DoubleSide;
+    const backgroundMesh = new Mesh(backgroundGeometry, backgroundMaterial);
     backgroundMesh.position.set(0, 0, -15);
 
     backgroundMesh.rotation.z = Math.PI;
@@ -25,27 +26,27 @@ export default class Layout3D extends THREE.Object3D {
   }
 
   _initStand() {
-    this.stand = new THREE.Group();
+    this.stand = new Group();
     this.stand.position.x = -2;
     this.add(this.stand)
 
-    const geometry = new THREE.CylinderGeometry(0.1, 0.1, 5, 10);
-    const material = new THREE.MeshPhysicalMaterial({ color: 0xdadada, metalness: 1, reflectivity: 10 });
-    const cylinder = new THREE.Mesh(geometry, material);
+    const geometry = new CylinderGeometry(0.1, 0.1, 5, 10);
+    const material = new MeshPhysicalMaterial({ color: 0xdadada, metalness: 1, reflectivity: 10 });
+    const cylinder = new Mesh(geometry, material);
     cylinder.position.y = -2;
 
     this.stand.add(cylinder)
 
-    const geo = new THREE.CylinderGeometry(1.5, 1.5, 0.1, 30
+    const geo = new CylinderGeometry(1.5, 1.5, 0.1, 30
     );
-    const base = new THREE.Mesh(geo, material);
+    const base = new Mesh(geo, material);
     base.position.y = -4.5;
 
     this.stand.add(base);
   }
 
   _initAsset() {
-    this.asset = THREE.Cache.get('assets').scene;
+    this.asset = Cache.get('assets').scene;
     this.asset.position.x = 0;
     this.asset.position.y = -2;
 
@@ -58,23 +59,6 @@ export default class Layout3D extends THREE.Object3D {
     })
   }
 
-  _initClay() {
-    const numberOfClay = 3;
-    this.clay = new THREE.Group()
-    this.add(this.clay);
-    this.clay.position.set(0 - numberOfClay / numberOfClay, 0, 0)
-
-    const offset = Black.stage.bounds.width / 2 / (numberOfClay + 2) / 100;
-    const colors = [0xE4DFDA, 0xD4B483, 0x48A9A6]
-    for (let i = 0; i < 3; i++) {
-      const geometry = new THREE.PlaneGeometry(0.5, 0.5);
-      const material = new THREE.MeshPhysicalMaterial({ color: colors[i], side: THREE.DoubleSide });
-      const plane = new THREE.Mesh(geometry, material);
-      plane.position.set(offset * i, 0, 4)
-      this.clay.add(plane);
-    }
-  }
-
   _initDock(bodyPart) {
     let dockelements;
     if (bodyPart === "head") {
@@ -84,13 +68,13 @@ export default class Layout3D extends THREE.Object3D {
       this.add(dockelements)
     }
     const width = 8;
-    const geo = new THREE.PlaneGeometry(width, 1, 20, 20)
-    const mat = new THREE.MeshBasicMaterial({ color: 0x834333, transparent: true, opacity: 1 });
-    this.bg = new THREE.Mesh(geo, mat);
+    const geo = new PlaneGeometry(width, 1, 20, 20)
+    const mat = new MeshPhysicalMaterial({ color: 0x834333, transparent: true, opacity: 1 });
+    this.bg = new Mesh(geo, mat);
     this.bg.position.set(-width / 4, -3.5, 2);
     this.add(this.bg)
 
-    this.dock = new THREE.Group();
+    this.dock = new Group();
     this.dock.position.set(-width / 4, -3.5, 2);
     this.add(this.dock);
 

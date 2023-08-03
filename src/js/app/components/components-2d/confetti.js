@@ -26,7 +26,7 @@ export default class Confetti extends GameObject {
             emitter.textures = textures;
 
             emitter.x = Black.stage.bounds.width / 2;
-            emitter.y = Black.stage.bounds.height / 8;
+            emitter.y = Black.stage.bounds.height / 8.5;
 
             let c = new GameObject();
             c.scaleX = c.scaleY = 1;
@@ -34,13 +34,13 @@ export default class Confetti extends GameObject {
 
             emitter.add(
                 // Set a random scale between 0.05 and 0.3
-                new InitialScale(1, 1),
+                new InitialScale(2, 2),
 
                 // No one lives forever
                 new InitialLife(1),
 
                 // Initialize every particle with a random velocity inside a box
-                new InitialVelocity(-800, -800, 800, 800),
+                new InitialVelocity(-900, -900, 900, 900),
 
                 // Pick a random texture
                 new InitialTexture(0, textures.length - 1),

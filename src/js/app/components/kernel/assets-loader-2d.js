@@ -16,8 +16,6 @@ import confetti0 from '../../../data/textures/cheers/confetti/confetti0.png';
 import confetti1 from '../../../data/textures/cheers/confetti/confetti1.png';
 import confetti2 from '../../../data/textures/cheers/confetti/confetti2.png';
 import confetti3 from '../../../data/textures/cheers/confetti/confetti3.png';
-import confetti4 from '../../../data/textures/cheers/confetti/confetti4.png';
-import confetti5 from '../../../data/textures/cheers/confetti/confetti5.png';
 
 import ConfigurableParams from '../../../data/configurable_params';
 
@@ -48,8 +46,7 @@ export default class AssetsLoader2D extends GameObject {
     assets.enqueueImage('confetti1', confetti1);
     assets.enqueueImage('confetti2', confetti2);
     assets.enqueueImage('confetti3', confetti3);
-    assets.enqueueImage('confetti4', confetti4);
-    assets.enqueueImage('confetti5', confetti5);
+
 
     assets.enqueueImage('cheers1', cheers1.url);
     assets.enqueueImage('cheers2', cheers2.url);

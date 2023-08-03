@@ -1,5 +1,5 @@
 import ConfigurableParams from '../../../data/configurable_params';
-import { Tween, Black, Graphics, Sprite, DisplayObject, TextField, Ease } from '../../../utils/black-engine.module';
+import { Sprite, DisplayObject, } from '../../../utils/black-engine.module';
 
 export default class ReferencePhoto extends DisplayObject {
   constructor() {

@@ -1,6 +1,5 @@
 import config from '../../../data/config';
-import { TextField, GameObject, Black, Graphics, Sprite, CapsStyle, JointStyle, Tween, Ease } from '../../../utils/black-engine.module';
-import Helpers from '../../helpers/helpers';
+import { GameObject, Sprite, Tween, Ease } from '../../../utils/black-engine.module';
 
 export default class CheersText extends GameObject {
   constructor() {

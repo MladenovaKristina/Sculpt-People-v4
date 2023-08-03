@@ -1,5 +1,5 @@
 import ConfigurableParams from '../../../data/configurable_params';
-import { Tween, Black, Graphics, Sprite, DisplayObject, TextField, Ease } from '../../../utils/black-engine.module';
+import { Tween, Black, Graphics, DisplayObject, TextField } from '../../../utils/black-engine.module';
 import Helpers from '../../helpers/helpers';
 
 export default class TopText extends DisplayObject {

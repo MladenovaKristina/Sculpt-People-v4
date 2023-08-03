@@ -1,5 +1,4 @@
-import { Black, Ease } from "../../../utils/black-engine.module";
-import * as THREE from "three";
+import { Vector3 } from "three";
 import * as TWEEN from "@tweenjs/tween.js";
 import Helpers from "../../helpers/helpers";
 
@@ -9,7 +8,7 @@ export default class CameraController {
 
     this._shakeTween = null;
 
-    this._startPosition = new THREE.Vector3();
+    this._startPosition = new Vector3();
     this._startRotation = 0;
 
     this._updatePositions();
@@ -24,12 +23,12 @@ export default class CameraController {
     this._updatePositions();
     this._updateTransform();
 
-    this._camera.lookAt(new THREE.Vector3(0, 0, 0))
+    this._camera.lookAt(new Vector3(0, 0, 0))
   }
 
   setLookingAt(position) {
-    const lookAtTarget = new THREE.Vector3(position.x + 1, position.y - 0.5, position.z + 1);
-    const currentLookAt = this._camera.getWorldDirection(new THREE.Vector3());
+    const lookAtTarget = new Vector3(position.x + 1, position.y - 0.5, position.z + 1);
+    const currentLookAt = this._camera.getWorldDirection(new Vector3());
     const duration = 500;
     // Create a new tween for the camera's lookAt position
     const tween = new TWEEN.Tween(currentLookAt)
@@ -54,10 +53,10 @@ export default class CameraController {
 
   _updatePositions() {
     if (Helpers.LP(false, true)) {
-      this._startPosition = new THREE.Vector3(0, 0, 10);
+      this._startPosition = new Vector3(0, 0, 10);
     }
     else {
-      this._startPosition = new THREE.Vector3(0, 0, 0.8);
+      this._startPosition = new Vector3(0, 0, 0.8);
     }
   }
 

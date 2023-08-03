@@ -1,9 +1,9 @@
 
-import * as THREE from "three";
-import * as TWEEN from "@tweenjs/tween.js";
+import { Object3D, Raycaster, Vector2 } from "three";
+import TWEEN from "@tweenjs/tween.js";
 import { Black } from "../../../utils/black-engine.module";
 
-export default class SceneController extends THREE.Object3D {
+export default class SceneController extends Object3D {
     constructor(camera, cameraController, layout2d, layout3d) {
         super();
         this._camera = camera;
@@ -42,14 +42,14 @@ export default class SceneController extends THREE.Object3D {
     }
 
     getClayAtPosition(x, y, callback) {
-        const raycaster = new THREE.Raycaster();
-        const mouse = new THREE.Vector2();
+        const raycaster = new Raycaster();
+        const mouse = new Vector2();
 
         // Convert screen coordinates (x, y) to normalized device coordinates (-1 to +1)
         mouse.x = (x / window.innerWidth) * 2 - 1;
         mouse.y = -(y / window.innerHeight) * 2 + 1;
 
-        raycaster.setFromCamera(mouse, this._camera.threeCamera); // Use "this._camera" directly as it is the Three.js camera object.
+        raycaster.setFromCamera(mouse, this._camera.threeCamera); // Use "this._camera" directly as it is the js camera object.
         const intersects = [];
         this._layout3d.clay.traverse((child) => {
             const intersect = raycaster.intersectObject(child); // The second parameter "true" enables recursive traversal.
@@ -63,8 +63,8 @@ export default class SceneController extends THREE.Object3D {
 
     getElementAtPosition(x, y) {
         if (this.canMove) {
-            const raycaster = new THREE.Raycaster();
-            const mouse = new THREE.Vector2();
+            const raycaster = new Raycaster();
+            const mouse = new Vector2();
 
             mouse.x = x;
             mouse.y = y;
@@ -88,8 +88,8 @@ export default class SceneController extends THREE.Object3D {
 
     draggedToHead() {
         if (this.canMove) {
-            const bboxSelectedDecoration = new THREE.Box3().setFromObject(this.selectedDecoration);
-            const bboxSculptHead = new THREE.Box3().setFromObject(this._layout3d._sculpt.head);
+            const bboxSelectedDecoration = new Box3().setFromObject(this.selectedDecoration);
+            const bboxSculptHead = new Box3().setFromObject(this._layout3d._sculpt.head);
 
             const intersects = bboxSculptHead.intersectsBox(bboxSelectedDecoration);
 
@@ -113,8 +113,8 @@ export default class SceneController extends THREE.Object3D {
     clickToEquip(x, y) {
         if (this.canMove) {
 
-            const raycaster = new THREE.Raycaster();
-            const mouse = new THREE.Vector2();
+            const raycaster = new Raycaster();
+            const mouse = new Vector2();
 
             // Convert mouse coordinates to normalized device coordinates (-1 to +1)
             mouse.x = (x / window.innerWidth) * 2 - 1;
@@ -164,7 +164,7 @@ export default class SceneController extends THREE.Object3D {
 
 
             //             if (this.sceneNumber === 3 && this.canMove) {
-            //                 const mouse = new THREE.Vector2();
+            //                 const mouse = new Vector2();
             //                 mouse.x = (x / window.innerWidth) * 2 - 1;
             //                 mouse.y = -(y / window.innerHeight) * 2 + 1;
             // 
@@ -186,7 +186,7 @@ export default class SceneController extends THREE.Object3D {
 
 
     scene0() {
-        this._layout3d._initClay();
+        this._layout2d._initClay();
         this._layout2d._startClayHint();
     }
 

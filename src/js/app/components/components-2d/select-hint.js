@@ -1,8 +1,6 @@
 import ConfigurableParams from '../../../data/configurable_params';
-import { Tween, Black, Graphics, Sprite, DisplayObject, TextField, Ease, Timer } from '../../../utils/black-engine.module';
-import UTween from '../../helpers/../../utils/utween';
+import { Tween, Black, DisplayObject, TextField, Ease } from '../../../utils/black-engine.module';
 import { TutorialHand } from './tutorial-hand';
-import Helpers from '../../helpers/helpers';
 
 export default class SelectHint extends DisplayObject {
   constructor() {

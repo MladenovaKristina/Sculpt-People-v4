@@ -1,6 +1,5 @@
 import ConfigurableParams from '../../../data/configurable_params';
-import { Tween, Black, DisplayObject, Sprite } from '../../../utils/black-engine.module';
-import Helpers from '../../helpers/helpers';
+import { Tween, DisplayObject, Sprite } from '../../../utils/black-engine.module';
 
 export class TutorialHand extends DisplayObject {
   constructor() {
@@ -19,8 +18,8 @@ export class TutorialHand extends DisplayObject {
   onAdded() {
     if (ConfigurableParams.getData()['hint']['starting_hint_type']['value'] === 'MICKEY') {
       this._view = new Sprite('hint_mickey');
-      this._view.scaleX = 0.7;
-      this._view.scaleY = 0.7;
+      this._view.scaleX = 1;
+      this._view.scaleY = 1;
       this._view.alignAnchor(0.15, -0.1);
       this._view.rotation = -0.3;
       this.add(this._view);
@@ -35,8 +34,8 @@ export class TutorialHand extends DisplayObject {
     }
     if (ConfigurableParams.getData()['hint']['starting_hint_type']['value'] === 'ORIGINAL') {
       this._view = new Sprite('hint_original');
-      this._view.scaleX = 0.35;
-      this._view.scaleY = 0.35;
+      this._view.scaleX = 0.5;
+      this._view.scaleY = 0.5;
       this._view.alignAnchor(0.5, -0.2);
       this._view.rotation = -0.3;
       this.add(this._view);

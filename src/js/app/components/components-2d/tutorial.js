@@ -1,5 +1,5 @@
 import ConfigurableParams from '../../../data/configurable_params';
-import { Tween, Black, Graphics, Sprite, DisplayObject, TextField, Ease, Timer } from '../../../utils/black-engine.module';
+import { Tween, Black, Sprite, DisplayObject, Ease, Timer } from '../../../utils/black-engine.module';
 import UTween from '../../helpers/../../utils/utween';
 import { TutorialHand } from './tutorial-hand';
 
@@ -9,8 +9,8 @@ export default class Tutorial extends DisplayObject {
 
     this._sign = null;
 
-    this.scaleX = 1;
-    this.scaleY = 1;
+    this.scaleX = 2;
+    this.scaleY = 2;
 
     this.visible = false;
   }

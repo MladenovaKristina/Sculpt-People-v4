@@ -1,7 +1,5 @@
-import { Black, MessageDispatcher, Timer, GameObject } from "../../utils/black-engine.module";
-import * as THREE from 'three';
+import { Black, MessageDispatcher } from "../../utils/black-engine.module";
 import Model from "../../data/model";
-import Helpers from "../helpers/helpers";
 import Layout2D from "./components-2d/layout-2d";
 import CameraController from "./components-3d/camera-controller";
 import SoundsController from "./kernel/soundscontroller";
