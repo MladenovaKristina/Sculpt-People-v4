@@ -31,6 +31,10 @@ export default class Models3D extends Group {
             }
         }
     }
+    init() {
+        this._initAssets();
+        this._initView();
+    }
 
     _initTexture(clayMaterial) {
         this.clayMaterial = clayMaterial;
@@ -39,49 +43,37 @@ export default class Models3D extends Group {
                 child.material = clayMaterial;
             }
         })
-        this._initView();
+        this.init()
+    }
+
+    _initAssets() {
+        const selectedCharacter = ConfigurableParams.getData()['character']['select_character']['value'];
+        const characterMappings = {
+            Big: { bodyName: 'b_big1', headName: 'HEAD' },
+            Bride: { bodyName: 'b_bride1', headName: 'HEAD' },
+            Harley: { bodyName: 'b_harley1', headName: 'Head' },
+            Tuxedo: { bodyName: 'b_tuxedo2', headName: 'face' }
+        };
+        this.accessories = [];
+        this.asset.traverse((child) => {
+
+            const mapping = characterMappings[selectedCharacter];
+            if (mapping && child.name === mapping.bodyName) {
+                this.body = child;
+            }
+            if (mapping && child.name === mapping.headName) {
+                this.head = child;
+            }
+            if (child.name == "Glasses" ||
+                child.name == "veil_001" ||
+                child.name == "Mask_SpiderMan" ||
+                child.name == "Moustage") {
+                this.accessories.push(child)
+            }
+        });
     }
 
     _initView() {
-        const selectedCharacter = ConfigurableParams.getData()['character']['select_character']['value'];
-        console.log("Using character", selectedCharacter);
-
-        this.asset.traverse((child) => {
-            console.log(child.name)
-
-            if (selectedCharacter === "Big") {
-                if (child.name === "b_big1") {
-                    this.body = child;
-                } if (child.name === "HEAD") {
-                    this.head = child;
-                }
-            }
-            if (selectedCharacter === "Bride") {
-                if (child.name === "b_bride1") {
-                    this.body = child;
-                } if (child.name === "HEAD") {
-                    this.head = child;
-                }
-
-            }
-            if (selectedCharacter === "Harley") {
-                if (child.name === "b_harley1") {
-                    this.body = child;
-                } if (child.name === "HEAD") {
-                    this.head = child;
-                }
-
-            }
-            if (selectedCharacter === "Tuxedo") {
-                if (child.name === "b_tuxedo2") {
-                    this.body = child;
-                } if (child.name === "HEAD") {
-                    this.head = child;
-                }
-
-            }
-        });
-
         this.group = new Group();
         this.add(this.group);
 
