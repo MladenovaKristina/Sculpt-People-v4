@@ -10,7 +10,7 @@ export default class MaxWidthComponent extends Component {
     this.onChange();
   }
 
-  onChange() {   
+  onChange() {
     if (!this.gameObject.autoSize)
       return;
 
@@ -33,7 +33,7 @@ export default class MaxWidthComponent extends Component {
   }
 
   set maxWidth(value) {
-    if (this._maxWidth !== value){
+    if (this._maxWidth !== value) {
       this._maxWidth = value;
       this.onChange();
     }
