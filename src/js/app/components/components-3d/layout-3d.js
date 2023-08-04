@@ -66,8 +66,6 @@ export default class Layout3D extends Object3D {
     ConfigurableParams.getData()['clay']['clay2']['value'],
     ConfigurableParams.getData()['clay']['clay3']['value']]
 
-
-
     for (let i = 0; i < 3; i++) {
       const geometry = new PlaneGeometry(0.5, 0.5);
       const material = new MeshPhysicalMaterial({ color: colors[i], side: DoubleSide });

@@ -234,7 +234,7 @@ export default class SceneController extends Object3D {
 
     scene5() {
         this.sceneNumber = 5;
-        this.setCam(-1, 2, -2, () => {
+        this.setCam(-0.5, 2, -2, () => {
             this._layout2d._confetti.show()
         });
         const standVector = new Vector3(this._layout3d.stand.position.x, this._layout3d.stand.position.y - 1, this._layout3d.stand.position.z)

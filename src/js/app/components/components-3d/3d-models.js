@@ -1,6 +1,6 @@
 import { Group, Cache, Mesh, MeshPhysicalMaterial, SphereGeometry, Vector3, NormalBlending, AnimationMixer } from 'three';
-
 import * as TWEEN from '@tweenjs/tween.js';
+import ConfigurableParams from '../../../data/configurable_params';
 
 export default class Models3D extends Group {
     constructor(stand) {
@@ -32,11 +32,9 @@ export default class Models3D extends Group {
         }
     }
 
-
     _initTexture(clayMaterial) {
         this.clayMaterial = clayMaterial;
         this.asset.traverse((child) => {
-            // console.log(child.name)
             if (child.name === "ears" || child.name === "EARS" || child.name === "ear_l" || child.name === "ear_r") {
                 child.material = clayMaterial;
             }
@@ -45,15 +43,44 @@ export default class Models3D extends Group {
     }
 
     _initView() {
+        const selectedCharacter = ConfigurableParams.getData()['character']['select_character']['value'];
+        console.log("Using character", selectedCharacter);
 
         this.asset.traverse((child) => {
+            console.log(child.name)
 
-            if (child.name === "Armature") {
-                this.body = child;
-            } if (child.name === "HEAD") {
-                this.head = child;
+            if (selectedCharacter === "Big") {
+                if (child.name === "b_big1") {
+                    this.body = child;
+                } if (child.name === "HEAD") {
+                    this.head = child;
+                }
             }
-        })
+            if (selectedCharacter === "Bride") {
+                if (child.name === "b_bride1") {
+                    this.body = child;
+                } if (child.name === "HEAD") {
+                    this.head = child;
+                }
+
+            }
+            if (selectedCharacter === "Harley") {
+                if (child.name === "b_harley1") {
+                    this.body = child;
+                } if (child.name === "HEAD") {
+                    this.head = child;
+                }
+
+            }
+            if (selectedCharacter === "Tuxedo") {
+                if (child.name === "b_tuxedo2") {
+                    this.body = child;
+                } if (child.name === "HEAD") {
+                    this.head = child;
+                }
+
+            }
+        });
 
         this.group = new Group();
         this.add(this.group);
@@ -61,7 +88,6 @@ export default class Models3D extends Group {
         this.arm = Cache.get("arm").scene;
         this.arm.scale.set(15, 15, 15);
         this.arm.rotation.set(0.7, 4.8, 0);
-
         this.arm.traverse((child) => {
             child.material = new MeshPhysicalMaterial({ color: 0xe5c59a, metalness: 0.2, reflectivity: 1 })
 
@@ -72,7 +98,7 @@ export default class Models3D extends Group {
                 this.arm.position.y = -4.5;
                 this.armposition.visible = false;
             }
-        })
+        });
 
         this.group.add(this.arm);
 
