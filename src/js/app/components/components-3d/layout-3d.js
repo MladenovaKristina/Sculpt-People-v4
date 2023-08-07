@@ -76,9 +76,7 @@ export default class Layout3D extends Object3D {
   }
 
   _initDock() {
-    const dockelements = this._sculpt.head.headDecor
-    this.add(dockelements)
-
+    const dockelements = this.model3d.headDecor
     const width = 8;
     const geo = new PlaneGeometry(width, 1, 20, 20)
     const mat = new MeshPhysicalMaterial({ color: 0x834333, transparent: true, opacity: 1 });
@@ -91,19 +89,46 @@ export default class Layout3D extends Object3D {
     this.add(this.dock);
 
     const numberOfElements = dockelements.length;
-    const distanceBetweenElements = 0; // Adjust this value as needed for the spacing between elements in the dock.
-    const rowStartPosition = 0 - numberOfElements / 2;
-    for (let i = 1; i < numberOfElements; i++) {
-      const element = dockelements.children[i].clone();
-      // element.scale.set(0.2, 0.2, 0.2)
-      let pos = rowStartPosition + (distanceBetweenElements * i);
-      element.position.set(pos, 2, 5)
+    const rowStartPosition = 1 - numberOfElements / 2;
+
+    for (let i = 1; i < dockelements.length; i++) {
+      const element = dockelements[i].clone();
+
+      const elementName = element.name.toLowerCase();
+      if (elementName.includes("ear") || elementName.includes("eye")) {
+        const element1 = element.clone();
+        const element2 = element.clone();
+        element2.scale.x *= -1;
+        this.dock.add(element1);
+        this.dock.add(element2);
+      } else {
+        this.dock.add(element);
+      }
+
+    }
+    const scale = (width / numberOfElements) * 1.7;
+    const distanceBetweenElements = (width - numberOfElements) / (numberOfElements + scale);
+
+    for (let i = 1; i < this.dock.children.length; i++) {
+      const element = this.dock.children[i];
+      element.rotation.set(0, 0, 0);
+
+      if (element.name != "hair") element.scale.set(scale, scale, scale);
+      else {
+        element.scale.set(scale - 1, scale - 1, scale - 1);
+        element.rotation.y -= Math.PI / 2;
+        element.rotation.x += Math.PI * 0.8;
+        element.rotation.z = 0;
+
+      }
+      const pos = rowStartPosition + (distanceBetweenElements * i);
+      element.position.set(pos, scale / 2 + 0.8, 5);
       this.positionInDock.push(pos);
       element.visible = true;
-      this.dock.add(element);
     }
-    console.log(this.dock)
 
+    console.log(this.dock
+    )
   }
 
   _initSculpt(clayMaterial) {

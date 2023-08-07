@@ -1,28 +1,33 @@
-import TWEEN from "@tweenjs/tween.js";
-import { Group, Cache, AnimationMixer, MeshPhysicalMaterial, Vector3, SphereGeometry, NormalBlending, Mesh } from "three";
+import { Group } from "three";
+import Models3D from "./3d-models";
 
 
 export default class Head extends Group {
-    constructor(clayMaterial, asset, stand) {
+    constructor(clayMaterial, head, stand) {
         super();
         this.clayMaterial = clayMaterial;
-        this.head = asset;
-        this.stand = stand;
-        this.headDecor = new Group();
 
+        this.head = head;
+        this.stand = stand;
+
+        console.log("this.head:", this.head);
+        console.log("this.clayMaterial:", this.clayMaterial);
+        console.log("this.stand:", this.stand);
 
         this._view = null;
         this._init();
     }
     _init() {
-        const scale = 0.4;
+        this.headDecor = new Group();
+
+        const scale = 15;
+        console.log(this.head)
         this.head.scale.set(scale, scale, scale);
-        for (let i = 0; i < this.head.children.length; i++) {
-            this.headDecor.add(this.head.children[i])
-        }
+
+
         const radius = 1.2;
 
-        this.head.position.set(this.stand.position.x, this.stand.position.y + radius, 0)
+        this.head.position.set(this.stand.position.x, this.stand.position.y - radius / 2, 0)
         this.head.material = this.clayMaterial;
         this.add(this.head)
         this.head.visible = false;

@@ -56,6 +56,7 @@ export default class Models3D extends Group {
             Tuxedo: { bodyName: 'b_tuxedo2', headName: 'h_tuxedo' }
         };
         this.accessories = [];
+        this.headDecor = [];
         this.asset.traverse((child) => {
 
             const mapping = characterMappings[selectedCharacter];
@@ -64,6 +65,10 @@ export default class Models3D extends Group {
             }
             if (mapping && child.name === mapping.headName) {
                 this.head = child;
+                this.head.traverse((child) => {
+                    child.visible = false;
+                    this.headDecor.push(child)
+                })
             }
             if (child.name == "glasses" ||
                 child.name == "veil" ||
