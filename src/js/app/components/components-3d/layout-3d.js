@@ -75,14 +75,10 @@ export default class Layout3D extends Object3D {
     }
   }
 
-  _initDock(bodyPart) {
-    let dockelements;
-    if (bodyPart === "head") {
-      dockelements = this._sculpt.head
-    } else {
-      dockelements = this.model3d.body;
-      this.add(dockelements)
-    }
+  _initDock() {
+    const dockelements = this._sculpt.head.headDecor
+    this.add(dockelements)
+
     const width = 8;
     const geo = new PlaneGeometry(width, 1, 20, 20)
     const mat = new MeshPhysicalMaterial({ color: 0x834333, transparent: true, opacity: 1 });
@@ -94,21 +90,19 @@ export default class Layout3D extends Object3D {
     this.dock.position.set(-width / 4, -3.5, 2);
     this.add(this.dock);
 
-    const numberOfElements = dockelements.children.length;
-    const distanceBetweenElements = 1; // Adjust this value as needed for the spacing between elements in the dock.
+    const numberOfElements = dockelements.length;
+    const distanceBetweenElements = 0; // Adjust this value as needed for the spacing between elements in the dock.
     const rowStartPosition = 0 - numberOfElements / 2;
-
     for (let i = 1; i < numberOfElements; i++) {
       const element = dockelements.children[i].clone();
-      if (bodyPart === "head") element.scale.set(2, 2, 2)
-      else element.scale.set(1, 1, 1)
-
+      // element.scale.set(0.2, 0.2, 0.2)
       let pos = rowStartPosition + (distanceBetweenElements * i);
-      element.position.set(pos, 1.8, 4)
+      element.position.set(pos, 2, 5)
       this.positionInDock.push(pos);
       element.visible = true;
       this.dock.add(element);
     }
+    console.log(this.dock)
 
   }
 
@@ -117,7 +111,6 @@ export default class Layout3D extends Object3D {
     this._sculpt = new Head(clayMaterial, this.model3d.head, this.stand);
     this.add(this._sculpt)
   }
-
   hideClay() {
     this.hide(this.clay);
   }

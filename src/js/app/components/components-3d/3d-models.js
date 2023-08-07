@@ -6,6 +6,7 @@ export default class Models3D extends Group {
     constructor(stand) {
         super();
         this.asset = Cache.get('assets').scene;
+
         this.stand = stand;
 
         this._animations = {
@@ -49,10 +50,10 @@ export default class Models3D extends Group {
     _initAssets() {
         const selectedCharacter = ConfigurableParams.getData()['character']['select_character']['value'];
         const characterMappings = {
-            Big: { bodyName: 'b_big1', headName: 'HEAD' },
-            Bride: { bodyName: 'b_bride1', headName: 'HEAD' },
-            Harley: { bodyName: 'b_harley1', headName: 'Head' },
-            Tuxedo: { bodyName: 'b_tuxedo2', headName: 'face' }
+            Big: { bodyName: 'b_big1', headName: 'h_bride' },
+            Bride: { bodyName: 'b_bride1', headName: 'h_bride' },
+            Harley: { bodyName: 'b_harley1', headName: 'h_harley' },
+            Tuxedo: { bodyName: 'b_tuxedo2', headName: 'h_tuxedo' }
         };
         this.accessories = [];
         this.asset.traverse((child) => {
@@ -64,10 +65,10 @@ export default class Models3D extends Group {
             if (mapping && child.name === mapping.headName) {
                 this.head = child;
             }
-            if (child.name == "Glasses" ||
-                child.name == "veil_001" ||
-                child.name == "Mask_SpiderMan" ||
-                child.name == "Moustage") {
+            if (child.name == "glasses" ||
+                child.name == "veil" ||
+                child.name == "spiderman" ||
+                child.name == "moustache") {
                 this.accessories.push(child)
             }
         });

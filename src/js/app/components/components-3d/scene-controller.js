@@ -196,7 +196,6 @@ export default class SceneController extends Object3D {
         this._layout3d.model3d.show();
         this.setCam(2, null, null, () => {
             this._layout2d.startHint()
-
         });
     }
 
