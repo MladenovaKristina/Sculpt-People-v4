@@ -141,7 +141,7 @@ export default class ConfigurableParams {
       "select_character": {
         "label": "Select Character",
         "type": "select",
-        "value": "Bride",
+        "value": "Harley",
         "options": ["Big", "Bride", "Harley", "Tuxedo"],
         "descrition": "Select character.",
         "assetName": null
