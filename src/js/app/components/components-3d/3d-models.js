@@ -1,11 +1,12 @@
 import { Group, Cache, Mesh, MeshPhysicalMaterial, SphereGeometry, Vector3, NormalBlending, AnimationMixer } from 'three';
-import * as TWEEN from '@tweenjs/tween.js';
+import TWEEN from '@tweenjs/tween.js';
 import ConfigurableParams from '../../../data/configurable_params';
 
 export default class Models3D extends Group {
     constructor(stand) {
         super();
         this.asset = Cache.get('assets').scene;
+        this.flipX = new Vector3(-1, 1, 1);
 
         this.stand = stand;
 
@@ -57,6 +58,8 @@ export default class Models3D extends Group {
         };
         this.accessories = [];
         this.headDecor = [];
+        this.bodies = [];
+
         this.asset.traverse((child) => {
 
             const mapping = characterMappings[selectedCharacter];
@@ -65,15 +68,48 @@ export default class Models3D extends Group {
             }
             if (mapping && child.name === mapping.headName) {
                 this.head = child;
+
                 this.head.traverse((child) => {
                     child.visible = false;
-                    this.headDecor.push(child)
+                    let childName = child.name.toLowerCase();
+                    if (!childName.includes("h_")) {
+
+                        if (childName.includes("ear") || childName.includes("eye")) {
+                            const child_l = child.clone();
+                            child_l.name += "_l";
+                            const child_r = child.clone();
+                            child_r.name += "_r";
+                            child_r.scale.multiply(this.flipX);
+                            child_r.position.multiply(this.flipX);
+
+                            this.head.add(child_l)
+                            this.head.add(child_r)
+
+                            this.headDecor.push(child_l);
+                            this.headDecor.push(child_r);
+                        } else
+                            this.headDecor.push(child);
+                    }
+                })
+
+                this.head.children = this.headDecor;
+                this.head.traverse((child) => { console.log(child.name) })
+
+            }
+
+            if (child.name === "Armature") {
+                child.traverse((child) => {
+                    if (child.name.startsWith("b_")) {
+                        child.visible = false;
+                        this.bodies.push(child)
+                    }
                 })
             }
             if (child.name == "glasses" ||
                 child.name == "veil" ||
                 child.name == "spiderman" ||
                 child.name == "moustache") {
+                child.visible = false;
                 this.accessories.push(child)
             }
         });

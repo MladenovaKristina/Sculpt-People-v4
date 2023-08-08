@@ -3,9 +3,9 @@ import { Tween, Black, DisplayObject, TextField, Ease } from '../../../utils/bla
 import { TutorialHand } from './tutorial-hand';
 
 export default class SelectHint extends DisplayObject {
-  constructor() {
+  constructor(position) {
     super();
-
+    this.position = position;
     this.scaleX = 1;
     this.scaleY = 1;
 

@@ -1,5 +1,5 @@
 import { Vector3 } from "three";
-import * as TWEEN from "@tweenjs/tween.js";
+import TWEEN from "@tweenjs/tween.js";
 import Helpers from "../../helpers/helpers";
 
 export default class CameraController {

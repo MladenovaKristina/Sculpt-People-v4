@@ -4,13 +4,14 @@ import { Black } from "../../../utils/black-engine.module";
 import Head from '../components-3d/head'
 import Models3D from "./3d-models";
 import ConfigurableParams from "../../../data/configurable_params";
+
 export default class Layout3D extends Object3D {
-  constructor() {
-    super();
+  constructor(camera) {
+    super(); this._camera = camera;
     this.positionInDock = [];
     this._init();
-
   }
+
   _init() {
     this._initBg();
     this._initStand();
@@ -28,6 +29,13 @@ export default class Layout3D extends Object3D {
     backgroundMesh.rotation.z = Math.PI;
     backgroundMesh.rotation.y = Math.PI;
     this.add(backgroundMesh);
+
+    const geo = new PlaneGeometry(8, 1);
+    const mat = new MeshPhysicalMaterial({ transparent: true, opacity: 0.9, color: 0x000000 });
+    this.bg = new Mesh(geo, mat);
+    this.bg.visible = false;
+
+    this.add(this.bg);
   }
 
   _initStand() {
@@ -75,72 +83,73 @@ export default class Layout3D extends Object3D {
     }
   }
 
-  _initDock() {
-    const dockelements = this.model3d.headDecor
-    const width = 8;
-    const geo = new PlaneGeometry(width, 1, 20, 20)
-    const mat = new MeshPhysicalMaterial({ color: 0x834333, transparent: true, opacity: 1 });
-    this.bg = new Mesh(geo, mat);
-    this.bg.position.set(-width / 4, -3.5, 2);
-    this.add(this.bg)
+  _initDock(bodyPart) {
+    this.positionInDock = [];
 
+    let scale, dockelements;
+    if (bodyPart === "head") {
+      dockelements = this.model3d.headDecor;
+      scale = this._camera.position.z / 2;
+
+    } else if (bodyPart === "body") {
+      dockelements = this.model3d.headDecor;
+      scale = 0.3;
+      this.model3d.bodies[0].visible = true;
+      this.model3d.bodies[0].position.copy(this.stand.position)
+
+    } else if (bodyPart === "accessories") {
+      dockelements = this.model3d.accessories;
+      scale = this._camera.position.z / 2;
+      console.log(dockelements)
+    }
+
+    const width = 8;
+
+    this.bg.position.set(-width / 4, this._camera.position.y - 2.75, this._camera.position.z / 2 - 3);
+    this.bg.visible = true;
     this.dock = new Group();
-    this.dock.position.set(-width / 4, -3.5, 2);
+    this.dock.position.set(-width / 4, this._camera.position.y - 2, this._camera.position.z / 2 - 1);
     this.add(this.dock);
 
     const numberOfElements = dockelements.length;
-    const rowStartPosition = 1 - numberOfElements / 2;
+    const rowStartPosition = -1.5 + (1 / numberOfElements);
 
-    for (let i = 1; i < dockelements.length; i++) {
+    const distanceBetweenElements = (width / 2) / (numberOfElements + 2); // Adjust this for spacing.
+    for (let i = 0; i < dockelements.length; i++) {
       const element = dockelements[i].clone();
-
-      const elementName = element.name.toLowerCase();
-      if (elementName.includes("ear") || elementName.includes("eye")) {
-        const element1 = element.clone();
-        const element2 = element.clone();
-        element2.scale.x *= -1;
-        this.dock.add(element1);
-        this.dock.add(element2);
-      } else {
-        this.dock.add(element);
-      }
-
-    }
-    const scale = (width / numberOfElements) * 1.7;
-    const distanceBetweenElements = (width - numberOfElements) / (numberOfElements + scale);
-
-    for (let i = 1; i < this.dock.children.length; i++) {
-      const element = this.dock.children[i];
-      element.rotation.set(0, 0, 0);
-
-      if (element.name != "hair") element.scale.set(scale, scale, scale);
-      else {
-        element.scale.set(scale - 1, scale - 1, scale - 1);
-        element.rotation.y -= Math.PI / 2;
-        element.rotation.x += Math.PI * 0.8;
-        element.rotation.z = 0;
-
-      }
-      const pos = rowStartPosition + (distanceBetweenElements * i);
-      element.position.set(pos, scale / 2 + 0.8, 5);
-      this.positionInDock.push(pos);
       element.visible = true;
-    }
+      element.scale.set(scale, scale, scale);
+      element.rotation.x += 1;
+      let elementName = element.name.toLowerCase();
+      if (elementName.includes("_r")) {
+        element.scale.multiply(this.model3d.flipX)
+      }
+      if (element.name === "hair") {
+        element.scale.set(scale / 2, scale / 2, scale / 2);
+        element.rotation.x += 1;
+        element.rotation.y += Math.PI / 2;
+      }
 
-    console.log(this.dock
-    )
+      const pos = rowStartPosition + (distanceBetweenElements * i);
+      element.position.set(pos, 0, 0);
+      this.positionInDock.push(pos);
+      this.dock.add(element)
+    }
   }
+
 
   _initSculpt(clayMaterial) {
     this.model3d._initTexture(clayMaterial);
     this._sculpt = new Head(clayMaterial, this.model3d.head, this.stand);
     this.add(this._sculpt)
   }
+
   hideClay() {
     this.hide(this.clay);
   }
+
   hide(object) {
-    const tween = new TWEEN.Tween(object.position) // Use the temporary object for tweening
+    const tween = new TWEEN.Tween(object.position)
       .to({ y: -10 }, 400)
       .easing(TWEEN.Easing.Quadratic.Out)
       .onComplete(() => {
@@ -151,6 +160,7 @@ export default class Layout3D extends Object3D {
 
     this.animate();
   }
+
   animate() {
     TWEEN.update();
     requestAnimationFrame(() => this.animate());
