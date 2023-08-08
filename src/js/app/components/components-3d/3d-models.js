@@ -116,13 +116,8 @@ export default class Models3D extends Group {
     }
 
     pushtoHead() {
-
         for (let i = 0; i < this.accessories.length; i++) {
             const accessory = this.accessories[i];
-            accessory.rotation.x = -0.3;
-
-            accessory.position.y += 0.2;
-
             this.head.add(accessory);
         }
 
