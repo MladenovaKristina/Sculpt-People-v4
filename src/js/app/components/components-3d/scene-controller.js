@@ -162,8 +162,9 @@ export default class SceneController extends Object3D {
             console.log(intersects)
             if (intersects.length > 0) {
                 const selectedDecoration = intersects[0].object;
-                let elementInHead;
-                elementInHead = this._layout3d.model3d.head.getObjectByName(selectedDecoration.name);
+
+                let headGroup = this._layout3d.model3d.head
+                const elementInHead = headGroup.getObjectByName(selectedDecoration.name);
 
                 if (elementInHead) {
 
@@ -274,7 +275,6 @@ export default class SceneController extends Object3D {
         this._layout3d._initDock("accessories");
         this.numberOfDecorations = this._layout3d.model3d.accessories.length;
         this._layout2d._cheers.show(2, Black.stage.centerX + 1, Black.stage.centerY - 1);
-        console.log("accessories", this.sceneNumber);
     }
 
     scene6() {

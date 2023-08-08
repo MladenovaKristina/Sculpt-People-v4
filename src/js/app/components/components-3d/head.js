@@ -8,10 +8,7 @@ export default class Head extends Group {
 
         this.head = head;
         this.stand = stand;
-        // 
-        //         console.log("this.head:", this.head);
-        //         console.log("this.clayMaterial:", this.clayMaterial);
-        //         console.log("this.stand:", this.stand);
+
 
         this._view = null;
         this._init();
@@ -27,6 +24,5 @@ export default class Head extends Group {
         this.head.material = this.clayMaterial;
         this.add(this.head)
         this.head.visible = false;
-
     }
 }

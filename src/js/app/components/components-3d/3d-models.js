@@ -93,7 +93,6 @@ export default class Models3D extends Group {
                 })
 
                 this.head.children = this.headDecor;
-                this.head.traverse((child) => { console.log(child.name) })
 
             }
 
@@ -105,6 +104,7 @@ export default class Models3D extends Group {
                     }
                 })
             }
+
             if (child.name == "glasses" ||
                 child.name == "veil" ||
                 child.name == "spiderman" ||
@@ -115,6 +115,18 @@ export default class Models3D extends Group {
         });
     }
 
+    pushtoHead() {
+
+        for (let i = 0; i < this.accessories.length; i++) {
+            const accessory = this.accessories[i];
+            accessory.rotation.x = -0.3;
+
+            accessory.position.y += 0.2;
+
+            this.head.add(accessory);
+        }
+
+    }
     _initView() {
         this.group = new Group();
         this.add(this.group);
