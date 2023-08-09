@@ -149,7 +149,6 @@ export default class SceneController extends Object3D {
     }
     clickToEquip(x, y) {
         if (this.canMove) {
-
             const raycaster = new Raycaster();
             const mouse = new Vector2();
 
@@ -159,15 +158,19 @@ export default class SceneController extends Object3D {
             raycaster.setFromCamera(mouse, this._camera.threeCamera);
 
             const intersects = raycaster.intersectObjects(this._layout3d.dock.children, true);
-            console.log(intersects)
+            console.log(intersects);
+
             if (intersects.length > 0) {
                 const selectedDecoration = intersects[0].object;
+                let headGroup, elementInHead;
 
-                let headGroup = this._layout3d.model3d.head
-                const elementInHead = headGroup.getObjectByName(selectedDecoration.name);
+                // if (this.sceneNumber === 4) 
+                headGroup = this._layout3d.model3d.head;
+                // if (this.sceneNumber === 5) headGroup = this._layout3d.model3d.headDecorAccessories;
+
+                elementInHead = headGroup.getObjectByName(selectedDecoration.name);
 
                 if (elementInHead) {
-
                     selectedDecoration.visible = false;
                     elementInHead.visible = true;
 
@@ -307,6 +310,7 @@ export default class SceneController extends Object3D {
         const tween = new TWEEN.Tween(tempCameraPosition) // Use the temporary object for tweening
             .to({ x: targetX, y: targetY, z: targetZ }, 400)
             .easing(TWEEN.Easing.Quadratic.Out)
+            .delay(300)
             .onUpdate(() => {
                 this._camera.threeCamera.position.x = tempCameraPosition.x;
                 this._camera.threeCamera.position.y = tempCameraPosition.y;

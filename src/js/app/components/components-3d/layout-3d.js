@@ -98,9 +98,9 @@ export default class Layout3D extends Object3D {
       this.model3d.bodies[0].position.copy(this.stand.position)
 
     } else if (bodyPart === "accessories") {
-      this.model3d.pushtoHead(this.model3d.head);
+      this.model3d.pushtoHead(this._sculpt.head);
       dockelements = this.model3d.accessories;
-      scale = 0.01;
+      scale = 0.2;
     }
 
     const width = 8;

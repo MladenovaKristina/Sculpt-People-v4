@@ -57,6 +57,7 @@ export default class Models3D extends Group {
             Tuxedo: { bodyName: 'b_tuxedo2', headName: 'h_tuxedo' }
         };
         this.accessories = [];
+        this.headDecorAccessories = new Group();
         this.headDecor = [];
         this.bodies = [];
 
@@ -109,17 +110,24 @@ export default class Models3D extends Group {
                 child.name == "veil" ||
                 child.name == "spiderman" ||
                 child.name == "moustache") {
-                child.visible = false;
+                child.visible = true;
                 this.accessories.push(child)
             }
         });
     }
 
-    pushtoHead() {
+    pushtoHead(head) {
+
         for (let i = 0; i < this.accessories.length; i++) {
+
             const accessory = this.accessories[i];
-            this.head.add(accessory);
+            accessory.rotation.set(0, 0, 0)
+            accessory.scale.copy(head.scale)
+            // this.headDecorAccessories.add(accessory);
+            this.head.add(accessory)
         }
+
+        // console.log(this.headDecorAccessories.rotation)
 
     }
     _initView() {
