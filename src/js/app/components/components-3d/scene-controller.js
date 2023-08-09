@@ -42,7 +42,6 @@ export default class SceneController extends Object3D {
 
         if (this.sceneNumber === 5) {
             this.clickToEquip(x, y)
-            // this.nextScene(6)
 
         }
         if (this.sceneNumber === 6) {
@@ -57,7 +56,6 @@ export default class SceneController extends Object3D {
         const raycaster = new Raycaster();
         const mouse = new Vector2();
 
-        // Convert screen coordinates (x, y) to normalized device coordinates (-1 to +1)
         mouse.x = (x / window.innerWidth) * 2 - 1;
         mouse.y = -(y / window.innerHeight) * 2 + 1;
 
@@ -121,32 +119,23 @@ export default class SceneController extends Object3D {
     }
 
     nextScene(scene) {
-        if (scene === 0) {
-            this.scene0();
-        }
-        if (scene === 1) {
-            this.scene1();
-        }
-        if (scene === 2) {
-            this.scene2();
-        }
-        if (scene === 3) {
-            this.scene3();
-        }
-        if (scene === 4) {
-            this.scene4();
-        }
-        if (scene === 5) {
-            this.scene5();
-        }
-        if (scene === 6) {
-            this.scene6();
-        }
-        if (scene === 7) {
-            this.scene7();
-        }
+        const sceneFunctions = [
+            this.scene0.bind(this),
+            this.scene1.bind(this),
+            this.scene2.bind(this),
+            this.scene3.bind(this),
+            this.scene4.bind(this),
+            this.scene5.bind(this),
+            this.scene6.bind(this),
+            this.scene7.bind(this)
+        ];
 
+        if (scene >= 0 && scene < sceneFunctions.length) {
+            this.sceneNumber = scene;
+            sceneFunctions[scene]();
+        }
     }
+
     clickToEquip(x, y) {
         if (this.canMove) {
             const raycaster = new Raycaster();
@@ -287,11 +276,12 @@ export default class SceneController extends Object3D {
         this.setCam(-0.5, 2, -2, () => {
             this._layout2d._confetti.show()
         });
+
         const standVector = new Vector3(this._layout3d.stand.position.x, this._layout3d.stand.position.y - 1, this._layout3d.stand.position.z)
         this._cameraController.setLookingAt(standVector)
 
         console.log("celebrate scene", this.sceneNumber);
-        setTimeout(() => { this.nextScene(7) }, 5000)
+        setTimeout(() => { this.nextScene(7) }, 3000)
     }
 
     scene7() {

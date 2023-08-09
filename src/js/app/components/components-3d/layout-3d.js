@@ -7,7 +7,8 @@ import ConfigurableParams from "../../../data/configurable_params";
 
 export default class Layout3D extends Object3D {
   constructor(camera) {
-    super(); this._camera = camera;
+    super();
+    this._camera = camera;
     this.positionInDock = [];
     this._init();
   }
@@ -21,13 +22,13 @@ export default class Layout3D extends Object3D {
   _initBg() {
     const backgroundGeometry = new PlaneGeometry(35, 35);
     const backgroundMaterial = new MeshPhysicalMaterial({ map: Cache.get("bg_image") });
-
     backgroundMaterial.side = DoubleSide;
+
     const backgroundMesh = new Mesh(backgroundGeometry, backgroundMaterial);
     backgroundMesh.position.set(0, 0, -15);
-
     backgroundMesh.rotation.z = Math.PI;
     backgroundMesh.rotation.y = Math.PI;
+
     this.add(backgroundMesh);
 
     const geo = new PlaneGeometry(8, 1);
@@ -41,47 +42,51 @@ export default class Layout3D extends Object3D {
   _initStand() {
     this.stand = new Group();
     this.stand.position.x = -2;
-    this.add(this.stand)
 
-    const geometry = new CylinderGeometry(0.1, 0.1, 5, 10);
-    const material = new MeshPhysicalMaterial({ color: 0xdadada, metalness: 1, reflectivity: 10 });
-    const cylinder = new Mesh(geometry, material);
+    const cylinderGeometry = new CylinderGeometry(0.1, 0.1, 5, 10);
+    const cylinderMaterial = new MeshPhysicalMaterial({ color: 0xdadada, metalness: 1, reflectivity: 10 });
+
+    const cylinder = new Mesh(cylinderGeometry, cylinderMaterial);
     cylinder.position.y = -2;
 
-    this.stand.add(cylinder)
+    this.stand.add(cylinder);
 
-    const geo = new CylinderGeometry(1.5, 1.5, 0.1, 30
-    );
-    const base = new Mesh(geo, material);
+    const baseGeometry = new CylinderGeometry(1.5, 1.5, 0.1, 30);
+    const base = new Mesh(baseGeometry, cylinderMaterial);
     base.position.y = -4.5;
 
     this.stand.add(base);
+
+    this.add(this.stand);
   }
 
   _initAsset() {
     this.model3d = new Models3D(this.stand);
-    this.add(this.model3d)
+    this.add(this.model3d);
   }
 
   _initClay() {
     const numberOfClay = 3;
-    this.clay = new Group()
+    this.clay = new Group();
     this.add(this.clay);
-    this.clay.position.set(0 - numberOfClay / numberOfClay, 0)
+    this.clay.position.set(0 - numberOfClay / numberOfClay, 0);
 
     const offset = Black.stage.bounds.width / 2 / (numberOfClay + 2) / 100;
-    const colors = [ConfigurableParams.getData()['clay']['clay1']['value'],
-    ConfigurableParams.getData()['clay']['clay2']['value'],
-    ConfigurableParams.getData()['clay']['clay3']['value']]
+    const colors = [
+      ConfigurableParams.getData()['clay']['clay1']['value'],
+      ConfigurableParams.getData()['clay']['clay2']['value'],
+      ConfigurableParams.getData()['clay']['clay3']['value']
+    ];
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < numberOfClay; i++) {
       const geometry = new PlaneGeometry(0.5, 0.5);
       const material = new MeshPhysicalMaterial({ color: colors[i], side: DoubleSide });
       const plane = new Mesh(geometry, material);
-      plane.position.set(offset * i, 0, 4)
+      plane.position.set(offset * i, 0, 4);
       this.clay.add(plane);
     }
   }
+
 
   _initDock(bodyPart) {
     this.positionInDock = [];
@@ -92,15 +97,14 @@ export default class Layout3D extends Object3D {
       scale = this._camera.position.z / 2;
 
     } else if (bodyPart === "body") {
-      dockelements = this.model3d.headDecor;
-      scale = 0.3;
-      this.model3d.bodies[0].visible = true;
-      this.model3d.bodies[0].position.copy(this.stand.position)
+      this.model3d.pushtoStand();
+      dockelements = this.model3d.bodiesAray;
+      scale = 1;
 
     } else if (bodyPart === "accessories") {
       this.model3d.pushtoHead(this._sculpt.head);
       dockelements = this.model3d.accessories;
-      scale = 0.2;
+      scale = 0.1;
     }
 
     const width = 8;

@@ -59,7 +59,8 @@ export default class Models3D extends Group {
         this.accessories = [];
         this.headDecorAccessories = new Group();
         this.headDecor = [];
-        this.bodies = [];
+        this.bodiesAray = [];
+        this.bodies = new Group();
 
         this.asset.traverse((child) => {
 
@@ -95,40 +96,47 @@ export default class Models3D extends Group {
 
                 this.head.children = this.headDecor;
 
-            }
 
+            }
             if (child.name === "Armature") {
-                child.traverse((child) => {
-                    if (child.name.startsWith("b_")) {
-                        child.visible = false;
-                        this.bodies.push(child)
-                    }
-                })
+                child.visible = false;
+                this.bodiesAray.push(child)
             }
 
             if (child.name == "glasses" ||
                 child.name == "veil" ||
                 child.name == "spiderman" ||
                 child.name == "moustache") {
-                child.visible = true;
+                child.visible = false;
                 this.accessories.push(child)
             }
         });
     }
 
     pushtoHead(head) {
-
         for (let i = 0; i < this.accessories.length; i++) {
 
             const accessory = this.accessories[i];
             accessory.rotation.set(0, 0, 0)
-            accessory.scale.copy(head.scale)
+            // accessory.scale.copy(head.scale)
             // this.headDecorAccessories.add(accessory);
             this.head.add(accessory)
         }
+    }
 
-        // console.log(this.headDecorAccessories.rotation)
+    pushtoStand() {
+        for (let i = 0; i < this.bodiesAray.length; i++) {
 
+            const bodies = this.bodiesAray[i];
+            bodies.position.copy(this.head.position)
+            bodies.position.z += 0.27;
+            bodies.position.x = 0;
+            bodies.position.y = 0;
+
+            bodies.rotation.set(0, 0, 0)
+            bodies.scale.set(bodies.scale.z / 2.5, bodies.scale.y / 2.5, bodies.scale.z / 2.5)
+            this.head.add(bodies)
+        }
     }
     _initView() {
         this.group = new Group();
