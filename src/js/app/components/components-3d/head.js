@@ -14,13 +14,17 @@ export default class Head extends Group {
         this._init();
     }
     _init() {
-        this.headDecor = new Group();
+        this.headParts = new Group();
 
         const scale = 10;
         this.head.scale.set(scale, scale, scale);
         const radius = 1.2;
 
         this.head.position.set(this.stand.position.x, this.stand.position.y - radius / 2, 0)
+
+        this.head.parent.traverse((child) => {
+            child.rotation.set(0, 0, 0)
+        })
 
         this.head.material = this.clayMaterial;
         this.add(this.head)

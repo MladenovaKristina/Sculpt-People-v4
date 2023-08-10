@@ -89,20 +89,22 @@ export default class Layout3D extends Object3D {
 
   body() {
     this.model3d.pushtoStand()
+    this._initDock("body");
+
   }
+
   _initDock(bodyPart) {
     this.positionInDock = [];
     let j = -2;
     let scale, dockelements;
     if (bodyPart === "head") {
-      dockelements = this.model3d.headDecor;
+      dockelements = this.model3d.headParts;
       scale = this._camera.position.z / 2;
 
     }
     else if (bodyPart === "body") {
-      this.model3d.pushtoStand();
-      dockelements = this.model3d.bodiesAray;
-      scale = 1;
+      dockelements = this.model3d.bodies2d;
+      scale = 0.5;
 
     }
     else if (bodyPart === "accessories") {
@@ -121,10 +123,13 @@ export default class Layout3D extends Object3D {
 
     const numberOfElements = dockelements.length;
     const rowStartPosition = -1.5 + (1 / numberOfElements);
+    let element;
 
     const distanceBetweenElements = (width / 2) / (numberOfElements + 2); // Adjust this for spacing.
     for (let i = 0; i < dockelements.length; i++) {
-      const element = dockelements[i].clone();
+      if (bodyPart !== "body")
+        element = dockelements[i].clone();
+      else element = dockelements[i];
       element.visible = true;
       element.scale.set(scale, scale, scale);
       element.rotation.x += 1;
@@ -136,6 +141,7 @@ export default class Layout3D extends Object3D {
         element.scale.set(scale / 2, scale / 2, scale / 2);
         element.rotation.x += 1;
         element.rotation.y += Math.PI / 2;
+
       }
 
 
@@ -144,6 +150,7 @@ export default class Layout3D extends Object3D {
 
       this.positionInDock.push(pos);
       this.dock.add(element)
+
     }
   }
 

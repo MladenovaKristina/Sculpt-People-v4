@@ -47,9 +47,7 @@ export default class SceneController extends Object3D {
                 this.clickToEquip(x, y)
 
             }
-            if (this.sceneNumber === 6) {
-                this.nextScene(7)
-            }
+
             if (this.sceneNumber === 7) {
                 this.clickToEquip(x, y)
             }
@@ -94,33 +92,10 @@ export default class SceneController extends Object3D {
         }
     }
     onUp() {
-        // if (this.sceneNumber === 3 && this.selectedDecoration) {
-        //     this.draggedToHead()
-        // }
+
     }
 
-    draggedToHead() {
-        if (this.canMove) {
-            const bboxSelectedDecoration = new Box3().setFromObject(this.selectedDecoration);
-            const bboxSculptHead = new Box3().setFromObject(this._layout3d._sculpt.head);
 
-            const intersects = bboxSculptHead.intersectsBox(bboxSelectedDecoration);
-
-            if (intersects && this.selectedDecoration.name) { // Add a check for name property
-                this._layout3d.model3d.head.traverse((element) => {
-                    if (element.name === this.selectedDecoration.name) {
-                        element.visible = true;
-                        this.selectedDecoration.visible = false;
-                        this.selectedDecoration = null;
-                        this.numberOfDecorations--;
-                        if (this.numberOfDecorations <= 0) { this.nextScene(this.sceneNumber + 1); }
-                    }
-                });
-            }
-        } else {
-            this.selectedDecoration = null;
-        }
-    }
 
     nextScene(scene) {
         const sceneFunctions = [
@@ -131,13 +106,13 @@ export default class SceneController extends Object3D {
             this.scene4.bind(this),
             this.scene5.bind(this),
             this.scene6.bind(this),
-            this.scene7.bind(this)
+            // this.scene7.bind(this)
         ];
 
         if (scene >= 0 && scene < sceneFunctions.length) {
             this.sceneNumber = scene;
             sceneFunctions[scene]();
-        }
+        } else { console.log("no scene"); return; }
     }
 
     clickToEquip(x, y) {
@@ -157,22 +132,19 @@ export default class SceneController extends Object3D {
                 const selectedDecoration = intersects[0].object;
                 let headGroup, elementInHead;
 
-                // if (this.sceneNumber === 4) 
                 headGroup = this._layout3d.model3d.head;
-                // if (this.sceneNumber === 5) headGroup = this._layout3d.model3d.headDecorAccessories;
 
                 elementInHead = headGroup.getObjectByName(selectedDecoration.name);
+                console.log(selectedDecoration, "from", elementInHead)
 
                 if (elementInHead) {
                     selectedDecoration.visible = false;
                     elementInHead.visible = true;
 
                     this.selectedDecoration = null;
-
                     this.numberOfDecorations--;
                     if (this.numberOfDecorations <= 0) {
                         this.nextScene(this.sceneNumber + 1);
-
                     }
                 }
             }
@@ -192,18 +164,7 @@ export default class SceneController extends Object3D {
             }
 
 
-            //             if (this.sceneNumber === 3 && this.canMove) {
-            //                 const mouse = new Vector2();
-            //                 mouse.x = (x / window.innerWidth) * 2 - 1;
-            //                 mouse.y = -(y / window.innerHeight) * 2 + 1;
-            // 
-            //                 this.getElementAtPosition(mouse.x, mouse.y)
-            // 
-            //                 if (this.selectedDecoration) {
-            //                     this.moveToMouse(mouse.x, mouse.y)
-            //                 }
-            // 
-            //             }
+
         }
     }
 
@@ -259,7 +220,7 @@ export default class SceneController extends Object3D {
         this.canMove = false;
         this._layout3d._initDock("head");
         // this._layout2d._startClayHint(Helpers.vector3ToBlackPosition(this._layout3d.model3d));
-        this.numberOfDecorations = this._layout3d.model3d.headDecor.length;
+        this.numberOfDecorations = this._layout3d.model3d.headParts.length;
 
         this._layout2d._cheers.show(1, Black.stage.centerX + 1, Black.stage.centerY - 1);
         console.log("decorating head scene", this.sceneNumber);
@@ -287,12 +248,16 @@ export default class SceneController extends Object3D {
         this._cameraController.setLookingAt(standVector)
 
         console.log("celebrate scene", this.sceneNumber);
-        setTimeout(() => { this.nextScene(7) }, 3000)
+        setTimeout(() => { this.scene7() }, 3000)
+
+
     }
 
     scene7() {
+        console.log('7')
         this.sceneNumber = 7;
         this._layout3d.body();
+        // this._layout3d._initDock("body");
     }
 
     setCam(setX, setY, setZ, callback) {

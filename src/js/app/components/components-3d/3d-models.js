@@ -1,4 +1,4 @@
-import { Group, Cache, Mesh, MeshPhysicalMaterial, SphereGeometry, Vector3, NormalBlending, AnimationMixer } from 'three';
+import { Group, Cache, Mesh, MeshPhysicalMaterial, PlaneGeometry, DoubleSide, SphereGeometry, Vector3, NormalBlending, AnimationMixer } from 'three';
 import TWEEN from '@tweenjs/tween.js';
 import ConfigurableParams from '../../../data/configurable_params';
 
@@ -57,10 +57,9 @@ export default class Models3D extends Group {
             Tuxedo: { bodyName: 'b_tuxedo2', headName: 'h_tuxedo' }
         };
         this.accessories = [];
-        this.headDecorAccessories = new Group();
-        this.headDecor = [];
-        this.bodiesAray = [];
-        this.bodies = new Group();
+        this.headParts = [];
+        this.bodies3d = [];
+        this.bodies2d = [];
 
         this.asset.traverse((child) => {
 
@@ -87,21 +86,25 @@ export default class Models3D extends Group {
                             this.head.add(child_l)
                             this.head.add(child_r)
 
-                            this.headDecor.push(child_l);
-                            this.headDecor.push(child_r);
+                            this.headParts.push(child_l);
+                            this.headParts.push(child_r);
                         } else
-                            this.headDecor.push(child);
+                            this.headParts.push(child);
                     }
                 })
 
-                this.head.children = this.headDecor;
+                this.head.children = this.headParts;
 
 
             }
-            if (child.name === "Armature") {
-                child.visible = false;
-                this.bodiesAray.push(child)
+
+            if (child.name.includes("b_")) {
+
+                this.bodies3d.push(child)
             }
+            // if (child.name === "Armature") {
+            //     child.visible = false;
+            // }
 
             if (child.name == "glasses" ||
                 child.name == "veil" ||
@@ -117,18 +120,31 @@ export default class Models3D extends Group {
         for (let i = 0; i < this.accessories.length; i++) {
 
             const accessory = this.accessories[i];
-            accessory.rotation.set(0, 0, 0)
-            // accessory.scale.copy(head.scale)
-            // this.headDecorAccessories.add(accessory);
+
             this.head.add(accessory)
         }
     }
 
     pushtoStand() {
 
-        this.head.add(this.bodiesAray)
+        this.bodies3d.traverse((child) => {
+
+            const geometry = new PlaneGeometry(1, 1);
+            const material = new MeshPhysicalMaterial({ color: 0xffff00, side: DoubleSide });
+            const plane = new Mesh(geometry, material);
+            plane.position.set(0, 0, 0);
+
+            plane.name = child.name;
+            this.bodies2d.push(plane);
+            child.visible = false;
+            this.head.add(child);
+
+
+
+        });
 
     }
+
     _initView() {
         this.group = new Group();
         this.add(this.group);
