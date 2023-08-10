@@ -125,18 +125,9 @@ export default class Models3D extends Group {
     }
 
     pushtoStand() {
-        for (let i = 0; i < this.bodiesAray.length; i++) {
 
-            const bodies = this.bodiesAray[i];
-            bodies.position.copy(this.head.position)
-            bodies.position.z += 0.27;
-            bodies.position.x = 0;
-            bodies.position.y = 0;
+        this.head.add(this.bodiesAray)
 
-            bodies.rotation.set(0, 0, 0)
-            bodies.scale.set(bodies.scale.z / 2.5, bodies.scale.y / 2.5, bodies.scale.z / 2.5)
-            this.head.add(bodies)
-        }
     }
     _initView() {
         this.group = new Group();

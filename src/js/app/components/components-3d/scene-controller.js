@@ -16,39 +16,43 @@ export default class SceneController extends Object3D {
         this.scene0();
         this.sculptFinish = 0;
         this.canMove = false;
+        this.animating = false;
     }
 
     onDown(x, y) {
-        this.canMove = true;
-        if (this.sceneNumber === 0) {
+        if (!this.animating) {
+            this.canMove = true;
 
-            this.getClayAtPosition(x, y, () => {
+            if (this.sceneNumber === 0) {
 
-                this._layout2d._hideClayHint();
-                this._layout3d.hideClay();
-                this.scene1(this.selectedClayMaterial);
-            });
-        }
+                this.getClayAtPosition(x, y, () => {
 
-        if (this.sceneNumber === 2) {
-            this.nextScene(3)
-        }
-        if (this.sceneNumber === 3) {
-            this.nextScene(4)
-        }
-        if (this.sceneNumber === 4) {
-            this.clickToEquip(x, y)
-        }
+                    this._layout2d._hideClayHint();
+                    this._layout3d.hideClay();
+                    this.scene1(this.selectedClayMaterial);
+                });
+            }
 
-        if (this.sceneNumber === 5) {
-            this.clickToEquip(x, y)
+            if (this.sceneNumber === 2) {
+                this.nextScene(3)
+            }
+            if (this.sceneNumber === 3) {
+                this.nextScene(4)
+            }
+            if (this.sceneNumber === 4) {
+                this.clickToEquip(x, y)
+            }
 
-        }
-        if (this.sceneNumber === 6) {
-            this.nextScene(7)
-        }
-        if (this.sceneNumber === 7) {
-            this.clickToEquip(x, y)
+            if (this.sceneNumber === 5) {
+                this.clickToEquip(x, y)
+
+            }
+            if (this.sceneNumber === 6) {
+                this.nextScene(7)
+            }
+            if (this.sceneNumber === 7) {
+                this.clickToEquip(x, y)
+            }
         }
     }
 
@@ -168,6 +172,7 @@ export default class SceneController extends Object3D {
                     this.numberOfDecorations--;
                     if (this.numberOfDecorations <= 0) {
                         this.nextScene(this.sceneNumber + 1);
+
                     }
                 }
             }
@@ -271,6 +276,7 @@ export default class SceneController extends Object3D {
 
     scene6() {
         this.sceneNumber = 6;
+
         this._layout3d.hide(this._layout3d.bg)
         this._layout3d.hide(this._layout3d.dock)
         this.setCam(-0.5, 2, -2, () => {
@@ -286,10 +292,11 @@ export default class SceneController extends Object3D {
 
     scene7() {
         this.sceneNumber = 7;
-        this._layout3d._initDock("body");
+        this._layout3d.body();
     }
 
     setCam(setX, setY, setZ, callback) {
+        this.animating = true;
         let targetX = setX, targetY = setY, targetZ = setZ;
         const tempCameraPosition = { x: this._camera.threeCamera.position.x, y: this._camera.threeCamera.position.y, z: this._camera.threeCamera.position.z }; // Temporary object to hold camera position
         if (!setX) targetX = this._camera.threeCamera.position.x; else targetX = this._camera.threeCamera.position.x - setX;
@@ -297,20 +304,20 @@ export default class SceneController extends Object3D {
         if (!setY) targetY = this._camera.threeCamera.position.y; else targetY = this._camera.threeCamera.position.y - setY;
         if (!setZ) targetZ = this._camera.threeCamera.position.z; else targetZ = this._camera.threeCamera.position.z - setZ;
 
-        const tween = new TWEEN.Tween(tempCameraPosition) // Use the temporary object for tweening
+        const tween = new TWEEN.Tween(tempCameraPosition)
             .to({ x: targetX, y: targetY, z: targetZ }, 400)
             .easing(TWEEN.Easing.Quadratic.Out)
             .delay(300)
             .onUpdate(() => {
                 this._camera.threeCamera.position.x = tempCameraPosition.x;
                 this._camera.threeCamera.position.y = tempCameraPosition.y;
-
                 this._camera.threeCamera.position.z = tempCameraPosition.z;
-
             })
             .onComplete(() => {
-                if (this._camera.threeCamera.position.x == targetX)
+                if (this._camera.threeCamera.position.x == targetX) {
                     callback();
+                    this.animating = false;
+                }
             })
             .start();
 
