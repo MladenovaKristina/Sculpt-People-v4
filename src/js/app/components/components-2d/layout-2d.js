@@ -1,4 +1,5 @@
-import { Black, DisplayObject, Sprite } from '../../../utils/black-engine.module';
+import { Black, DisplayObject, Sprite, Graphics } from '../../../utils/black-engine.module';
+import { Tween, Easing } from '@tweenjs/tween.js';
 import model from '../../../data/model';
 import Helpers from '../../helpers/helpers';
 import PlayButton from './play-button';
@@ -10,6 +11,7 @@ import ReferencePhoto from './ref-photo';
 import SelectHint from './select-hint';
 import CheersText from './cheers-text';
 import Confetti from './confetti';
+import { call } from 'file-loader';
 // works as a main class in 2D playables
 export default class Layout2D extends DisplayObject {
   constructor() {
@@ -115,7 +117,22 @@ export default class Layout2D extends DisplayObject {
   startHint() {
     this._tutorial.show();
   }
-
+  _initDockBG(object, callback) {
+    const height = 150;
+    const bb = Black.stage.bounds;
+    if (this._bg) this._bg.clear();
+    this._bg = new Graphics();
+    this._bg.beginPath();
+    this._bg.fillStyle(0x000000, 0.9);
+    this._bg.rect(bb.left, bb.height / 2 + height, bb.width, height);
+    this._bg.fill();
+    this.add(this._bg);
+    this.initObjectInDock(object);
+    callback()
+  }
+  initObjectInDock(object) {
+    console.log(object)
+  }
   _startClayHint() {
     this._selectHint.show();
   }
@@ -131,6 +148,17 @@ export default class Layout2D extends DisplayObject {
     this.add(this._confetti)
   }
 
+  hide(object, callback) {
+    //     console.log("hiding", object)
+    //     const hideTween = new Tween({
+    //       y: Black.stage.bounds.bottom + 250
+    //     }, 0.2);
+    // 
+    //     object.add(hideTween);
+    object.visible = false;
+    if (callback) callback()
+
+  }
 
   onDown(x, y) {
     const defaultPos = { x: x, y: y };
@@ -140,6 +168,11 @@ export default class Layout2D extends DisplayObject {
     if (ifDownloadButtonClicked) return true;
 
     this._endScreen.onDown(blackPos.x, blackPos.y);
+  }
+
+  selectSpray(x, y, callback) {
+    console.log(x, y, "spray")
+    if (callback) callback();
   }
 
   onMove(x, y) {

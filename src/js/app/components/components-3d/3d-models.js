@@ -102,9 +102,7 @@ export default class Models3D extends Group {
 
                 this.bodies3d.push(child)
             }
-            // if (child.name === "Armature") {
-            //     child.visible = false;
-            // }
+
 
             if (child.name == "glasses" ||
                 child.name == "veil" ||
@@ -126,9 +124,8 @@ export default class Models3D extends Group {
     }
 
     pushtoStand() {
-
-        this.bodies3d.traverse((child) => {
-
+        for (let i = 0; i < this.bodies3d.length; i++) {
+            const child = this.bodies3d[i];
             const geometry = new PlaneGeometry(1, 1);
             const material = new MeshPhysicalMaterial({ color: 0xffff00, side: DoubleSide });
             const plane = new Mesh(geometry, material);
@@ -138,11 +135,7 @@ export default class Models3D extends Group {
             this.bodies2d.push(plane);
             child.visible = false;
             this.head.add(child);
-
-
-
-        });
-
+        }
     }
 
     _initView() {

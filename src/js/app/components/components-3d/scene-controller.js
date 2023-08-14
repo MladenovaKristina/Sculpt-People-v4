@@ -37,7 +37,10 @@ export default class SceneController extends Object3D {
                 this.nextScene(3)
             }
             if (this.sceneNumber === 3) {
-                this.nextScene(4)
+                // this.nextScene(4)
+                this._layout2d.selectSpray(x, y, () => {
+                    this.nextScene(4)
+                });
             }
             if (this.sceneNumber === 4) {
                 this.clickToEquip(x, y)
@@ -50,6 +53,9 @@ export default class SceneController extends Object3D {
 
             if (this.sceneNumber === 7) {
                 this.clickToEquip(x, y)
+            }
+            if (this.sceneNumber === 8) {
+                this.nextScene(9)
             }
         }
     }
@@ -106,7 +112,10 @@ export default class SceneController extends Object3D {
             this.scene4.bind(this),
             this.scene5.bind(this),
             this.scene6.bind(this),
-            // this.scene7.bind(this)
+            this.scene7.bind(this),
+            this.scene8.bind(this),
+            this.scene9.bind(this)
+
         ];
 
         if (scene >= 0 && scene < sceneFunctions.length) {
@@ -162,9 +171,6 @@ export default class SceneController extends Object3D {
             else {
                 this.scene2();
             }
-
-
-
         }
     }
 
@@ -206,20 +212,22 @@ export default class SceneController extends Object3D {
         console.log("scene", this.sceneNumber, "sculpting scene");
     }
     scene3() {
-        this.sceneNumber = 3;
-
         this._layout2d._cheers.show(2, Black.stage.centerX + 1, Black.stage.centerY - 1);
 
 
         console.log("painting scene implement pls", this.sceneNumber);
+        this._layout2d._initDockBG("spray", () => { this.sceneNumber = 3; });
+
     }
 
     scene4() {
         this.sceneNumber = 4;
 
         this.canMove = false;
+
+        this._layout2d.hide(this._layout2d._bg);
         this._layout3d._initDock("head");
-        // this._layout2d._startClayHint(Helpers.vector3ToBlackPosition(this._layout3d.model3d));
+
         this.numberOfDecorations = this._layout3d.model3d.headParts.length;
 
         this._layout2d._cheers.show(1, Black.stage.centerX + 1, Black.stage.centerY - 1);
@@ -257,9 +265,22 @@ export default class SceneController extends Object3D {
         console.log('7')
         this.sceneNumber = 7;
         this._layout3d.body();
-        // this._layout3d._initDock("body");
+        this.numberOfDecorations = 1;
+
     }
 
+    scene8() {
+        this._layout3d.hide(this._layout3d.bg)
+        this._layout3d.hide(this._layout3d.dock)
+        console.log('8, moving body')
+        this.sceneNumber = 8;
+    }
+    scene9() {
+        this.sceneNumber = 9;
+        this._layout2d._confetti.show();
+        this._layout2d._confetti.show();
+
+    }
     setCam(setX, setY, setZ, callback) {
         this.animating = true;
         let targetX = setX, targetY = setY, targetZ = setZ;
