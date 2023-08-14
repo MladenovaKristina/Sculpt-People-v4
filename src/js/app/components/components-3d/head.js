@@ -1,3 +1,4 @@
+import { call } from "file-loader";
 import { Group, Cache, NormalBlending, MeshPhysicalMaterial, Mesh, MeshStandardMaterial } from "three";
 
 export default class Head extends Group {
@@ -18,6 +19,9 @@ export default class Head extends Group {
         const radius = 1.2;
 
         this.head.position.set(this.stand.position.x, this.stand.position.y - radius / 2, 0);
+        this.head.visible = false;
+        this.head.material = this.clayMaterial;
+        this.add(this.head);
 
         // Create a new geometry based on the head's geometry
         this.modifiedGeometry = this._modifyGeometry(this.head.geometry.clone());
@@ -58,6 +62,16 @@ export default class Head extends Group {
         modifiedGeometry.attributes.position.needsUpdate = true;
 
         return modifiedGeometry;
+    }
+
+    headDone() {
+        this.head.visible = true;
+        this.modifiedMesh.visible = false;
+    }
+
+    onMove(x, y, callback) {
+        console.log(x, y,)
+        if (callback) callback();
     }
 
     graduallyRevertToOriginal(callback) {

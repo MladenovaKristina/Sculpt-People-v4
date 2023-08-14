@@ -22,6 +22,11 @@ import confetti6 from '../../../data/textures/cheers/confetti/confetti6.png';
 import confetti7 from '../../../data/textures/cheers/confetti/confetti7.png';
 import confetti8 from '../../../data/textures/cheers/confetti/confetti8.png';
 
+import spray from '../../../data/textures/spray/Spray.png';
+import sprayColorPart from '../../../data/textures/spray/SprayColorPart.png';
+import spraySelected from '../../../data/textures/spray/SpraySelected.png';
+
+
 import ConfigurableParams from '../../../data/configurable_params';
 
 export default class AssetsLoader2D extends GameObject {
@@ -63,6 +68,10 @@ export default class AssetsLoader2D extends GameObject {
     assets.enqueueImage('cheers3', cheers3.url);
     assets.enqueueImage('cheers4', cheers4.url);
     assets.enqueueImage('cheers5', cheers5.url);
+
+    assets.enqueueImage('spray', spray);
+    assets.enqueueImage('sprayColorPart', sprayColorPart);
+    assets.enqueueImage('spraySelected', spraySelected);
 
 
     assets.enqueueImage('logo', ConfigurableParams.getData()["logo_for_google"]["change_logo"]["value"]);

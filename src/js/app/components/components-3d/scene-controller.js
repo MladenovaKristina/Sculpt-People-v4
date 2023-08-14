@@ -33,13 +33,13 @@ export default class SceneController extends Object3D {
                 });
             }
 
-
             if (this.sceneNumber === 3) {
                 // this.nextScene(4)
                 this._layout2d.selectSpray(x, y, () => {
                     this.nextScene(4)
                 });
             }
+
             if (this.sceneNumber === 4) {
                 this.clickToEquip(x, y)
             }
@@ -174,8 +174,15 @@ export default class SceneController extends Object3D {
             this._layout3d._sculpt.graduallyRevertToOriginal(() => {
                 this.canMove = false
                 this._layout2d._hideOval();
-                this.nextScene(3)
+                this.sculptWithStick();
             })
+            if (this.sculpting) {
+                this._layout3d._sculpt.onMove(x, y, () => {
+                    this._layout3d._sculpt.headDone();
+                    this.sculpting = false;
+                    this.nextScene(3)
+                })
+            }
         }
     }
 
@@ -192,24 +199,26 @@ export default class SceneController extends Object3D {
     }
 
     scene1(clayMaterial) {
-        this.sceneNumber = 1;
         this._layout3d._initSculpt(clayMaterial);
         this._layout3d.model3d.show();
         this.setCam(2, null, null, () => {
-            this._layout2d.startHint()
+            this._layout2d.startHint();
+            this.sceneNumber = 1;
+            this.canMove = true;
         });
     }
 
     scene2() {
-        this.sceneNumber = 2;
+        this._layout2d._cheers.show(0, Black.stage.centerX - 1, Black.stage.centerY + 1);
+
         this.setCam(null, null, 2, () => {
             console.log("zoom")
+            this.sceneNumber = 2;
+
         })
-        this._layout2d._cheers.show(0, Black.stage.centerX - 1, Black.stage.centerY + 1);
 
         this._layout2d._tutorial.hide();
         this._layout3d._sculpt.head.rotation.set(Math.PI / 2, 0, 0)
-        // this._layout3d._sculpt.head.
         this._layout3d._sculpt.modifiedMesh.visible = true;
         this._layout2d._showOval();
         this._layout3d.model3d.hide(this._layout3d.model3d.group);
@@ -217,13 +226,14 @@ export default class SceneController extends Object3D {
         this.canMove = false;
         console.log("scene", this.sceneNumber, "sculpting scene");
     }
+    sculptWithStick() {
+        this.sculpting = true;
+    }
+
     scene3() {
         this._layout2d._cheers.show(2, Black.stage.centerX + 1, Black.stage.centerY - 1);
-
-
         console.log("painting scene implement pls", this.sceneNumber);
         this._layout2d._initDockBG("spray", () => { this.sceneNumber = 3; });
-
     }
 
     scene4() {
@@ -231,7 +241,7 @@ export default class SceneController extends Object3D {
 
         this.canMove = false;
 
-        this._layout2d.hide(this._layout2d._bg);
+        this._layout2d._objectsInDock.hide();
         this._layout3d._initDock("head");
 
         this.numberOfDecorations = this._layout3d.model3d.headParts.length;
@@ -263,8 +273,6 @@ export default class SceneController extends Object3D {
 
         console.log("celebrate scene", this.sceneNumber);
         setTimeout(() => { this.scene7() }, 3000)
-
-
     }
 
     scene7() {

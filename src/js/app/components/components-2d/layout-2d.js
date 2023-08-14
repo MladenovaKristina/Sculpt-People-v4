@@ -12,6 +12,7 @@ import SelectHint from './select-hint';
 import CheersText from './cheers-text';
 import Confetti from './confetti';
 import { call } from 'file-loader';
+import SprayCan from './spray';
 // works as a main class in 2D playables
 export default class Layout2D extends DisplayObject {
   constructor() {
@@ -137,20 +138,12 @@ export default class Layout2D extends DisplayObject {
 
   }
   _initDockBG(object, callback) {
-    const height = 150;
-    const bb = Black.stage.bounds;
-    if (this._bg) this._bg.clear();
-    this._bg = new Graphics();
-    this._bg.beginPath();
-    this._bg.fillStyle(0x000000, 0.9);
-    this._bg.rect(bb.left, bb.height / 2 + height, bb.width, height);
-    this._bg.fill();
-    this.add(this._bg);
     this.initObjectInDock(object);
     callback()
   }
   initObjectInDock(object) {
-    console.log(object)
+    this._objectsInDock = new SprayCan(this._bg)
+    this.add(this._objectsInDock)
   }
   _startClayHint() {
     this._selectHint.show();
