@@ -1,5 +1,5 @@
 import { call } from "file-loader";
-import { Group, Cache, NormalBlending, MeshPhysicalMaterial, Mesh, MeshStandardMaterial } from "three";
+import { Group, Cache, NormalBlending, MeshPhysicalMaterial, Mesh, CylinderGeometry } from "three";
 
 export default class Head extends Group {
     constructor(clayMaterial, head, stand) {
@@ -14,6 +14,7 @@ export default class Head extends Group {
     }
 
     _init() {
+        this._initStick();
         const scale = 10;
         this.head.scale.set(scale, scale, scale);
         const radius = 1.2;
@@ -62,6 +63,14 @@ export default class Head extends Group {
         modifiedGeometry.attributes.position.needsUpdate = true;
 
         return modifiedGeometry;
+    }
+    _initStick() {
+        const geom = new CylinderGeometry(0.05, 0.13, 5, 10, 10);
+        const mat = new MeshPhysicalMaterial({ color: 0x964B00 });
+        this.stick = new Mesh(geom, mat);
+        this.stick.position.copy(this.stand.position);
+        this.stick.visible = false;
+        this.add(this.stick);
     }
 
     headDone() {

@@ -228,9 +228,12 @@ export default class SceneController extends Object3D {
     }
     sculptWithStick() {
         this.sculpting = true;
+        this._layout3d._sculpt.stick.visible = true;
+
     }
 
     scene3() {
+        this._layout3d.hide(this._layout3d._sculpt.stick)
         this._layout2d._cheers.show(2, Black.stage.centerX + 1, Black.stage.centerY - 1);
         console.log("painting scene implement pls", this.sceneNumber);
         this._layout2d._initDockBG("spray", () => { this.sceneNumber = 3; });

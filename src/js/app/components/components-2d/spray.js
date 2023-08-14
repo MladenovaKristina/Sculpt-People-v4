@@ -25,7 +25,7 @@ export default class SprayCan extends GameObject {
         const totalWidth = this._bg.width || bb.width;
         const startY = (bb.height / 2 + height) + height / 8;
 
-        const colors = [0x000000, 0x666666, 0x111111, 0xffffff];
+        const colors = [0x00ff00, 0xff0000, 0x0000ff, 0x0f0f0f, 0x000000];
 
         for (let i = 0; i < this.numberOfCans; i++) {
             const can = new Graphics();
