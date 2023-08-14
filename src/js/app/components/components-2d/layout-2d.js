@@ -117,6 +117,25 @@ export default class Layout2D extends DisplayObject {
   startHint() {
     this._tutorial.show();
   }
+  _showOval() {
+    const bb = Black.stage;
+    if (this.ovalTarget) this.ovalTarget.clear();
+    this.ovalTarget = new Graphics();
+    this.ovalTarget.beginPath();
+    this.ovalTarget.lineStyle(10, 0xf0f0f0);
+    const width = bb.height * 0.4;
+    const height = bb.height * 0.5;
+    this.ovalTarget.roundedRect(bb.centerX - width / 2, bb.centerY - height / 1.5, width, height, 200);
+    this.ovalTarget.stroke();
+    this.ovalTarget.visible = true;
+    this.add(this.ovalTarget);
+  }
+  _hideOval() {
+    this.ovalTarget.visible = false;
+    this.ovalTarget.clear();
+    this.ovalTarget = null;
+
+  }
   _initDockBG(object, callback) {
     const height = 150;
     const bb = Black.stage.bounds;

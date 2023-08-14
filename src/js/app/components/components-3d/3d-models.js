@@ -177,8 +177,9 @@ export default class Models3D extends Group {
 
 
         const radius = 1.2;
-        const geometry = new SphereGeometry(radius, 5, 10);
+        const geometry = new SphereGeometry(radius, 10, 20);
         const fingerprintTexture = Cache.get('fingerprint');
+
         this.customMaterial = new MeshPhysicalMaterial({
             map: fingerprintTexture,
             blending: NormalBlending,
@@ -320,10 +321,17 @@ export default class Models3D extends Group {
     }
 
     smooth(x, y, sculptFactor) {
-        this.sphere.rotation.x -= x / 10000;
-        this.sphere.rotation.y += y / 10000;
-        this.fingerprintSphere.rotation.x = this.sphere.rotation.x;
-        this.fingerprintSphere.rotation.y = this.sphere.rotation.y;
+        // this.sphere.rotation.x -= x / 10000;
+        // this.sphere.rotation.y += y / 10000;
+        // this.fingerprintSphere.rotation.x = this.sphere.rotation.x;
+        // this.fingerprintSphere.rotation.y = this.sphere.rotation.y;
+
+        // Calculate the new scale based on sculptFactor
+        const scaleAmountX = 1 - sculptFactor * 0.1; // Adjust the factor for oval effect
+        const scaleAmountY = 1 + sculptFactor * 0.3; // Adjust the factor for oval effect
+
+        this.sphere.scale.set(scaleAmountX, scaleAmountY, 1);
+        this.fingerprintSphere.scale.copy(this.sphere.scale);
 
         this.customMaterial.opacity -= sculptFactor / 100;
     }

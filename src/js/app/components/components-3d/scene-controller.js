@@ -33,9 +33,7 @@ export default class SceneController extends Object3D {
                 });
             }
 
-            if (this.sceneNumber === 2) {
-                this.nextScene(3)
-            }
+
             if (this.sceneNumber === 3) {
                 // this.nextScene(4)
                 this._layout2d.selectSpray(x, y, () => {
@@ -55,7 +53,7 @@ export default class SceneController extends Object3D {
                 this.clickToEquip(x, y)
             }
             if (this.sceneNumber === 8) {
-                this.nextScene(9)
+                // this.nextScene(9)
             }
         }
     }
@@ -172,6 +170,13 @@ export default class SceneController extends Object3D {
                 this.scene2();
             }
         }
+        if (this.sceneNumber === 2 && this.canMove) {
+            this._layout3d._sculpt.graduallyRevertToOriginal(() => {
+                this.canMove = false
+                this._layout2d._hideOval();
+                this.nextScene(3)
+            })
+        }
     }
 
     moveToMouse(x, y) {
@@ -204,8 +209,9 @@ export default class SceneController extends Object3D {
 
         this._layout2d._tutorial.hide();
         this._layout3d._sculpt.head.rotation.set(Math.PI / 2, 0, 0)
-        this._layout3d._sculpt.head.visible = true;
-
+        // this._layout3d._sculpt.head.
+        this._layout3d._sculpt.modifiedMesh.visible = true;
+        this._layout2d._showOval();
         this._layout3d.model3d.hide(this._layout3d.model3d.group);
 
         this.canMove = false;
@@ -272,6 +278,7 @@ export default class SceneController extends Object3D {
     scene8() {
         this._layout3d.hide(this._layout3d.bg)
         this._layout3d.hide(this._layout3d.dock)
+
         console.log('8, moving body')
         this.sceneNumber = 8;
     }
