@@ -1,5 +1,5 @@
 import { call } from "file-loader";
-import { Group, Cache, NormalBlending, MeshPhysicalMaterial, Mesh, CylinderGeometry } from "three";
+import { Group, Cache, NormalBlending, MeshPhysicalMaterial, Vector3, SphereGeometry, Mesh, CylinderGeometry } from "three";
 
 export default class Head extends Group {
     constructor(clayMaterial, head, stand) {
@@ -8,13 +8,15 @@ export default class Head extends Group {
 
         this.head = head;
         this.stand = stand;
-
+        this.count = 0;
+        this.states = 0;
         this.headParts = new Group();
         this._init();
     }
 
     _init() {
         this._initStick();
+        this._createAimPoints();
         const scale = 10;
         this.head.scale.set(scale, scale, scale);
         const radius = 1.2;
@@ -44,6 +46,32 @@ export default class Head extends Group {
         this.add(this.modifiedMesh);
         this.modifiedMesh.visible = false;
     }
+    _createAimPoints() {
+        const aimPointsData = {
+            rEye: new Vector3(this.stand.position.x - 0.37, 0.3, 0.9),
+            lEye: new Vector3(this.stand.position.x + 0.34, 0.3, 0.9),
+            nose: new Vector3(this.stand.position.x, -0.2, 0.14),
+            mouth: new Vector3(this.stand.position.x, -0.6, 0.12),
+            // face: new Vector3(this.stand.position.x, 0.7, 0.12)
+        };
+        this.points = new Group();
+        const geo = new SphereGeometry(0.3, 32, 32);
+
+        for (let key in aimPointsData) {
+            const p = aimPointsData[key];
+
+            const point = new Mesh(geo);
+            point.position.x = p.x;
+            point.position.y = p.y;
+            point.position.z = p.z;
+            point.visible = true;
+            this.points.add(point)
+        }
+        this.add(this.points)
+
+        this._aimPoints = aimPointsData;
+
+    }
 
     _modifyGeometry(originalGeometry) {
         const modifiedGeometry = originalGeometry.clone();
@@ -68,7 +96,9 @@ export default class Head extends Group {
         const geom = new CylinderGeometry(0.05, 0.13, 5, 10, 10);
         const mat = new MeshPhysicalMaterial({ color: 0x964B00 });
         this.stick = new Mesh(geom, mat);
+        this.stick.geometry.translate(0, -5 / 2, 0)
         this.stick.position.copy(this.stand.position);
+        this.stick.rotation.set(Math.PI / 3, Math.PI / 4, Math.PI / 3)
         this.stick.visible = false;
         this.add(this.stick);
     }
@@ -80,8 +110,31 @@ export default class Head extends Group {
 
     onMove(x, y, callback) {
         console.log(x, y,)
-        if (callback) callback();
+        this.rotateStick(x, y, () => {
+            if (callback) callback();
+        })
     }
+
+    rotateStick(x, y, callback) {
+        this.states += 0.01;
+        this.stick.rotation.z = -x / 50;
+        this.stick.rotation.y = y / 10;
+        this.modifiedMesh.material.opacity = 0;;
+
+        if (this.states >= 2.0) {
+            this.states -= 2.0;
+            if (this.count < this.points.children.length) {
+                this.stick.position.copy(this.points.children[this.count].position);
+                this.count++;
+            } else {
+                if (callback) {
+                    callback();
+                }
+            }
+        }
+    }
+
+
 
     graduallyRevertToOriginal(callback) {
         const incrementAmount = 0.01; // Adjust this value to control the speed of the transition

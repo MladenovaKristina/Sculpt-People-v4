@@ -3,6 +3,7 @@ import { Object3D, Raycaster, Vector2, Vector3 } from "three";
 import TWEEN from "@tweenjs/tween.js";
 import { Black } from "../../../utils/black-engine.module";
 import Helpers from "../../helpers/helpers";
+import AnimationController from "./animations-controller";
 
 export default class SceneController extends Object3D {
     constructor(camera, cameraController, layout2d, layout3d) {
@@ -32,6 +33,7 @@ export default class SceneController extends Object3D {
                     this.scene1(this.selectedClayMaterial);
                 });
             }
+
 
             if (this.sceneNumber === 3) {
                 // this.nextScene(4)
@@ -171,11 +173,13 @@ export default class SceneController extends Object3D {
             }
         }
         if (this.sceneNumber === 2 && this.canMove) {
-            this._layout3d._sculpt.graduallyRevertToOriginal(() => {
-                this.canMove = false
-                this._layout2d._hideOval();
-                this.sculptWithStick();
-            })
+            if (!this.sculpting) {
+                this._layout3d._sculpt.graduallyRevertToOriginal(() => {
+                    this.canMove = false
+                    this._layout2d._hideOval();
+                    this.sculptWithStick();
+                })
+            }
             if (this.sculpting) {
                 this._layout3d._sculpt.onMove(x, y, () => {
                     this._layout3d._sculpt.headDone();
@@ -186,11 +190,11 @@ export default class SceneController extends Object3D {
         }
     }
 
-    moveToMouse(x, y) {
-        this.selectedDecoration.position.x = x;
-        this.selectedDecoration.position.y = y + 3;
-        this.selectedDecoration.position.z = -1;
-    }
+    // moveToMouse(x, y) {
+    //     this.selectedDecoration.position.x = x;
+    //     this.selectedDecoration.position.y = y + 3;
+    //     this.selectedDecoration.position.z = -1;
+    // }
 
 
     scene0() {
