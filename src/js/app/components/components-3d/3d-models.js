@@ -109,6 +109,8 @@ export default class Models3D extends Group {
                 child.name == "spiderman" ||
                 child.name == "moustache") {
                 child.visible = false;
+                child.rotation.set(0, 0, 0)
+                // child.position.z -= 0.1;
                 this.accessories.push(child)
             }
         });
