@@ -3,7 +3,6 @@ import { Object3D, Raycaster, Vector2, Vector3 } from "three";
 import TWEEN from "@tweenjs/tween.js";
 import { Black } from "../../../utils/black-engine.module";
 import Helpers from "../../helpers/helpers";
-import AnimationController from "./animations-controller";
 
 export default class SceneController extends Object3D {
     constructor(camera, cameraController, layout2d, layout3d) {
@@ -174,7 +173,7 @@ export default class SceneController extends Object3D {
         }
         if (this.sceneNumber === 2 && this.canMove) {
             if (!this.sculpting) {
-                this._layout3d._sculpt.graduallyRevertToOriginal(() => {
+                this._layout3d._sculpt.graduallyTurnToSculpt(() => {
                     this.canMove = false
                     this._layout2d._hideOval();
                     this.sculptWithStick();
@@ -223,7 +222,7 @@ export default class SceneController extends Object3D {
 
         this._layout2d._tutorial.hide();
         this._layout3d._sculpt.head.rotation.set(Math.PI / 2, 0, 0)
-        this._layout3d._sculpt.modifiedMesh.visible = true;
+        this._layout3d._sculpt.halfSculptedHead.visible = true;
         this._layout2d._showOval();
         this._layout3d.model3d.hide(this._layout3d.model3d.group);
 
@@ -233,7 +232,6 @@ export default class SceneController extends Object3D {
     sculptWithStick() {
         this.sculpting = true;
         this._layout3d._sculpt.stick.visible = true;
-
     }
 
     scene3() {
