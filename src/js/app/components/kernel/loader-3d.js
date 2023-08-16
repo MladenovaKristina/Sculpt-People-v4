@@ -6,6 +6,12 @@ import assets from '../../../data/textures/3d/assets_v02.glb';
 import bg_image from '../../../data/textures/bg_image.png';
 import arm from '../../../data/textures/3d/hand_Sculpting.glb';
 
+import arianagrandehead from '../../../data/textures/3d/ArianaG.png';
+import harleybody from '../../../data/textures/3d/Harley_Body_D.png';
+import harleyhead from '../../../data/textures/3d/Harley_Head_D.png';
+import mrbeanhead from '../../../data/textures/3d/MrBean.png';
+import rockhead from '../../../data/textures/3d/RockPaintMask.png';
+
 import fingerprint from '../../../data/textures/3d/fingerprints.png';
 
 export default class Loader3D {
@@ -25,7 +31,12 @@ export default class Loader3D {
     ];
     const textures = [
       { name: 'bg_image', asset: bg_image },
-      { name: 'fingerprint', asset: fingerprint }
+      { name: 'fingerprint', asset: fingerprint },
+      { name: 'arianagrandehead', asset: arianagrandehead },
+      { name: 'harleyhead', asset: harleyhead },
+      { name: 'harleybody', asset: harleybody },
+      { name: 'mrbeanhead', asset: mrbeanhead },
+      { name: 'rockhead', asset: rockhead },
 
     ];
 

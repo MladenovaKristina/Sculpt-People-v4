@@ -148,25 +148,22 @@ export default class Head extends Group {
         this.stick.rotation.x = Math.PI / 2 - x / 100;
         this.stick.rotation.y = Math.PI / 2 - y / 100;
         this.stick.rotation.z = Math.PI / 2 - x / 1000;
-        this.stick.position.copy(this.points.children[this.count].position);
+
 
         if (this.states >= 2.0) {
             this.states -= 2.0;
             if (this.count < this.points.children.length - 1) {
-                const headPosition = this.head.position.clone(); // Assuming this.head is the head surface mesh
-                const distanceToHead = stickPosition.distanceTo(headPosition);
+                this.stick.position.copy(this.points.children[this.count]);
 
-                this.stick.position.copy(stickPosition.add(headPosition.clone().sub(stickPosition).normalize().multiplyScalar(distanceToHead)));
                 this.count++;
-            }
-
-            else {
+            } else {
                 if (callback) {
                     callback();
                 }
             }
         }
     }
+
 
 
 
