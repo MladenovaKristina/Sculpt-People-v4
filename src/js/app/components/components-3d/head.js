@@ -7,6 +7,8 @@ export default class Head extends Group {
         this.clayMaterial = clayMaterial;
 
         this.head = head;
+        this.head.traverse((child) => { if (child.name == "base_head") console.log(child.name) });
+        console.log(this.head)
         this.stand = stand;
         this.count = 0;
         this.states = 0;
@@ -163,9 +165,6 @@ export default class Head extends Group {
             }
         }
     }
-
-
-
 
     graduallyTurnToSculpt(callback) {
         const incrementAmount = 0.01; // Adjust this value to control the speed of the transition
