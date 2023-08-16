@@ -131,10 +131,35 @@ export default class Layout2D extends DisplayObject {
     this.ovalTarget.visible = true;
     this.add(this.ovalTarget);
   }
-  _hideOval() {
-    this.ovalTarget.visible = false;
+  _hideOval(callback) {
+    const bb = Black.stage;
+
     this.ovalTarget.clear();
-    this.ovalTarget = null;
+    this.ovalTarget.beginPath();
+    this.ovalTarget.lineStyle(10, 0x00ff00);
+    const width = bb.height * 0.4;
+    const height = bb.height * 0.5;
+    this.ovalTarget.roundedRect(bb.centerX - width / 2, bb.centerY - height / 1.5, width, height, 200);
+    this.ovalTarget.stroke();
+
+    setTimeout(() => {
+      this.ovalTarget.clear();
+      this.ovalTarget.beginPath();
+      this.ovalTarget.lineStyle(10, 0xffffff);
+      const width = bb.height * 0.4;
+      const height = bb.height * 0.5;
+      this.ovalTarget.roundedRect(bb.centerX - width / 2, bb.centerY - height / 1.5, width, height, 200);
+      this.ovalTarget.stroke();
+    }, 200)
+
+    setTimeout(() => {
+      this.ovalTarget.visible = false;
+      this.ovalTarget.clear();
+      this.ovalTarget = null;
+      callback()
+    }, 600)
+
+
 
   }
   _initDockBG(object, callback) {

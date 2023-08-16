@@ -62,6 +62,7 @@ export default class Models3D extends Group {
         this.bodies2d = [];
 
         this.asset.traverse((child) => {
+            if (child.material) child.material.side = DoubleSide;
 
             const mapping = characterMappings[selectedCharacter];
             if (mapping && child.name === mapping.bodyName) {
@@ -109,8 +110,9 @@ export default class Models3D extends Group {
                 child.name == "spiderman" ||
                 child.name == "moustache") {
                 child.visible = false;
+                child.scale.set(10, 10, 10)
                 child.rotation.set(0, 0, 0)
-                // child.position.z -= 0.1;
+                child.position.z = 0;
                 this.accessories.push(child)
             }
         });
@@ -120,7 +122,8 @@ export default class Models3D extends Group {
         for (let i = 0; i < this.accessories.length; i++) {
 
             const accessory = this.accessories[i];
-
+            if (accessory.name == "glasses" || accessory.name == "moustache")
+                accessory.position.z += 0.2;
             this.head.add(accessory)
         }
     }
@@ -322,18 +325,8 @@ export default class Models3D extends Group {
 
     }
 
-    smooth(x, y, sculptFactor) {
-        this.sphere.rotation.x -= x / 10000;
-        this.sphere.rotation.y += y / 10000;
-        this.fingerprintSphere.rotation.x = this.sphere.rotation.x;
-        this.fingerprintSphere.rotation.y = this.sphere.rotation.y;
-
-        const scaleAmountX = 1 - sculptFactor * 0.05;
-        const scaleAmountY = 1 + sculptFactor * 0.4;
-
-        this.sphere.scale.set(scaleAmountX, scaleAmountY, 1);
-        this.fingerprintSphere.scale.copy(this.sphere.scale);
-
+    smooth() {
+        this.fingerprintSphere.material.opacity -= 0.01;
     }
 
     hide(object) {

@@ -32,22 +32,14 @@ export default class Head extends Group {
 
         this.modifiedGeometry = this._modifyGeometry(this.halfSculptedHeadGeometry.clone());
 
-        this.customMaterial = new MeshPhysicalMaterial({
-            map: Cache.get('fingerprint'),
-            color: this.clayMaterial.color,
-            blending: NormalBlending,
-            transparent: true,
-            opacity: 1
-        });
-
-        this.halfSculptedHead = new Mesh(this.modifiedGeometry, this.customMaterial);
+        this.halfSculptedHead = new Mesh(this.modifiedGeometry, this.clayMaterial);
         this.halfSculptedHead.position.copy(this.head.position);
         this.halfSculptedHead.scale.copy(this.head.scale);
         this.halfSculptedHead.rotation.copy(this.head.rotation);
 
         this.add(this.halfSculptedHead);
 
-        this.modifiedMesh = new Mesh(this.modifiedGeometry, this.customMaterial);
+        this.modifiedMesh = new Mesh(this.modifiedGeometry, this.clayMaterial);
         this.modifiedMesh.position.copy(this.head.position);
         this.modifiedMesh.scale.copy(this.head.scale);
         this.modifiedMesh.rotation.copy(this.head.rotation);
@@ -161,7 +153,10 @@ export default class Head extends Group {
         if (this.states >= 2.0) {
             this.states -= 2.0;
             if (this.count < this.points.children.length - 1) {
-                this.stick.position.copy(this.points.children[this.count].position);
+                const headPosition = this.head.position.clone(); // Assuming this.head is the head surface mesh
+                const distanceToHead = stickPosition.distanceTo(headPosition);
+
+                this.stick.position.copy(stickPosition.add(headPosition.clone().sub(stickPosition).normalize().multiplyScalar(distanceToHead)));
                 this.count++;
             }
 
@@ -201,6 +196,36 @@ export default class Head extends Group {
             callback()
         }
     }
+
+    graduallyTurnClayToSculpt(object, callback) {
+        this.clay = object;
+        const incrementAmount = 0.01; // Adjust this value to control the speed of the transition
+        const threshold = 0.001; // Adjust this value to set the threshold for "almost the same"
+        let allPositionsAlmostSame = true;
+
+        for (let i = 0; i < this.clay.geometry.attributes.position.array.length; i += 3) {
+            const diffX = this.modifiedGeometry.attributes.position.array[i] - this.clay.geometry.attributes.position.array[i];
+            const diffY = this.modifiedGeometry.attributes.position.array[i + 1] - this.clay.geometry.attributes.position.array[i + 1];
+            const diffZ = this.modifiedGeometry.attributes.position.array[i + 2] - this.clay.geometry.attributes.position.array[i + 2];
+
+            this.clay.geometry.attributes.position.array[i] += diffX * incrementAmount;
+            this.clay.geometry.attributes.position.array[i + 1] += diffY * incrementAmount;
+            this.clay.geometry.attributes.position.array[i + 2] += diffZ * incrementAmount;
+
+            if (Math.abs(diffX) > threshold || Math.abs(diffY) > threshold || Math.abs(diffZ) > threshold) {
+                allPositionsAlmostSame = false;
+            }
+        }
+
+        this.clay.geometry.attributes.position.needsUpdate = true;
+
+        if (allPositionsAlmostSame && callback) {
+            callback()
+            object.visible = false;
+        }
+    }
+
+
 
     graduallyRevertToOriginal(callback) {
         console.log("graduallyRevertToOriginal");
@@ -244,5 +269,31 @@ export default class Head extends Group {
     }
 
 
+    graduallyMorph(object, callback) {
+        this.object = object;
+        const incrementAmount = 0.01; // Adjust this value to control the speed of the transition
+        const threshold = 0.001; // Adjust this value to set the threshold for "almost the same"
+        let allPositionsAlmostSame = true;
 
+        for (let i = 0; i < this.object.geometry.attributes.position.array.length; i += 3) {
+            const diffX = this.modifiedGeometry.attributes.position.array[i] - this.object.geometry.attributes.position.array[i];
+            const diffY = this.modifiedGeometry.attributes.position.array[i + 1] - this.object.geometry.attributes.position.array[i + 1];
+            const diffZ = this.modifiedGeometry.attributes.position.array[i + 2] - this.object.geometry.attributes.position.array[i + 2];
+
+            this.object.geometry.attributes.position.array[i] += diffX * incrementAmount;
+            this.object.geometry.attributes.position.array[i + 1] += diffY * incrementAmount;
+            this.object.geometry.attributes.position.array[i + 2] += diffZ * incrementAmount;
+
+            if (Math.abs(diffX) > threshold || Math.abs(diffY) > threshold || Math.abs(diffZ) > threshold) {
+                allPositionsAlmostSame = false;
+
+            }
+        }
+
+        this.object.geometry.attributes.position.needsUpdate = true;
+
+        if (allPositionsAlmostSame && callback) {
+            callback()
+        }
+    }
 }

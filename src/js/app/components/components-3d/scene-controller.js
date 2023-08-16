@@ -164,7 +164,8 @@ export default class SceneController extends Object3D {
 
             if (this.sculptFinish < 1) {
                 this._layout3d.model3d.playAnim('sculpt');
-                this._layout3d.model3d.smooth(x, y, this.sculptFinish);
+                this._layout3d._sculpt.graduallyMorph(this._layout3d.model3d.sphere, this._layout3d._sculpt.modifiedMesh);
+                this._layout3d.model3d.smooth();
                 this.sculptFinish += 0.005;
             }
             else {
@@ -175,8 +176,9 @@ export default class SceneController extends Object3D {
             if (!this.sculpting) {
                 this._layout3d._sculpt.graduallyTurnToSculpt(() => {
                     this.canMove = false
-                    this._layout2d._hideOval();
-                    this.sculptWithStick();
+                    this._layout2d._hideOval(() => {
+                        this.sculptWithStick();
+                    });
                 })
             }
             if (this.sculpting) {
