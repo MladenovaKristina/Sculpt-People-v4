@@ -30,9 +30,8 @@ export default class Layout3D extends Object3D {
     backgroundMesh.rotation.y = Math.PI;
 
     this.add(backgroundMesh);
-    const screenwidth = this._camera.fov * Math.PI / 180;
-    const width = screenwidth.toString().split('.')[1];
-    const geo = new PlaneGeometry(parseFloat(width), 1);
+
+    const geo = new PlaneGeometry(6, 1);
     const mat = new MeshPhysicalMaterial({ transparent: true, opacity: 0.9, color: 0x000000 });
     this.bg = new Mesh(geo, mat);
     this.bg.visible = false;
@@ -157,7 +156,7 @@ export default class Layout3D extends Object3D {
 
   _initSculpt(clayMaterial) {
     this.model3d._initTexture(clayMaterial);
-    this._sculpt = new Head(clayMaterial, this.model3d.head, this.stand);
+    this._sculpt = new Head(clayMaterial, this.model3d.head, this.model3d.sphere, this.stand);
     this.add(this._sculpt)
   }
 

@@ -391,7 +391,7 @@ export default class Models3D extends Group {
     }
 
     removeMask(callback) {
-        const targetpos = new Vector3(-7, 4, 4);
+        const targetpos = new Vector3(-4, 4, 10);
         const targetrotation = new Vector3(0, 0, 0);
 
 
@@ -417,5 +417,8 @@ export default class Models3D extends Group {
             .start();
     }
 }
+
+
+
 
 

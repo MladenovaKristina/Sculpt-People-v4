@@ -166,7 +166,7 @@ export default class SceneController extends Object3D {
 
             if (this.sculptFinish < 1) {
                 this._layout3d.model3d.playAnim('sculpt');
-                this._layout3d._sculpt.graduallyMorph(this._layout3d.model3d.sphere, this._layout3d._sculpt.modifiedMesh);
+                this._layout3d._sculpt.graduallyTurnClayToSculpt();
                 this._layout3d.model3d.smooth();
                 this.sculptFinish += 0.005;
             }

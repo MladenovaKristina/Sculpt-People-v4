@@ -2,10 +2,10 @@ import { call } from "file-loader";
 import { Group, Cache, Sphere, NormalBlending, Raycaster, MeshPhysicalMaterial, Vector3, SphereGeometry, Mesh, CylinderGeometry } from "three";
 
 export default class Head extends Group {
-    constructor(clayMaterial, head, stand) {
+    constructor(clayMaterial, head, sphere, stand) {
         super();
         this.clayMaterial = clayMaterial;
-
+        this.sphere = sphere;
         this.head = head;
         this.head.traverse((child) => { if (child.name == "base_head") console.log(child.name) });
         console.log(this.head)
@@ -185,27 +185,26 @@ export default class Head extends Group {
         }
     }
 
-    graduallyTurnClayToSculpt(object, callback) {
-        this.clay = object;
+    graduallyTurnClayToSculpt(callback) {
         const incrementAmount = 0.01; // Adjust this value to control the speed of the transition
         const threshold = 0.001; // Adjust this value to set the threshold for "almost the same"
         let allPositionsAlmostSame = true;
 
-        for (let i = 0; i < this.clay.geometry.attributes.position.array.length; i += 3) {
-            const diffX = this.modifiedGeometry.attributes.position.array[i] - this.clay.geometry.attributes.position.array[i];
-            const diffY = this.modifiedGeometry.attributes.position.array[i + 1] - this.clay.geometry.attributes.position.array[i + 1];
-            const diffZ = this.modifiedGeometry.attributes.position.array[i + 2] - this.clay.geometry.attributes.position.array[i + 2];
+        for (let i = 0; i < this.sphere.geometry.attributes.position.array.length; i += 3) {
+            const diffX = this.head.geometry.attributes.position.array[i] - this.sphere.geometry.attributes.position.array[i];
+            const diffY = this.head.geometry.attributes.position.array[i + 1] - this.sphere.geometry.attributes.position.array[i + 1];
+            const diffZ = this.head.geometry.attributes.position.array[i + 2] - this.sphere.geometry.attributes.position.array[i + 2];
 
-            this.clay.geometry.attributes.position.array[i] += diffX * incrementAmount;
-            this.clay.geometry.attributes.position.array[i + 1] += diffY * incrementAmount;
-            this.clay.geometry.attributes.position.array[i + 2] += diffZ * incrementAmount;
+            this.sphere.geometry.attributes.position.array[i] += diffX * incrementAmount;
+            this.sphere.geometry.attributes.position.array[i + 1] += diffY * incrementAmount;
+            this.sphere.geometry.attributes.position.array[i + 2] += diffZ * incrementAmount;
 
             if (Math.abs(diffX) > threshold || Math.abs(diffY) > threshold || Math.abs(diffZ) > threshold) {
                 allPositionsAlmostSame = false;
             }
         }
 
-        this.clay.geometry.attributes.position.needsUpdate = true;
+        this.sphere.geometry.attributes.position.needsUpdate = true;
 
         if (allPositionsAlmostSame && callback) {
             callback()
