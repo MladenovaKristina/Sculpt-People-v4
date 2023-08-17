@@ -13,18 +13,20 @@ export default class SceneController extends Object3D {
         this._layout2d = layout2d;
         this._layout3d = layout3d;
         this.sceneNumber = 0;
-        this.scene0();
         this.sculptFinish = 0;
         this.canMove = false;
         this.animating = false;
+
+
+        this.scene0();
     }
 
     onDown(x, y) {
+
         if (!this.animating) {
             this.canMove = true;
 
             if (this.sceneNumber === 0) {
-
                 this.getClayAtPosition(x, y, () => {
 
                     this._layout2d._hideClayHint();
@@ -206,7 +208,7 @@ export default class SceneController extends Object3D {
     scene1(clayMaterial) {
         this._layout3d._initSculpt(clayMaterial);
         this._layout3d.model3d.show();
-        this.setCam(2, null, null, () => {
+        this.setCam(3, null, null, true, () => {
             this._layout2d.startHint();
             this.sceneNumber = 1;
             this.canMove = true;
@@ -214,9 +216,10 @@ export default class SceneController extends Object3D {
     }
 
     scene2() {
+
         this._layout2d._cheers.show(0, Black.stage.centerX - 1, Black.stage.centerY + 1);
 
-        this.setCam(null, null, 2, () => {
+        this.setCam(null, null, 2, true, () => {
             console.log("zoom")
             this.sceneNumber = 2;
 
@@ -237,24 +240,27 @@ export default class SceneController extends Object3D {
     }
 
     scene3() {
-        this._layout3d.hide(this._layout3d._sculpt.stick)
+        this._layout3d.hideStick();
         this._layout2d._cheers.show(2, Black.stage.centerX + 1, Black.stage.centerY - 1);
         console.log("painting scene implement pls", this.sceneNumber);
+        this._layout3d.model3d.placeMask();
         this._layout2d._initDockBG("spray", () => { this.sceneNumber = 3; });
     }
 
     scene4() {
-        this.sceneNumber = 4;
+        this._layout3d.model3d.removeMask(() => {
+            this.sceneNumber = 4;
 
-        this.canMove = false;
+            this.canMove = false;
 
-        this._layout2d._objectsInDock.hide();
-        this._layout3d._initDock("head");
+            this._layout2d._objectsInDock.hide();
+            this._layout3d._initDock("head");
 
-        this.numberOfDecorations = this._layout3d.model3d.headParts.length;
+            this.numberOfDecorations = this._layout3d.model3d.headParts.length;
 
-        this._layout2d._cheers.show(1, Black.stage.centerX + 1, Black.stage.centerY - 1);
-        console.log("decorating head scene", this.sceneNumber);
+            this._layout2d._cheers.show(1, Black.stage.centerX + 1, Black.stage.centerY - 1);
+            console.log("decorating head scene", this.sceneNumber);
+        })
     }
 
     scene5() {
@@ -271,7 +277,7 @@ export default class SceneController extends Object3D {
 
         this._layout3d.hide(this._layout3d.bg)
         this._layout3d.hide(this._layout3d.dock)
-        this.setCam(-0.5, 2, -2, () => {
+        this.setCam(-0.5, 2, -2, true, () => {
             this._layout2d._confetti.show()
         });
 
@@ -303,33 +309,41 @@ export default class SceneController extends Object3D {
         this._layout2d._confetti.show();
 
     }
-    setCam(setX, setY, setZ, callback) {
+    setCam(setX, setY, setZ, bool, callback) {
         this.animating = true;
         let targetX = setX, targetY = setY, targetZ = setZ;
-        const tempCameraPosition = { x: this._camera.threeCamera.position.x, y: this._camera.threeCamera.position.y, z: this._camera.threeCamera.position.z }; // Temporary object to hold camera position
-        if (!setX) targetX = this._camera.threeCamera.position.x; else targetX = this._camera.threeCamera.position.x - setX;
+        if (bool === "false") {
+            this._camera.threeCamera.position.set(targetX, targetY, targetZ);
+            this.animating = false;
 
-        if (!setY) targetY = this._camera.threeCamera.position.y; else targetY = this._camera.threeCamera.position.y - setY;
-        if (!setZ) targetZ = this._camera.threeCamera.position.z; else targetZ = this._camera.threeCamera.position.z - setZ;
+            callback();
+        } else {
+            const tempCameraPosition = { x: this._camera.threeCamera.position.x, y: this._camera.threeCamera.position.y, z: this._camera.threeCamera.position.z }; // Temporary object to hold camera position
+            if (!setX) targetX = this._camera.threeCamera.position.x; else targetX = this._camera.threeCamera.position.x - setX;
 
-        const tween = new TWEEN.Tween(tempCameraPosition)
-            .to({ x: targetX, y: targetY, z: targetZ }, 400)
-            .easing(TWEEN.Easing.Quadratic.Out)
-            .delay(300)
-            .onUpdate(() => {
-                this._camera.threeCamera.position.x = tempCameraPosition.x;
-                this._camera.threeCamera.position.y = tempCameraPosition.y;
-                this._camera.threeCamera.position.z = tempCameraPosition.z;
-            })
-            .onComplete(() => {
-                if (this._camera.threeCamera.position.x == targetX) {
-                    callback();
-                    this.animating = false;
-                }
-            })
-            .start();
+            if (!setY) targetY = this._camera.threeCamera.position.y; else targetY = this._camera.threeCamera.position.y - setY;
+            if (!setZ) targetZ = this._camera.threeCamera.position.z; else targetZ = this._camera.threeCamera.position.z - setZ;
 
-        this.animate();
+            const tween = new TWEEN.Tween(tempCameraPosition)
+                .to({ x: targetX, y: targetY, z: targetZ }, 400)
+                .easing(TWEEN.Easing.Quadratic.Out)
+                .delay(300)
+                .onUpdate(() => {
+                    this._camera.threeCamera.position.x = tempCameraPosition.x;
+                    this._camera.threeCamera.position.y = tempCameraPosition.y;
+                    this._camera.threeCamera.position.z = tempCameraPosition.z;
+                })
+                .onComplete(() => {
+                    if (this._camera.threeCamera.position.x == targetX) {
+                        this.animating = false;
+                        callback();
+                    }
+                })
+                .start();
+
+            this.animate();
+        }
+
     }
 
     animate() {

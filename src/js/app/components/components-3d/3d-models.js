@@ -63,7 +63,6 @@ export default class Models3D extends Group {
 
         this.asset.traverse((child) => {
             if (child.material) child.material.side = DoubleSide;
-
             const mapping = characterMappings[selectedCharacter];
             if (mapping && child.name === mapping.bodyName) {
                 this.body = child;
@@ -74,7 +73,8 @@ export default class Models3D extends Group {
                 this.head.traverse((child) => {
                     child.visible = false;
                     let childName = child.name.toLowerCase();
-                    if (!childName.includes("h_")) {
+                    if (childName.includes("mask")) { child.position.y += 0.3; child.scale.set(10, 10, 10); const childmat = new MeshPhysicalMaterial({ color: 0xffffff }); child.material = childmat; this.mask = child; this.add(this.mask) }
+                    if (!childName.includes("h_") && !childName.includes("mask")) {
 
                         if (childName.includes("ear") || childName.includes("eye")) {
                             const child_l = child.clone();
@@ -155,7 +155,7 @@ export default class Models3D extends Group {
 
             if (child.name === "ref_position") {
                 this.armposition = child;
-                this.arm.position.x = -1;
+                this.arm.position.x = 1;
                 this.arm.position.z = 6;
                 this.arm.position.y = -4.5;
                 this.armposition.visible = false;
@@ -176,7 +176,7 @@ export default class Models3D extends Group {
                 child.visible = false;
             }
         })
-        this.rightArm.position.set(-3.5, this.arm.position.y, this.arm.position.z)
+        this.rightArm.position.set(-1.5, this.arm.position.y, this.arm.position.z)
 
         this.group.add(this.rightArm);
 
@@ -360,6 +360,61 @@ export default class Models3D extends Group {
     changeAnim(oldAnimName, newAnimName) {
         this.stopAnim(oldAnimName);
         this.playAnim(newAnimName);
+    }
+
+    placeMask() {
+        this.mask.visible = true;
+        const targetpos = new Vector3(this.head.position.x, this.head.position.y, this.head.position.z + 0.3);
+        const targetrotation = new Vector3(Math.PI / 2, 0, 0);
+        this.mask.position.set(-7, 4, 4);
+        this.mask.rotation.z += 0.3;
+        const tween = new TWEEN.Tween(this.mask.position)
+            .to({ x: targetpos.x, y: targetpos.y, z: targetpos.z }, 1000)
+            .easing(TWEEN.Easing.Sinusoidal.InOut)
+            .delay(200)
+            .onUpdate(() => {
+                if (this.mask.position === targetpos) console.log("mask");
+            })
+            .onComplete(() => {
+
+
+            })
+            .start();
+        const rotatetween = new TWEEN.Tween(this.mask.rotation)
+            .to({ x: targetrotation.x, y: targetrotation.y, z: targetrotation.z }, 1000)
+            .easing(TWEEN.Easing.Sinusoidal.InOut)
+            .delay(800)
+            .onUpdate(() => {
+                if (this.mask.rotatetween === targetrotation) console.log("mask");
+            })
+            .start();
+    }
+
+    removeMask(callback) {
+        const targetpos = new Vector3(-7, 4, 4);
+        const targetrotation = new Vector3(0, 0, 0);
+
+
+        const tween = new TWEEN.Tween(this.mask.position)
+            .to({ x: targetpos.x, y: targetpos.y, z: targetpos.z }, 1000)
+            .easing(TWEEN.Easing.Sinusoidal.InOut)
+            .delay(800)
+            .onUpdate(() => {
+                if (this.mask.position === targetpos) console.log("mask");
+            })
+            .onComplete(() => {
+                callback();
+            })
+            .start();
+
+        const rotatetween = new TWEEN.Tween(this.mask.rotation)
+            .to({ x: targetrotation.x, y: targetrotation.y, z: targetrotation.z }, 1000)
+            .easing(TWEEN.Easing.Sinusoidal.InOut)
+            .delay(200)
+            .onUpdate(() => {
+                if (this.mask.rotatetween === targetrotation) console.log("mask");
+            })
+            .start();
     }
 }
 

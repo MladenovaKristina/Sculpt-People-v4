@@ -127,7 +127,6 @@ export default class Head extends Group {
         const mat = new MeshPhysicalMaterial({ color: 0x964B00 });
         this.stick = new Mesh(geom, mat);
         this.stick.geometry.translate(0, -height / 2, 0)
-        this.stick.position.copy(this.stand.position);
         this.stick.rotation.set(0, 0, 0)
         this.stick.visible = false;
         this.add(this.stick);
@@ -139,32 +138,25 @@ export default class Head extends Group {
     }
 
     onMove(x, y, callback) {
-        this.graduallyRevertToOriginal()
-        this.rotateStick(x, y, () => {
-            if (callback) callback();
-        })
+        this.graduallyRevertToOriginal();
+        this.rotateStick(x, y, () => { callback() })
     }
+
 
     rotateStick(x, y, callback) {
-        this.states += 0.01;
-        this.stick.rotation.x = Math.PI / 2 - x / 100;
-        this.stick.rotation.y = Math.PI / 2 - y / 100;
-        this.stick.rotation.z = Math.PI / 2 - x / 1000;
+        this.states++;
 
-
-        if (this.states >= 2.0) {
-            this.states -= 2.0;
-            if (this.count < this.points.children.length - 1) {
-                this.stick.position.copy(this.points.children[this.count]);
-
-                this.count++;
-            } else {
-                if (callback) {
-                    callback();
-                }
-            }
-        }
+        this.stick.rotation.x = x / 1000;
+        this.stick.rotation.y = y / 1000;
+        this.stick.rotation.z = -Math.PI / 2 - x / 1000;
+        if (this.states === 0 || this.states === 100 || this.states === 200 || this.states === 300) {
+            this.count++;
+            this.stick.position.copy(this.points.children[this.count].position);
+            console.log(this.states)
+        } if (this.states >= 400) callback();
     }
+
+
 
     graduallyTurnToSculpt(callback) {
         const incrementAmount = 0.01; // Adjust this value to control the speed of the transition
@@ -223,8 +215,7 @@ export default class Head extends Group {
 
 
 
-    graduallyRevertToOriginal(callback) {
-        console.log("graduallyRevertToOriginal");
+    graduallyRevertToOriginal() {
 
         const incrementAmount = 0.01; // Adjust this value to control the speed of the transition
         let threshold = 0.001; // Initial threshold value
@@ -241,7 +232,6 @@ export default class Head extends Group {
             threshold = 0.01; // Larger threshold when not intersecting
         }
 
-        let allPositionsAlmostSame = true;
 
         for (let i = 0; i < this.modifiedGeometry.attributes.position.array.length; i += 3) {
             const diffX = this.originalGeometry.attributes.position.array[i] - this.modifiedGeometry.attributes.position.array[i];
@@ -252,15 +242,8 @@ export default class Head extends Group {
             this.modifiedGeometry.attributes.position.array[i + 1] += diffY * incrementAmount;
             this.modifiedGeometry.attributes.position.array[i + 2] += diffZ * incrementAmount;
 
-            if (Math.abs(diffX) > threshold || Math.abs(diffY) > threshold || Math.abs(diffZ) > threshold) {
-                allPositionsAlmostSame = false;
-            }
-        }
 
-        this.modifiedGeometry.attributes.position.needsUpdate = true;
-
-        if (allPositionsAlmostSame && callback) {
-            callback();
+            this.modifiedGeometry.attributes.position.needsUpdate = true;
         }
     }
 
@@ -292,4 +275,5 @@ export default class Head extends Group {
             callback()
         }
     }
+
 }

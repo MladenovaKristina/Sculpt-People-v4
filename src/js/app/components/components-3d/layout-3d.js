@@ -30,8 +30,9 @@ export default class Layout3D extends Object3D {
     backgroundMesh.rotation.y = Math.PI;
 
     this.add(backgroundMesh);
-
-    const geo = new PlaneGeometry(8, 1);
+    const screenwidth = this._camera.fov * Math.PI / 180;
+    const width = screenwidth.toString().split('.')[1];
+    const geo = new PlaneGeometry(parseFloat(width), 1);
     const mat = new MeshPhysicalMaterial({ transparent: true, opacity: 0.9, color: 0x000000 });
     this.bg = new Mesh(geo, mat);
     this.bg.visible = false;
@@ -41,7 +42,7 @@ export default class Layout3D extends Object3D {
 
   _initStand() {
     this.stand = new Group();
-    this.stand.position.x = -2;
+    this.stand.position.x = 0;
 
     const cylinderGeometry = new CylinderGeometry(0.1, 0.1, 5, 10);
     const cylinderMaterial = new MeshPhysicalMaterial({ color: 0xdadada, metalness: 1, reflectivity: 10 });
@@ -69,7 +70,7 @@ export default class Layout3D extends Object3D {
     const numberOfClay = 3;
     this.clay = new Group();
     this.add(this.clay);
-    this.clay.position.set(0 - numberOfClay / numberOfClay, 0);
+    this.clay.position.set(3 - numberOfClay / numberOfClay, 0);
 
     const offset = Black.stage.bounds.width / 2 / (numberOfClay + 2) / 100;
     const colors = [
@@ -95,30 +96,29 @@ export default class Layout3D extends Object3D {
 
   _initDock(bodyPart) {
     this.positionInDock = [];
-    let j = -2;
     let scale, dockelements;
     if (bodyPart === "head") {
       dockelements = this.model3d.headParts;
-      scale = this._camera.position.z / 2;
 
     }
     else if (bodyPart === "body") {
       dockelements = this.model3d.bodies2d;
-      scale = 0.5;
+      // scale = 0.3;
 
     }
     else if (bodyPart === "accessories") {
       this.model3d.pushtoHead(this._sculpt.head);
       dockelements = this.model3d.accessories;
-      scale = 0.1;
+      // scale = 0.01;
     }
+    scale = 4 / (dockelements.length + 1) * 10;
 
     const width = 8;
 
-    this.bg.position.set(-width / 4, this._camera.position.y - 2.75, this._camera.position.z / 2 - 3);
+    this.bg.position.set(0, this._camera.position.y - 2.75, this._camera.position.z - (dockelements.length + 1));
     this.bg.visible = true;
     this.dock = new Group();
-    this.dock.position.set(-width / 4, this._camera.position.y - 2, this._camera.position.z / 2 - 1);
+    this.dock.position.copy(this.bg.position);
     this.add(this.dock);
 
     const numberOfElements = dockelements.length;
@@ -164,7 +164,9 @@ export default class Layout3D extends Object3D {
   hideClay() {
     this.hide(this.clay);
   }
-
+  hideStick() {
+    this.hide(this._sculpt.stick)
+  }
   hide(object) {
     const tween = new TWEEN.Tween(object.position)
       .to({ y: -10 }, 400)

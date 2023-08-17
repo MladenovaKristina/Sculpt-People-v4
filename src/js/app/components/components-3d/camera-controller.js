@@ -23,11 +23,11 @@ export default class CameraController {
     this._updatePositions();
     this._updateTransform();
 
-    this._camera.lookAt(new Vector3(0, 0, 0))
+    this._camera.lookAt(new Vector3(3, 0, 0))
   }
 
   setLookingAt(position) {
-    const lookAtTarget = new Vector3(position.x + 1, position.y - 0.5, position.z + 1);
+    const lookAtTarget = new Vector3(position.x, position.y, position.z);
     const currentLookAt = this._camera.getWorldDirection(new Vector3());
     const duration = 500;
     // Create a new tween for the camera's lookAt position
@@ -53,10 +53,10 @@ export default class CameraController {
 
   _updatePositions() {
     if (Helpers.LP(false, true)) {
-      this._startPosition = new Vector3(0, 0, 10);
+      this._startPosition = new Vector3(3, 0, 10);
     }
     else {
-      this._startPosition = new Vector3(0, 0, 0.8);
+      this._startPosition = new Vector3(3, 0, 0.8);
     }
   }
 
