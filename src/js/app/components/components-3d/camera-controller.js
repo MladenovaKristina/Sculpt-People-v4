@@ -23,7 +23,7 @@ export default class CameraController {
     this._updatePositions();
     this._updateTransform();
 
-    this._camera.lookAt(new Vector3(3, 0, 0))
+    this._camera.lookAt(new Vector3(0.5, 0, 0))
   }
 
   setLookingAt(position) {
@@ -53,10 +53,10 @@ export default class CameraController {
 
   _updatePositions() {
     if (Helpers.LP(false, true)) {
-      this._startPosition = new Vector3(3, 0, 10);
+      this._startPosition = new Vector3(0.5, 0, 1);
     }
     else {
-      this._startPosition = new Vector3(3, 0, 0.8);
+      this._startPosition = new Vector3(0.5, 0, 1);
     }
   }
 

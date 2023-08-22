@@ -128,7 +128,14 @@ export default class Models3D extends Group {
                 this.head.traverse((child) => {
                     child.visible = false;
                     let childName = child.name.toLowerCase();
-                    if (childName.includes("mask")) { child.position.y += 0.3; child.scale.set(10, 10, 10); const childmat = new MeshPhysicalMaterial({ color: 0xffffff }); child.material = childmat; this.mask = child; this.add(this.mask) }
+                    if (childName.includes("mask")) {
+                        child.position.y += 0.1;
+                        const childmat = new MeshPhysicalMaterial({ color: 0xffffff });
+                        child.material = childmat;
+                        this.mask = child;
+                        this.mask.scale.set(0.75, 0.75, 0.75)
+                        this.add(this.mask)
+                    }
                     if (!childName.includes("h_") && !childName.includes("mask")) {
 
                         if (childName.includes("ear") || childName.includes("eye")) {
@@ -153,7 +160,7 @@ export default class Models3D extends Group {
         this.head.children = [...this.headParts, ...this.accessories];
         this.head.traverse((child) => {
         })
-        this.head.scale.set(10, 10, 10)
+        this.head.scale.set(1, 1, 1)
     }
 
 
@@ -176,24 +183,21 @@ export default class Models3D extends Group {
         this.add(this.group);
 
         this.arm = Cache.get("arm").scene;
-        this.arm.scale.set(15, 15, 15);
-        this.arm.rotation.set(0.7, 4.8, 0);
+        this.arm.scale.set(1, 1, 1);
+        this.arm.rotation.set(0.7, 5, 0);
         this.arm.traverse((child) => {
             child.material = new MeshPhysicalMaterial({ color: 0xe5c59a, metalness: 0.2, reflectivity: 1 })
 
             if (child.name === "ref_position") {
-                this.armposition = child;
-                this.arm.position.x = 1;
-                this.arm.position.z = 6;
-                this.arm.position.y = -4.5;
-                this.armposition.visible = false;
+                child.visible = false;
             }
         });
+        this.group.position.set(0, 0, 1)
 
         this.group.add(this.arm);
 
         this.rightArm = Cache.get('rightArm').scene;
-        this.rightArm.scale.set(15, 15, 15);
+        this.rightArm.scale.set(1, 1, 1);
         const scale = new Vector3(1, 1, -1)
         this.rightArm.scale.multiply(scale);
 
@@ -201,10 +205,14 @@ export default class Models3D extends Group {
         this.rightArm.traverse((child) => {
             child.material = new MeshPhysicalMaterial({ color: 0xe5c59a, metalness: 0.2, reflectivity: 1 })
             if (child.name === "ref_position") {
-                child.visible = false;
+                child.visible = true;
+                child.material = this.clayMaterial;
+                this.sphere = child;
+                this.fingerprintSphere = new Mesh(this.sphere.geometry, this.customMaterial)
+
             }
         })
-        this.rightArm.position.set(-1.5, this.arm.position.y, this.arm.position.z)
+        this.rightArm.position.copy(this.arm.position)
 
         this.group.add(this.rightArm);
 
@@ -220,14 +228,15 @@ export default class Models3D extends Group {
             opacity: 0.4
         });
 
-        this.sphere = new Mesh(geometry, this.clayMaterial)
-
-        this.sphere.position.set(this.stand.position.x, this.stand.position.y + radius / 2, 0)
-        this.group.add(this.sphere);
-        this.fingerprintSphere = new Mesh(geometry, this.customMaterial);
-        this.fingerprintSphere.position.set(this.sphere.position.x, this.sphere.position.y, this.sphere.position.z);
-
-        this.group.add(this.fingerprintSphere);
+        // 
+        //         this.sphere = new Mesh(geometry, this.clayMaterial)
+        // 
+        //         this.sphere.position.set(this.stand.position.x, this.stand.position.y + radius / 2, 0)
+        //         this.group.add(this.sphere);
+        //         this.fingerprintSphere = new Mesh(geometry, this.customMaterial);
+        //         this.fingerprintSphere.position.set(this.sphere.position.x, this.sphere.position.y, this.sphere.position.z);
+        // 
+        //         this.group.add(this.fingerprintSphere);
 
 
         //=============================================

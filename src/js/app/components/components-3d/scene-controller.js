@@ -221,7 +221,7 @@ export default class SceneController extends Object3D {
     scene1(clayMaterial) {
         this._layout3d._initSculpt(clayMaterial);
         this._layout3d.model3d.show();
-        this.setCam(3, null, null, true, () => {
+        this.setCam(0, null, null, true, () => {
             this._layout2d.startHint();
             this.sceneNumber = 1;
             this.canMove = true;
@@ -232,7 +232,7 @@ export default class SceneController extends Object3D {
 
         this._layout2d._cheers.show(0, Black.stage.centerX - 1, Black.stage.centerY + 1);
 
-        this.setCam(null, null, 2, true, () => {
+        this.setCam(null, 0.001, null, true, () => {
             console.log("zoom")
             this.sceneNumber = 2;
 
@@ -341,10 +341,10 @@ export default class SceneController extends Object3D {
             callback();
         } else {
             const tempCameraPosition = { x: this._camera.threeCamera.position.x, y: this._camera.threeCamera.position.y, z: this._camera.threeCamera.position.z }; // Temporary object to hold camera position
-            if (!setX) targetX = this._camera.threeCamera.position.x; else targetX = this._camera.threeCamera.position.x - setX;
+            if (setX == null) targetX = this._camera.threeCamera.position.x; else if (setX != 0) targetX = this._camera.threeCamera.position.x - setX;
 
-            if (!setY) targetY = this._camera.threeCamera.position.y; else targetY = this._camera.threeCamera.position.y - setY;
-            if (!setZ) targetZ = this._camera.threeCamera.position.z; else targetZ = this._camera.threeCamera.position.z - setZ;
+            if (setY == null) targetY = this._camera.threeCamera.position.y; else if (setY != 0) targetY = this._camera.threeCamera.position.y - setY;
+            if (setZ == null) targetZ = this._camera.threeCamera.position.z; else if (setZ != 0) targetZ = this._camera.threeCamera.position.z - setZ;
 
             const tween = new TWEEN.Tween(tempCameraPosition)
                 .to({ x: targetX, y: targetY, z: targetZ }, 400)

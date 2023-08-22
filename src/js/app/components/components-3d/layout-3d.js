@@ -31,11 +31,11 @@ export default class Layout3D extends Object3D {
 
     this.add(backgroundMesh);
 
-    const geo = new PlaneGeometry(6, 1);
+    const geo = new PlaneGeometry(8, 1);
     const mat = new MeshPhysicalMaterial({ transparent: true, opacity: 0.9, color: 0x000000 });
     this.bg = new Mesh(geo, mat);
     this.bg.visible = false;
-
+    this.bg.scale.set(0.1, 0.1, 0.1)
     this.add(this.bg);
   }
 
@@ -56,7 +56,7 @@ export default class Layout3D extends Object3D {
     base.position.y = -4.5;
 
     this.stand.add(base);
-
+    this.stand.scale.set(0.1, 0.1, 0.1)
     this.add(this.stand);
   }
 
@@ -69,9 +69,9 @@ export default class Layout3D extends Object3D {
     const numberOfClay = 3;
     this.clay = new Group();
     this.add(this.clay);
-    this.clay.position.set(3 - numberOfClay / numberOfClay, 0);
+    this.clay.position.set(1.5 - numberOfClay / numberOfClay, 0);
 
-    const offset = Black.stage.bounds.width / 2 / (numberOfClay + 2) / 100;
+    const offset = 1;
     const colors = [
       ConfigurableParams.getData()['clay']['clay1']['value'],
       ConfigurableParams.getData()['clay']['clay2']['value'],
@@ -85,6 +85,8 @@ export default class Layout3D extends Object3D {
       plane.position.set(offset * i, 0, 4);
       this.clay.add(plane);
     }
+    this.clay.scale.set(0.1, 0.1, 0.1)
+
   }
 
   body() {
@@ -112,14 +114,14 @@ export default class Layout3D extends Object3D {
 
     const width = 8;
 
-    this.bg.position.set(0, this._camera.position.y - 1.5, 3);
+    this.bg.position.set(this._camera.position.x, this._camera.position.y - 1, this._camera.position.z / 2);
     this.bg.visible = true;
     this.dock = new Group();
     this.dock.position.copy(this.bg.position);
     this.add(this.dock);
 
     const numberOfElements = dockelements.length;
-    const rowStartPosition = -1.5 + (1 / numberOfElements);
+    const rowStartPosition = this._camera.position.x - (1 / dockelements.length + 1);
     let element;
 
     const distanceBetweenElements = (width / 2) / (numberOfElements + 2); // Adjust this for spacing.
@@ -149,6 +151,7 @@ export default class Layout3D extends Object3D {
       this.dock.add(element)
 
     }
+    this.dock.scale.set(0.1, 0.1, 0.1)
   }
 
 

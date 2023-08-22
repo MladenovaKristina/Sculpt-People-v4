@@ -72,14 +72,14 @@ export default class Head extends Group {
 
     _createAimPoints() {
         const aimPointsData = {
-            rEye: new Vector3(this.stand.position.x - 0.37, 0.3, 1.3),
-            lEye: new Vector3(this.stand.position.x + 0.34, 0.3, 1.3),
-            nose: new Vector3(this.stand.position.x, 0, 1.6),
-            mouth: new Vector3(this.stand.position.x, -0.4, 1.35),
-            face: new Vector3(this.stand.position.x, 0.7, 1.3)
+            rEye: new Vector3(this.stand.position.x - 0.037, 0.1, 0.13),
+            lEye: new Vector3(this.stand.position.x + 0.034, 0.1, 0.13),
+            nose: new Vector3(this.stand.position.x, -0.1, 0.18),
+            mouth: new Vector3(this.stand.position.x, 0.1, 0.135),
+            face: new Vector3(this.stand.position.x, 0.15, 0.13)
         };
         this.points = new Group();
-        const geo = new SphereGeometry(0.3, 32, 32);
+        const geo = new SphereGeometry(0.03, 32, 32);
 
         for (let key in aimPointsData) {
             const p = aimPointsData[key];
@@ -88,11 +88,12 @@ export default class Head extends Group {
             point.position.x = p.x;
             point.position.y = p.y;
             point.position.z = p.z;
-            point.visible = false;
-            this.points.add(point)
-        }
-        this.add(this.points)
+            point.visible = true;
 
+            this.points.add(point);
+        }
+
+        this.add(this.points);
         this._aimPoints = aimPointsData;
 
     }
@@ -148,6 +149,8 @@ export default class Head extends Group {
         this.stick.rotation.set(0, 0, 0)
         this.stick.visible = false;
         this.add(this.stick);
+        this.stick.scale.set(0.1, 0.1, 0.1)
+
     }
 
     headDone() {
