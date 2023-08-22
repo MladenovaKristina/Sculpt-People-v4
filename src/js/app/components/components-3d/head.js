@@ -155,10 +155,10 @@ export default class Head extends Group {
         this.head.visible = true;
         this.modifiedMesh.visible = false;
         this.halfSculptedHead.visible = false;
-
     }
 
     onMove(x, y, callback) {
+
         this.graduallyRevertToOriginal();
         this.rotateStick(x, y, () => { callback() })
     }
@@ -180,7 +180,8 @@ export default class Head extends Group {
 
 
     graduallyTurnToSculpt(callback) {
-        const incrementAmount = 0.01; // Adjust this value to control the speed of the transition
+
+        const incrementAmount = 0.1; // Adjust this value to control the speed of the transition
         const threshold = 0.001; // Adjust this value to set the threshold for "almost the same"
         let allPositionsAlmostSame = true;
 
@@ -207,6 +208,7 @@ export default class Head extends Group {
     }
 
     graduallyTurnClayToSculpt(callback) {
+
         const incrementAmount = 0.01; // Adjust this value to control the speed of the transition
         const threshold = 0.001; // Adjust this value to set the threshold for "almost the same"
         let allPositionsAlmostSame = true;
@@ -230,6 +232,7 @@ export default class Head extends Group {
         if (allPositionsAlmostSame && callback) {
             callback()
             object.visible = false;
+            this.head.visible = true;
         }
     }
 
@@ -273,13 +276,12 @@ export default class Head extends Group {
 
     putonTexture(callback) {
         // Ensure both materials are transparent
-
         this.headWithMap.material.transparent = true;
         this.head.material.transparent = true;
 
         // Adjust opacity values
-        this.headWithMap.material.opacity += 0.01;
-        this.head.material.opacity -= 0.001;
+        this.headWithMap.material.opacity += 0.005;
+        this.head.material.opacity -= 0.0008;
 
         if (this.headWithMap.material.opacity >= 1 - 0.01) {
             this.headWithMap.material.transparent = false;

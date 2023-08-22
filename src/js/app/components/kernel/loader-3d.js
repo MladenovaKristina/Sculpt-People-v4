@@ -2,6 +2,7 @@ import { TextureLoader, Cache } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import assets from '../../../data/textures/3d/assets_v03.glb';
 // import assets from '../../../data/textures/3d/scene.glb';
+import sprayCan from '../../../data/textures/3d/spray_can.glb';
 
 import bg_image from '../../../data/textures/bg_image.png';
 import arm from '../../../data/textures/3d/hand_Sculpting.glb';
@@ -11,7 +12,6 @@ import harleybody from '../../../data/textures/3d/Harley_Body_D.png';
 import harleyhead from '../../../data/textures/3d/Harley_Head_D.png';
 import mrbeanhead from '../../../data/textures/3d/MrBean.png';
 import rockhead from '../../../data/textures/3d/RockPaintMask.png';
-
 import fingerprint from '../../../data/textures/3d/fingerprints.png';
 
 export default class Loader3D {
@@ -26,7 +26,8 @@ export default class Loader3D {
     const objects = [
       { name: 'assets', asset: assets },
       { name: 'arm', asset: arm },
-      { name: 'rightArm', asset: arm }
+      { name: 'rightArm', asset: arm },
+      { name: 'sprayCan', asset: sprayCan }
 
     ];
     const textures = [

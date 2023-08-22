@@ -155,7 +155,6 @@ export default class SceneController extends Object3D {
 
     onMove(x, y) {
         if (this.sceneNumber === 1 && this.canMove) {
-
             if (this.sculptFinish < 1) {
                 this._layout3d.model3d.playAnim('sculpt');
                 this._layout3d._sculpt.graduallyTurnClayToSculpt();
@@ -189,14 +188,16 @@ export default class SceneController extends Object3D {
             this._layout3d._sculpt.putonTexture(() => {
                 this.nextScene(4);
             })
+            this.moveToMouse(x, y);
+
         }
     }
 
-    // moveToMouse(x, y) {
-    //     this.selectedDecoration.position.x = x;
-    //     this.selectedDecoration.position.y = y + 3;
-    //     this.selectedDecoration.position.z = -1;
-    // }
+    moveToMouse(x, y) {
+        this._layout3d.model3d.sprayCan.position.x = x / 200;
+        this._layout3d.model3d.sprayCan.position.y = -y / 200;
+        console.log(this._layout3d.model3d.sprayCan.position)
+    }
 
 
     scene0() {
@@ -240,16 +241,20 @@ export default class SceneController extends Object3D {
 
     scene3() {
         this._layout3d.hideStick();
+        this._layout3d.model3d.sprayCan.visible = true;
         this._layout2d._cheers.show(2, Black.stage.centerX + 1, Black.stage.centerY - 1);
         this._layout3d.model3d.placeMask();
+
         setTimeout(() => {
             this.sceneNumber = 3;
         }, 2300)
+
         this._layout2d._initDockBG("spray", () => { });
     }
 
     scene4() {
         this._layout3d.model3d.removeMask();
+        this._layout3d.model3d.sprayCan.visible = false;
         setTimeout(() => {
             this._layout2d._cheers.show(1, Black.stage.centerX + 1, Black.stage.centerY - 1);
             this.numberOfDecorations = this._layout3d.model3d.headParts.length;
@@ -271,7 +276,6 @@ export default class SceneController extends Object3D {
 
     scene5() {
         this.sceneNumber = 5;
-
         this.canMove = false;
         this._layout3d._initDock("accessories");
         this.numberOfDecorations = this._layout3d.model3d.accessories.length;
@@ -297,8 +301,6 @@ export default class SceneController extends Object3D {
     scene7() {
         console.log('7')
         this.sceneNumber = 7;
-        this._layout3d.body();
-        this.numberOfDecorations = 1;
 
     }
 

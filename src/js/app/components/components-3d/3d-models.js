@@ -5,7 +5,7 @@ import ConfigurableParams from '../../../data/configurable_params';
 export default class Models3D extends Group {
     constructor(stand) {
         super();
-        this.asset = Cache.get('assets').scene.children[0];
+        this._asset = Cache.get('assets').scene.children[0];
         this.flipX = new Vector3(-1, 1, 1);
 
         this.stand = stand;
@@ -40,7 +40,7 @@ export default class Models3D extends Group {
 
     _initTexture(clayMaterial) {
         this.clayMaterial = clayMaterial;
-        this.asset.traverse((child) => {
+        this._asset.traverse((child) => {
             if (child.name === "ears" || child.name === "EARS" || child.name === "ear_l" || child.name === "ear_r") {
                 child.material = clayMaterial;
             }
@@ -48,72 +48,7 @@ export default class Models3D extends Group {
         this.init()
     }
 
-    _initAssets() {
-        const selectedCharacter = ConfigurableParams.getData()['character']['select_character']['value'];
-        const characterMappings = {
-            Big: { bodyName: 'b_big1', headName: 'h_bride' },
-            Bride: { bodyName: 'b_bride1', headName: 'h_bride' },
-            Harley: { bodyName: 'b_harley1', headName: 'h_harley' },
-            Tuxedo: { bodyName: 'b_tuxedo2', headName: 'h_tuxedo' }
-        };
-        this.accessories = [];
-        this.headParts = [];
-        this.bodies3d = [];
-        this.bodies2d = [];
 
-        this.asset.traverse((child) => {
-            if (child.material) child.material.side = DoubleSide;
-            const mapping = characterMappings[selectedCharacter];
-            if (mapping && child.name === mapping.bodyName) {
-                this.body = child;
-            }
-            if (mapping && child.name === mapping.headName) {
-                this.head = child;
-
-                this.head.traverse((child) => {
-                    child.visible = false;
-                    let childName = child.name.toLowerCase();
-                    if (childName.includes("mask")) { child.position.y -= 0.3; child.scale.set(10, 10, 10); const childmat = new MeshPhysicalMaterial({ color: 0xffffff }); child.material = childmat; this.mask = child; this.add(this.mask) }
-                    if (!childName.includes("h_") && !childName.includes("mask")) {
-
-                        if (childName.includes("ear") || childName.includes("eye")) {
-                            const child_l = child.clone();
-                            child_l.name += "_l";
-                            const child_r = child.clone();
-                            child_r.name += "_r";
-                            child_r.scale.multiply(this.flipX);
-                            child_r.position.multiply(this.flipX);
-
-                            this.head.add(child_l)
-                            this.head.add(child_r)
-
-                            this.headParts.push(child_l);
-                            this.headParts.push(child_r);
-                        } else
-                            this.headParts.push(child);
-                    }
-                })
-
-                this.head.children = this.headParts;
-            }
-
-            if (child.name.includes("b_")) {
-                this.bodies3d.push(child)
-            }
-
-
-            if (child.name == "glasses" ||
-                child.name == "veil" ||
-                child.name == "spiderman" ||
-                child.name == "moustache") {
-                child.visible = false;
-                child.scale.set(10, 10, 10)
-                child.rotation.set(0, 0, 0)
-                child.position.z = 0;
-                this.accessories.push(child)
-            }
-        });
-    }
 
     pushtoHead(head) {
         for (let i = 0; i < this.accessories.length; i++) {
@@ -126,18 +61,17 @@ export default class Models3D extends Group {
     }
 
     pushtoStand() {
-        for (let i = 0; i < this.bodies3d.length; i++) {
-            const child = this.bodies3d[i];
-            const geometry = new PlaneGeometry(1, 1);
-            const material = new MeshPhysicalMaterial({ color: 0xffff00, side: DoubleSide });
-            const plane = new Mesh(geometry, material);
-            plane.position.set(0, 0, 0);
-
-            plane.name = child.name;
-            this.bodies2d.push(plane);
-            child.visible = false;
-            this.head.add(child);
-        }
+        //         for (let i = 0; i < this.bodies3d.length; i++) {
+        //             const child = this.bodies3d[i];
+        //             const geometry = new PlaneGeometry(1, 1);
+        //             const material = new MeshPhysicalMaterial({ color: 0xffff00, side: DoubleSide });
+        //             const plane = new Mesh(geometry, material);
+        //             plane.position.set(0, 0, 0);
+        // 
+        //             plane.name = child.name;
+        //             this.bodies2d.push(plane);
+        //             child.visible = false;
+        //             this.head.add(child);
     }
 
     _initView() {
@@ -326,8 +260,6 @@ export default class Models3D extends Group {
         this.fingerprintSphere.material.opacity -= 0.01;
     }
 
-
-
     hide(object) {
         const target = -5;
         const tween = new TWEEN.Tween(object.position.y)
@@ -402,9 +334,7 @@ export default class Models3D extends Group {
 
             .start();
     }
+
+
+
 }
-
-
-
-
-

@@ -31,7 +31,7 @@ export default class Layout3D extends Object3D {
 
     this.add(backgroundMesh);
 
-    const geo = new PlaneGeometry(6, 0.8);
+    const geo = new PlaneGeometry(6, 1);
     const mat = new MeshPhysicalMaterial({ transparent: true, opacity: 0.9, color: 0x000000 });
     this.bg = new Mesh(geo, mat);
     this.bg.visible = false;
@@ -114,7 +114,7 @@ export default class Layout3D extends Object3D {
 
     const width = 8;
 
-    this.bg.position.set(0, this._camera.position.y - 1, this._camera.position.z - (dockelements.length + 1) / 2);
+    this.bg.position.set(0, this._camera.position.y - 2, this._camera.position.z - (dockelements.length + 1) / 2);
     this.bg.visible = true;
     this.dock = new Group();
     this.dock.position.copy(this.bg.position);
