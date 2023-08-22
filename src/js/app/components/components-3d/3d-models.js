@@ -106,19 +106,19 @@ export default class Models3D extends Group {
                 head.name == "veil" ||
                 head.name == "spiderman" ||
                 head.name == "moustache") {
-                head.visible = true;
-                head.scale.set(0.014, 0.014, 0.014)
-                head.rotation.set(0, 0, 0)
-                // if (head.name == "glasses" ||
-                //     head.name == "moustache") head.position.z += 1;
-                console.log(head.position)
+                head.visible = false;
+                // head.scale.set(0.014, 0.014, 0.014)
+                head.rotation.set(0, 0, 0);
+
+                // // if (head.name == "glasses" ||
+                // //     head.name == "moustache") head.position.z += 1;
+                // console.log(head.position)
                 this.accessories.push(head)
             }
             const mapping = characterMappings[selectedCharacter];
 
             if (mapping && head.name === mapping.headName) {
                 this.head = head;
-                head.scale.set(10, 10, 10)
 
 
                 this.head.traverse((child) => {
@@ -146,24 +146,11 @@ export default class Models3D extends Group {
                 })
             }
         })
-        this.head.children = this.headParts;
-    }
-
-    pushtoHead(object) {
-        let use;
-        if (object === "accessories") use = this.accessories;
-        if (object === "head") use = this.headParts;
-        for (let i = 0; i <= use.length - 1; i++) {
-            const child = use[i];
-            if (object === "accessories") {
-                child.position.x = this.head.position.x;
-                child.position.z = this.head.position.z
-            }
-
-            if (child.name == "glasses" || child.name == "moustache")
-                child.position.z += 0.2;
-            this.head.add(child)
-        }
+        this.head.children = [...this.headParts, ...this.accessories];
+        this.head.traverse((child) => {
+            console.log(child.name, child.position)
+        })
+        this.head.scale.set(10, 10, 10)
     }
 
 

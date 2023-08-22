@@ -97,10 +97,8 @@ export default class Layout3D extends Object3D {
     this.positionInDock = [];
     let scale, dockelements;
     if (bodyPart === "head") {
-      // this.model3d.pushtoHead("head", this._sculpt.head);
       dockelements = this.model3d.headParts;
       scale = 4 / (dockelements.length + 2) * 10;
-
     }
     else if (bodyPart === "body") {
       dockelements = this.model3d.bodies2d;
@@ -108,7 +106,6 @@ export default class Layout3D extends Object3D {
 
     }
     else if (bodyPart === "accessories") {
-      this.model3d.pushtoHead("accessories", this._sculpt.head);
       dockelements = this.model3d.accessories;
       scale = 0.02;
     }
