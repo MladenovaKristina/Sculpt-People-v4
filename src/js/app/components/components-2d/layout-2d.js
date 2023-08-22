@@ -1,4 +1,5 @@
-import { Black, DisplayObject, Sprite } from '../../../utils/black-engine.module';
+import { Black, DisplayObject, Sprite, Graphics } from '../../../utils/black-engine.module';
+import { Tween, Easing } from '@tweenjs/tween.js';
 import model from '../../../data/model';
 import Helpers from '../../helpers/helpers';
 import PlayButton from './play-button';
@@ -10,6 +11,8 @@ import ReferencePhoto from './ref-photo';
 import SelectHint from './select-hint';
 import CheersText from './cheers-text';
 import Confetti from './confetti';
+import { call } from 'file-loader';
+import SprayCan from './spray';
 // works as a main class in 2D playables
 export default class Layout2D extends DisplayObject {
   constructor() {
@@ -115,7 +118,58 @@ export default class Layout2D extends DisplayObject {
   startHint() {
     this._tutorial.show();
   }
+  _showOval() {
+    const bb = Black.stage;
+    if (this.ovalTarget) this.ovalTarget.clear();
+    this.ovalTarget = new Graphics();
+    this.ovalTarget.beginPath();
+    this.ovalTarget.lineStyle(10, 0xf0f0f0);
+    const width = bb.height * 0.4;
+    const height = bb.height * 0.5;
+    this.ovalTarget.roundedRect(bb.centerX - width / 2, bb.centerY - height / 1.5, width, height, 200);
+    this.ovalTarget.stroke();
+    this.ovalTarget.visible = true;
+    this.add(this.ovalTarget);
+  }
+  _hideOval(callback) {
+    const bb = Black.stage;
 
+    this.ovalTarget.clear();
+    this.ovalTarget.beginPath();
+    this.ovalTarget.lineStyle(10, 0x00ff00);
+    const width = bb.height * 0.4;
+    const height = bb.height * 0.5;
+    this.ovalTarget.roundedRect(bb.centerX - width / 2, bb.centerY - height / 1.5, width, height, 200);
+    this.ovalTarget.stroke();
+
+    setTimeout(() => {
+      this.ovalTarget.clear();
+      this.ovalTarget.beginPath();
+      this.ovalTarget.lineStyle(10, 0xffffff);
+      const width = bb.height * 0.4;
+      const height = bb.height * 0.5;
+      this.ovalTarget.roundedRect(bb.centerX - width / 2, bb.centerY - height / 1.5, width, height, 200);
+      this.ovalTarget.stroke();
+    }, 200)
+
+    setTimeout(() => {
+      this.ovalTarget.visible = false;
+      this.ovalTarget.clear();
+      this.ovalTarget = null;
+      callback()
+    }, 600)
+
+
+
+  }
+  _initDockBG(object, callback) {
+    this.initObjectInDock(object);
+    callback()
+  }
+  initObjectInDock(object) {
+    this._objectsInDock = new SprayCan(this._bg)
+    this.add(this._objectsInDock)
+  }
   _startClayHint() {
     this._selectHint.show();
   }
@@ -131,6 +185,17 @@ export default class Layout2D extends DisplayObject {
     this.add(this._confetti)
   }
 
+  hide(object, callback) {
+    //     console.log("hiding", object)
+    //     const hideTween = new Tween({
+    //       y: Black.stage.bounds.bottom + 250
+    //     }, 0.2);
+    // 
+    //     object.add(hideTween);
+    object.visible = false;
+    if (callback) callback()
+
+  }
 
   onDown(x, y) {
     const defaultPos = { x: x, y: y };
@@ -140,6 +205,11 @@ export default class Layout2D extends DisplayObject {
     if (ifDownloadButtonClicked) return true;
 
     this._endScreen.onDown(blackPos.x, blackPos.y);
+  }
+
+  selectSpray(x, y, callback) {
+    console.log(x, y, "spray")
+    if (callback) callback();
   }
 
   onMove(x, y) {

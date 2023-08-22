@@ -7,7 +7,7 @@ export default class Confetti extends GameObject {
     }
 
     show() {
-        const emitterCount = 10;
+        const emitterCount = 20;
         const emitterDelay = 0; // 1 second delay between each emitter
         let currentDelay = 0.5;
 
@@ -29,7 +29,7 @@ export default class Confetti extends GameObject {
             emitter.y = Black.stage.bounds.height / 8.5;
 
             let c = new GameObject();
-            c.scaleX = c.scaleY = 1;
+            c.scaleX = c.scaleY = 2;
             this.addChild(c);
 
             emitter.add(

@@ -63,7 +63,7 @@ export default class Game {
   }
 
   _initLayout3D() {
-    this._layout3d = new Layout3D(this._camera);
+    this._layout3d = new Layout3D(this._camera.threeCamera);
     this._scene.add(this._layout3d);
   }
 

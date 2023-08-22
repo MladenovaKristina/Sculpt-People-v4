@@ -1,13 +1,14 @@
-import { Group, Cache, Mesh, MeshPhysicalMaterial, SphereGeometry, Vector3, NormalBlending, AnimationMixer } from 'three';
-import * as TWEEN from '@tweenjs/tween.js';
+import { Group, Cache, Mesh, MeshPhysicalMaterial, PlaneGeometry, DoubleSide, SphereGeometry, Vector3, NormalBlending, AnimationMixer } from 'three';
+import TWEEN from '@tweenjs/tween.js';
 import ConfigurableParams from '../../../data/configurable_params';
 
 export default class Models3D extends Group {
     constructor(stand) {
         super();
-        this.asset = Cache.get('assets').scene;
+        this._asset = Cache.get('assets').scene.children[0];
+        this.flipX = new Vector3(-1, 1, 1);
         this.stand = stand;
-
+        // this.add(this._asset)
         this._animations = {
             sculpt: {
                 tween: null,
@@ -19,6 +20,7 @@ export default class Models3D extends Group {
                 yoyo: true
             }
         }
+
         this._rightAnimations = {
             sculpt: {
                 tween: null,
@@ -38,7 +40,7 @@ export default class Models3D extends Group {
 
     _initTexture(clayMaterial) {
         this.clayMaterial = clayMaterial;
-        this.asset.traverse((child) => {
+        this._asset.traverse((child) => {
             if (child.name === "ears" || child.name === "EARS" || child.name === "ear_l" || child.name === "ear_r") {
                 child.material = clayMaterial;
             }
@@ -47,30 +49,126 @@ export default class Models3D extends Group {
     }
 
     _initAssets() {
-        const selectedCharacter = ConfigurableParams.getData()['character']['select_character']['value'];
-        const characterMappings = {
-            Big: { bodyName: 'b_big1', headName: 'HEAD' },
-            Bride: { bodyName: 'b_bride1', headName: 'HEAD' },
-            Harley: { bodyName: 'b_harley1', headName: 'Head' },
-            Tuxedo: { bodyName: 'b_tuxedo2', headName: 'face' }
-        };
-        this.accessories = [];
-        this.asset.traverse((child) => {
+        this.sprayCanGroup = Cache.get("sprayCan").scene;
+        this.sprayCanGroup.traverse((child) => {
+            if (child.name === "spray_can_type4") {
+                this.sprayCan = child; child.visible = true;
+                this.sprayCan.position.set(0, 0, 1);
+                this.sprayCan.rotation.set(Math.PI / 1.5, 0, 0);
+                console.log(child)
+                this.sprayCan.visible = false;
+                this.sprayCan.traverse((cap) => {
+                    if (child.name === "can_tip_whole") {
+                        this.canTip = cap; this.paintEmitter()
 
-            const mapping = characterMappings[selectedCharacter];
-            if (mapping && child.name === mapping.bodyName) {
-                this.body = child;
-            }
-            if (mapping && child.name === mapping.headName) {
-                this.head = child;
-            }
-            if (child.name == "Glasses" ||
-                child.name == "veil_001" ||
-                child.name == "Mask_SpiderMan" ||
-                child.name == "Moustage") {
-                this.accessories.push(child)
+                    }
+                })
             }
         });
+
+        this.sprayCan.scale.set(0.5, 0.5, 0.5)
+        this.add(this.sprayCan);
+
+        const selectedCharacter = ConfigurableParams.getData()['character']['select_character']['value'];
+        const characterMappings = {
+            Big: { bodyName: 'b_big1', headName: 'h_bride' },
+            Bride: { bodyName: 'b_bride1', headName: 'h_bride' },
+            Harley: { bodyName: 'b_harley1', headName: 'h_harley' },
+            Tuxedo: { bodyName: 'b_tuxedo2', headName: 'h_tuxedo' }
+        };
+
+        this.accessories = [];
+        this.headParts = [];
+        this.bodies3d = [];
+        this.bodies2d = [];
+
+        this._asset.traverse((child) => {
+            child.receiveShadow = true;
+            child.castShadow = true;
+
+            if (child.material) child.material.side = DoubleSide;
+
+            if (child.name === "Armature") this.armature = child;
+            if (child.name === "Heads") this.heads = child;
+        })
+
+        this.armature.traverse((bodies) => {
+            //             const mapping = characterMappings[selectedCharacter];
+            //             if (mapping && head.name === mapping.bodyName) {
+            //                 this.body = head;
+            // 
+            //             }
+            if (bodies.name.includes("b_")) {
+                this.bodies3d.push(bodies)
+            }
+        })
+
+        this.heads.traverse((head) => {
+
+            if (head.name == "glasses" ||
+                head.name == "veil" ||
+                head.name == "spiderman" ||
+                head.name == "moustache") {
+                head.visible = false;
+                head.rotation.set(Math.PI / 2, 0, 0);
+
+                head.scale.set(0.1, 0.1, 0.1)
+                // head.position.y += 1;
+                // // if (head.name == "glasses" ||
+                // //     head.name == "moustache") head.position.z += 1;
+                // console.log(head.position)
+                this.accessories.push(head)
+            }
+            const mapping = characterMappings[selectedCharacter];
+
+            if (mapping && head.name === mapping.headName) {
+                this.head = head;
+
+
+                this.head.traverse((child) => {
+                    child.visible = false;
+                    let childName = child.name.toLowerCase();
+                    if (childName.includes("mask")) { child.position.y += 0.3; child.scale.set(10, 10, 10); const childmat = new MeshPhysicalMaterial({ color: 0xffffff }); child.material = childmat; this.mask = child; this.add(this.mask) }
+                    if (!childName.includes("h_") && !childName.includes("mask")) {
+
+                        if (childName.includes("ear") || childName.includes("eye")) {
+                            const child_l = child.clone();
+                            child_l.name += "_l";
+                            const child_r = child.clone();
+                            child_r.name += "_r";
+                            child_r.scale.multiply(this.flipX);
+                            child_r.position.multiply(this.flipX);
+
+                            this.head.add(child_l)
+                            this.head.add(child_r)
+
+                            this.headParts.push(child_l);
+                            this.headParts.push(child_r);
+                        } else
+                            this.headParts.push(child);
+                    }
+                })
+            }
+        })
+        this.head.children = [...this.headParts, ...this.accessories];
+        this.head.traverse((child) => {
+        })
+        this.head.scale.set(10, 10, 10)
+    }
+
+
+    pushtoStand() {
+        //         for (let i = 0; i < this.bodies3d.length; i++) {
+        //             const child = this.bodies3d[i];
+        //             const geometry = new PlaneGeometry(1, 1);
+        //             const material = new MeshPhysicalMaterial({ color: 0xffff00, side: DoubleSide });
+        //             const plane = new Mesh(geometry, material);
+        //             plane.position.set(0, 0, 0);
+        // 
+        //             plane.name = child.name;
+        //             this.bodies2d.push(plane);
+        //             child.visible = false;
+        //             this.head.add(child);
     }
 
     _initView() {
@@ -85,7 +183,7 @@ export default class Models3D extends Group {
 
             if (child.name === "ref_position") {
                 this.armposition = child;
-                this.arm.position.x = -1;
+                this.arm.position.x = 1;
                 this.arm.position.z = 6;
                 this.arm.position.y = -4.5;
                 this.armposition.visible = false;
@@ -106,14 +204,15 @@ export default class Models3D extends Group {
                 child.visible = false;
             }
         })
-        this.rightArm.position.set(-3.5, this.arm.position.y, this.arm.position.z)
+        this.rightArm.position.set(-1.5, this.arm.position.y, this.arm.position.z)
 
         this.group.add(this.rightArm);
 
 
         const radius = 1.2;
-        const geometry = new SphereGeometry(radius, 5, 10);
+        const geometry = new SphereGeometry(radius, 10, 20);
         const fingerprintTexture = Cache.get('fingerprint');
+
         this.customMaterial = new MeshPhysicalMaterial({
             map: fingerprintTexture,
             blending: NormalBlending,
@@ -254,13 +353,8 @@ export default class Models3D extends Group {
 
     }
 
-    smooth(x, y, sculptFactor) {
-        this.sphere.rotation.x -= x / 10000;
-        this.sphere.rotation.y += y / 10000;
-        this.fingerprintSphere.rotation.x = this.sphere.rotation.x;
-        this.fingerprintSphere.rotation.y = this.sphere.rotation.y;
-
-        this.customMaterial.opacity -= sculptFactor / 100;
+    smooth() {
+        this.fingerprintSphere.material.opacity -= 0.01;
     }
 
     hide(object) {
@@ -295,6 +389,85 @@ export default class Models3D extends Group {
         this.stopAnim(oldAnimName);
         this.playAnim(newAnimName);
     }
-}
 
+    placeMask() {
+        this.mask.visible = true;
+        const targetpos = new Vector3(this.head.position.x, this.head.position.y, this.head.position.z + 0.3);
+        const targetrotation = new Vector3(Math.PI / 2, 0, 0);
+        this.mask.position.set(-7, 4, 4);
+        this.mask.rotation.z += 0.3;
+        const tween = new TWEEN.Tween(this.mask.position)
+            .to({ x: targetpos.x, y: targetpos.y, z: targetpos.z }, 1000)
+            .easing(TWEEN.Easing.Sinusoidal.InOut)
+            .delay(200)
+            .start();
+        const rotatetween = new TWEEN.Tween(this.mask.rotation)
+            .to({ x: targetrotation.x, y: targetrotation.y, z: targetrotation.z }, 1000)
+            .easing(TWEEN.Easing.Sinusoidal.InOut)
+            .delay(800)
+            .onComplete(() => {
+                if (this.mask.rotation === targetrotation) callback()
+
+            })
+            .start();
+    }
+
+    removeMask() {
+        const targetpos = new Vector3(-4, 4, 10);
+        const targetrotation = new Vector3(0, 0, 0);
+
+
+        const tween = new TWEEN.Tween(this.mask.position)
+            .to({ x: targetpos.x, y: targetpos.y, z: targetpos.z }, 1000)
+            .easing(TWEEN.Easing.Sinusoidal.InOut)
+            .delay(800)
+
+            .start();
+
+        const rotatetween = new TWEEN.Tween(this.mask.rotation)
+            .to({ x: targetrotation.x, y: targetrotation.y, z: targetrotation.z }, 1000)
+            .easing(TWEEN.Easing.Sinusoidal.InOut)
+            .delay(200)
+
+            .start();
+    }
+
+    paintEmitter() {
+        this.paintEmitted = [];
+
+        for (let i = 0; i < 4; i++) {
+            const planegeometry = new PlaneGeometry(1, 1, 10, 10);
+            const material = new MeshPhysicalMaterial({ color: 0xffffff });
+            const paint = new Mesh(planegeometry, material);
+            paint.position.copy(this.canTip.position); // Copy the position of the paint can tip
+            this.paintEmitted.push(paint);
+        }
+        this.add(this.paintEmitted);
+    }
+
+    emitPaint() {
+        if (!this.paintEmitted) {
+            console.error("Paint particles not initialized. Call paintEmitter() first.");
+            return;
+        }
+
+        const sprayDuration = 200; // Adjust as needed
+        const sprayDistance = 2;   // Adjust as needed
+
+        for (let i = 0; i < this.paintEmitted.length; i++) {
+            const paint = this.paintEmitted[i];
+            const targetPosition = new Vector3(this.head.position.x, this.head.position.y, this.head.position.z + sprayDistance);
+
+            const tween = new TWEEN.Tween(paint.position)
+                .to({ x: targetPosition.x, y: targetPosition.y, z: targetPosition.z }, sprayDuration)
+                .easing(TWEEN.Easing.Linear.None)
+                .start();
+
+            tween.onComplete(() => {
+                // Reset the position after emitting paint
+                paint.position.copy(this.canTip.position);
+            });
+        }
+    }
+}
 
