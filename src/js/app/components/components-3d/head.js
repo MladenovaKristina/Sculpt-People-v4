@@ -22,7 +22,7 @@ export default class Head extends Group {
 
         const radius = 1.2;
 
-        this.head.position.set(this.stand.position.x, this.stand.position.y - radius / 2, 0);
+        // this.head.position.set(this.stand.position.x, this.stand.position.y - radius / 2, 0);
         this.head.visible = false;
         this.head.material = this.clayMaterial;
         this.add(this.head);

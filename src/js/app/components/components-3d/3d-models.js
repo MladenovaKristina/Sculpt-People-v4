@@ -8,7 +8,7 @@ export default class Models3D extends Group {
         this._asset = Cache.get('assets').scene.children[0];
         this.flipX = new Vector3(-1, 1, 1);
         this.stand = stand;
-
+        // this.add(this._asset)
         this._animations = {
             sculpt: {
                 tween: null,
@@ -83,6 +83,9 @@ export default class Models3D extends Group {
         this.bodies2d = [];
 
         this._asset.traverse((child) => {
+            child.receiveShadow = true;
+            child.castShadow = true;
+
             if (child.material) child.material.side = DoubleSide;
 
             if (child.name === "Armature") this.armature = child;
@@ -107,9 +110,10 @@ export default class Models3D extends Group {
                 head.name == "spiderman" ||
                 head.name == "moustache") {
                 head.visible = false;
-                // head.scale.set(0.014, 0.014, 0.014)
-                head.rotation.set(0, 0, 0);
+                head.rotation.set(Math.PI / 2, 0, 0);
 
+                head.scale.set(0.1, 0.1, 0.1)
+                // head.position.y += 1;
                 // // if (head.name == "glasses" ||
                 // //     head.name == "moustache") head.position.z += 1;
                 // console.log(head.position)
@@ -148,7 +152,6 @@ export default class Models3D extends Group {
         })
         this.head.children = [...this.headParts, ...this.accessories];
         this.head.traverse((child) => {
-            console.log(child.name, child.position)
         })
         this.head.scale.set(10, 10, 10)
     }
