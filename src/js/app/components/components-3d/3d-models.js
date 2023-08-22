@@ -48,7 +48,92 @@ export default class Models3D extends Group {
         this.init()
     }
 
+    _initAssets() {
+        this.sprayCanGroup = Cache.get("sprayCan").scene;
+        this.sprayCanGroup.traverse((child) => {
+            if (child.name === "spray_can_type4") {
+                this.sprayCan = child; child.visible = true;
+                this.sprayCan.position.set(0, 0, 1);
+                this.sprayCan.rotation.set(Math.PI / 1.5, 0, 0);
+                console.log(child)
+                this.sprayCan.visible = false;
+                this.sprayCan.traverse((cap) => {
+                    if (child.name === "can_tip_whole") {
+                        this.canTip = cap; this.paintEmitter()
 
+                    }
+                })
+            }
+        });
+
+        this.sprayCan.scale.set(0.5, 0.5, 0.5)
+        this.add(this.sprayCan);
+
+        const selectedCharacter = ConfigurableParams.getData()['character']['select_character']['value'];
+        const characterMappings = {
+            Big: { bodyName: 'b_big1', headName: 'h_bride' },
+            Bride: { bodyName: 'b_bride1', headName: 'h_bride' },
+            Harley: { bodyName: 'b_harley1', headName: 'h_harley' },
+            Tuxedo: { bodyName: 'b_tuxedo2', headName: 'h_tuxedo' }
+        };
+        this.accessories = [];
+        this.headParts = [];
+        this.bodies3d = [];
+        this.bodies2d = [];
+
+        this._asset.traverse((child) => {
+            if (child.material) child.material.side = DoubleSide;
+            const mapping = characterMappings[selectedCharacter];
+            if (mapping && child.name === mapping.bodyName) {
+                this.body = child;
+            }
+            if (mapping && child.name === mapping.headName) {
+                this.head = child;
+
+                this.head.traverse((child) => {
+                    child.visible = false;
+                    let childName = child.name.toLowerCase();
+                    if (childName.includes("mask")) { child.position.y += 0.3; child.scale.set(10, 10, 10); const childmat = new MeshPhysicalMaterial({ color: 0xffffff }); child.material = childmat; this.mask = child; this.add(this.mask) }
+                    if (!childName.includes("h_") && !childName.includes("mask")) {
+
+                        if (childName.includes("ear") || childName.includes("eye")) {
+                            const child_l = child.clone();
+                            child_l.name += "_l";
+                            const child_r = child.clone();
+                            child_r.name += "_r";
+                            child_r.scale.multiply(this.flipX);
+                            child_r.position.multiply(this.flipX);
+
+                            this.head.add(child_l)
+                            this.head.add(child_r)
+
+                            this.headParts.push(child_l);
+                            this.headParts.push(child_r);
+                        } else
+                            this.headParts.push(child);
+                    }
+                })
+
+                this.head.children = this.headParts;
+            }
+
+            if (child.name.includes("b_")) {
+                this.bodies3d.push(child)
+            }
+
+
+            if (child.name == "glasses" ||
+                child.name == "veil" ||
+                child.name == "spiderman" ||
+                child.name == "moustache") {
+                child.visible = false;
+                child.scale.set(10, 10, 10)
+                child.rotation.set(0, 0, 0)
+                child.position.z = 0;
+                this.accessories.push(child)
+            }
+        });
+    }
 
     pushtoHead(head) {
         for (let i = 0; i < this.accessories.length; i++) {
@@ -335,6 +420,42 @@ export default class Models3D extends Group {
             .start();
     }
 
+    paintEmitter() {
+        this.paintEmitted = [];
 
+        for (let i = 0; i < 4; i++) {
+            const planegeometry = new PlaneGeometry(1, 1, 10, 10);
+            const material = new MeshPhysicalMaterial({ color: 0xffffff });
+            const paint = new Mesh(planegeometry, material);
+            paint.position.copy(this.canTip.position); // Copy the position of the paint can tip
+            this.paintEmitted.push(paint);
+        }
+        this.add(this.paintEmitted);
+    }
 
+    emitPaint() {
+        if (!this.paintEmitted) {
+            console.error("Paint particles not initialized. Call paintEmitter() first.");
+            return;
+        }
+
+        const sprayDuration = 200; // Adjust as needed
+        const sprayDistance = 2;   // Adjust as needed
+
+        for (let i = 0; i < this.paintEmitted.length; i++) {
+            const paint = this.paintEmitted[i];
+            const targetPosition = new Vector3(this.head.position.x, this.head.position.y, this.head.position.z + sprayDistance);
+
+            const tween = new TWEEN.Tween(paint.position)
+                .to({ x: targetPosition.x, y: targetPosition.y, z: targetPosition.z }, sprayDuration)
+                .easing(TWEEN.Easing.Linear.None)
+                .start();
+
+            tween.onComplete(() => {
+                // Reset the position after emitting paint
+                paint.position.copy(this.canTip.position);
+            });
+        }
+    }
 }
+
