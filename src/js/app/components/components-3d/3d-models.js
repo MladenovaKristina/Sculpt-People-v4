@@ -21,6 +21,7 @@ export default class Models3D extends Group {
                 yoyo: true
             }
         }
+
         this._rightAnimations = {
             sculpt: {
                 tween: null,
