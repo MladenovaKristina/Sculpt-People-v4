@@ -97,7 +97,9 @@ export default class Layout3D extends Object3D {
     this.positionInDock = [];
     let scale, dockelements;
     if (bodyPart === "head") {
+      // this.model3d.pushtoHead("head", this._sculpt.head);
       dockelements = this.model3d.headParts;
+      scale = 4 / (dockelements.length + 2) * 10;
 
     }
     else if (bodyPart === "body") {
@@ -106,15 +108,14 @@ export default class Layout3D extends Object3D {
 
     }
     else if (bodyPart === "accessories") {
-      this.model3d.pushtoHead(this._sculpt.head);
+      this.model3d.pushtoHead("accessories", this._sculpt.head);
       dockelements = this.model3d.accessories;
-      // scale = 0.01;
+      scale = 0.02;
     }
-    scale = 4 / (dockelements.length + 1) * 10;
 
     const width = 8;
 
-    this.bg.position.set(0, this._camera.position.y - 2, this._camera.position.z - (dockelements.length + 1) / 2);
+    this.bg.position.set(0, this._camera.position.y - 1.5, 3);
     this.bg.visible = true;
     this.dock = new Group();
     this.dock.position.copy(this.bg.position);

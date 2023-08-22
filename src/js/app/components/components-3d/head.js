@@ -19,8 +19,7 @@ export default class Head extends Group {
     _init() {
         this._initStick();
         this._createAimPoints();
-        const scale = 10;
-        this.head.scale.set(scale, scale, scale);
+
         const radius = 1.2;
 
         this.head.position.set(this.stand.position.x, this.stand.position.y - radius / 2, 0);

@@ -7,7 +7,6 @@ export default class Models3D extends Group {
         super();
         this._asset = Cache.get('assets').scene.children[0];
         this.flipX = new Vector3(-1, 1, 1);
-
         this.stand = stand;
 
         this._animations = {
@@ -77,6 +76,7 @@ export default class Models3D extends Group {
             Harley: { bodyName: 'b_harley1', headName: 'h_harley' },
             Tuxedo: { bodyName: 'b_tuxedo2', headName: 'h_tuxedo' }
         };
+
         this.accessories = [];
         this.headParts = [];
         this.bodies3d = [];
@@ -84,12 +84,42 @@ export default class Models3D extends Group {
 
         this._asset.traverse((child) => {
             if (child.material) child.material.side = DoubleSide;
-            const mapping = characterMappings[selectedCharacter];
-            if (mapping && child.name === mapping.bodyName) {
-                this.body = child;
+
+            if (child.name === "Armature") this.armature = child;
+            if (child.name === "Heads") this.heads = child;
+        })
+
+        this.armature.traverse((bodies) => {
+            //             const mapping = characterMappings[selectedCharacter];
+            //             if (mapping && head.name === mapping.bodyName) {
+            //                 this.body = head;
+            // 
+            //             }
+            if (bodies.name.includes("b_")) {
+                this.bodies3d.push(bodies)
             }
-            if (mapping && child.name === mapping.headName) {
-                this.head = child;
+        })
+
+        this.heads.traverse((head) => {
+
+            if (head.name == "glasses" ||
+                head.name == "veil" ||
+                head.name == "spiderman" ||
+                head.name == "moustache") {
+                head.visible = true;
+                head.scale.set(0.014, 0.014, 0.014)
+                head.rotation.set(0, 0, 0)
+                // if (head.name == "glasses" ||
+                //     head.name == "moustache") head.position.z += 1;
+                console.log(head.position)
+                this.accessories.push(head)
+            }
+            const mapping = characterMappings[selectedCharacter];
+
+            if (mapping && head.name === mapping.headName) {
+                this.head = head;
+                head.scale.set(10, 10, 10)
+
 
                 this.head.traverse((child) => {
                     child.visible = false;
@@ -114,37 +144,28 @@ export default class Models3D extends Group {
                             this.headParts.push(child);
                     }
                 })
-
-                this.head.children = this.headParts;
             }
-
-            if (child.name.includes("b_")) {
-                this.bodies3d.push(child)
-            }
-
-
-            if (child.name == "glasses" ||
-                child.name == "veil" ||
-                child.name == "spiderman" ||
-                child.name == "moustache") {
-                child.visible = false;
-                child.scale.set(10, 10, 10)
-                child.rotation.set(0, 0, 0)
-                child.position.z = 0;
-                this.accessories.push(child)
-            }
-        });
+        })
+        this.head.children = this.headParts;
     }
 
-    pushtoHead(head) {
-        for (let i = 0; i < this.accessories.length; i++) {
+    pushtoHead(object) {
+        let use;
+        if (object === "accessories") use = this.accessories;
+        if (object === "head") use = this.headParts;
+        for (let i = 0; i <= use.length - 1; i++) {
+            const child = use[i];
+            if (object === "accessories") {
+                child.position.x = this.head.position.x;
+                child.position.z = this.head.position.z
+            }
 
-            const accessory = this.accessories[i];
-            if (accessory.name == "glasses" || accessory.name == "moustache")
-                accessory.position.z += 0.2;
-            this.head.add(accessory)
+            if (child.name == "glasses" || child.name == "moustache")
+                child.position.z += 0.2;
+            this.head.add(child)
         }
     }
+
 
     pushtoStand() {
         //         for (let i = 0; i < this.bodies3d.length; i++) {
