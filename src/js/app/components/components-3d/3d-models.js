@@ -5,7 +5,7 @@ import ConfigurableParams from '../../../data/configurable_params';
 export default class Models3D extends Group {
     constructor(stand) {
         super();
-        this.asset = Cache.get('assets').scene;
+        this.asset = Cache.get('assets').scene.children[0];
         this.flipX = new Vector3(-1, 1, 1);
 
         this.stand = stand;
@@ -73,7 +73,7 @@ export default class Models3D extends Group {
                 this.head.traverse((child) => {
                     child.visible = false;
                     let childName = child.name.toLowerCase();
-                    if (childName.includes("mask")) { child.position.y += 0.3; child.scale.set(10, 10, 10); const childmat = new MeshPhysicalMaterial({ color: 0xffffff }); child.material = childmat; this.mask = child; this.add(this.mask) }
+                    if (childName.includes("mask")) { child.position.y -= 0.3; child.scale.set(10, 10, 10); const childmat = new MeshPhysicalMaterial({ color: 0xffffff }); child.material = childmat; this.mask = child; this.add(this.mask) }
                     if (!childName.includes("h_") && !childName.includes("mask")) {
 
                         if (childName.includes("ear") || childName.includes("eye")) {
@@ -95,12 +95,9 @@ export default class Models3D extends Group {
                 })
 
                 this.head.children = this.headParts;
-
-
             }
 
             if (child.name.includes("b_")) {
-
                 this.bodies3d.push(child)
             }
 
@@ -329,6 +326,8 @@ export default class Models3D extends Group {
         this.fingerprintSphere.material.opacity -= 0.01;
     }
 
+
+
     hide(object) {
         const target = -5;
         const tween = new TWEEN.Tween(object.position.y)
@@ -372,25 +371,19 @@ export default class Models3D extends Group {
             .to({ x: targetpos.x, y: targetpos.y, z: targetpos.z }, 1000)
             .easing(TWEEN.Easing.Sinusoidal.InOut)
             .delay(200)
-            .onUpdate(() => {
-                if (this.mask.position === targetpos) console.log("mask");
-            })
-            .onComplete(() => {
-
-
-            })
             .start();
         const rotatetween = new TWEEN.Tween(this.mask.rotation)
             .to({ x: targetrotation.x, y: targetrotation.y, z: targetrotation.z }, 1000)
             .easing(TWEEN.Easing.Sinusoidal.InOut)
             .delay(800)
-            .onUpdate(() => {
-                if (this.mask.rotatetween === targetrotation) console.log("mask");
+            .onComplete(() => {
+                if (this.mask.rotation === targetrotation) callback()
+
             })
             .start();
     }
 
-    removeMask(callback) {
+    removeMask() {
         const targetpos = new Vector3(-4, 4, 10);
         const targetrotation = new Vector3(0, 0, 0);
 
@@ -399,21 +392,14 @@ export default class Models3D extends Group {
             .to({ x: targetpos.x, y: targetpos.y, z: targetpos.z }, 1000)
             .easing(TWEEN.Easing.Sinusoidal.InOut)
             .delay(800)
-            .onUpdate(() => {
-                if (this.mask.position === targetpos) console.log("mask");
-            })
-            .onComplete(() => {
-                callback();
-            })
+
             .start();
 
         const rotatetween = new TWEEN.Tween(this.mask.rotation)
             .to({ x: targetrotation.x, y: targetrotation.y, z: targetrotation.z }, 1000)
             .easing(TWEEN.Easing.Sinusoidal.InOut)
             .delay(200)
-            .onUpdate(() => {
-                if (this.mask.rotatetween === targetrotation) console.log("mask");
-            })
+
             .start();
     }
 }

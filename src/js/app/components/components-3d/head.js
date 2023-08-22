@@ -27,6 +27,25 @@ export default class Head extends Group {
         this.head.visible = false;
         this.head.material = this.clayMaterial;
         this.add(this.head);
+        let headMap;
+        if (this.head.name === "h_harley") {
+            headMap = Cache.get("harleyhead")
+        } if (this.head.name === "h_bride") {
+            headMap = Cache.get("arianagrandehead")
+        } if (this.head.name === "h_rock") {
+            headMap = Cache.get("rockhead")
+        }
+        if (this.head.name === "h_tuxedo") {
+            headMap = Cache.get("mrbeanhead")
+        }
+
+        const headmaterial = new MeshPhysicalMaterial({ map: headMap, transparent: true, opacity: 0 })
+        this.headWithMap = new Mesh(this.head.geometry, headmaterial);
+        this.headWithMap.position.copy(this.head.position)
+        this.headWithMap.rotation.copy(this.head.rotation)
+        this.headWithMap.scale.copy(this.head.scale)
+        // this.headWithMap.visible = false;
+        this.add(this.headWithMap)
 
         // Create a new geometry based on the head's geometry
         this.originalGeometry = this.head.geometry.clone(); // Store the original geometry    
@@ -134,7 +153,9 @@ export default class Head extends Group {
 
     headDone() {
         this.head.visible = true;
+        this.modifiedMesh.visible = false;
         this.halfSculptedHead.visible = false;
+
     }
 
     onMove(x, y, callback) {
@@ -214,7 +235,7 @@ export default class Head extends Group {
 
 
 
-    graduallyRevertToOriginal() {
+    graduallyRevertToOriginal(callback) {
 
         const incrementAmount = 0.01; // Adjust this value to control the speed of the transition
         let threshold = 0.001; // Initial threshold value
@@ -243,6 +264,28 @@ export default class Head extends Group {
 
 
             this.modifiedGeometry.attributes.position.needsUpdate = true;
+        }
+
+        // if (this.modifiedGeometry.attributes.position.array === this.originalGeometry.attributes.position.array) {
+        //     callback()
+        // }
+    }
+
+    putonTexture(callback) {
+        // Ensure both materials are transparent
+
+        this.headWithMap.material.transparent = true;
+        this.head.material.transparent = true;
+
+        // Adjust opacity values
+        this.headWithMap.material.opacity += 0.01;
+        this.head.material.opacity -= 0.001;
+
+        if (this.headWithMap.material.opacity >= 1 - 0.01) {
+            this.headWithMap.material.transparent = false;
+            this.head.material = this.headWithMap.material;
+            this.headDone()
+            callback();
         }
     }
 
