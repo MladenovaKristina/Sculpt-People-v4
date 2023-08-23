@@ -1,5 +1,5 @@
 
-import { Object3D, Raycaster, Vector2, Vector3, Box3 } from "three";
+import { Object3D, Raycaster, Vector2 } from "three";
 import TWEEN from "@tweenjs/tween.js";
 import { Black } from "../../../utils/black-engine.module";
 import Helpers from "../../helpers/helpers";
@@ -187,6 +187,7 @@ export default class SceneController extends Object3D {
                 this._layout3d._sculpt.onMove(x, y, () => {
                     this._layout3d._sculpt.headDone();
                     this.sculpting = false;
+                    this.canMove = false;
                     this.nextScene(3)
                 })
             }
@@ -194,24 +195,20 @@ export default class SceneController extends Object3D {
 
         }
         if (this.sceneNumber === 3 && this.canMove) {
-            this._layout3d._sculpt.putonTexture(() => {
-                if (!this.scene4Executed) {
-                    this.scene4(); this.scene4Executed = true;
-
-                    console.log(this.scene4Executed)
-                }
-            })
             this.moveToMouse(x, y);
-
         }
     }
 
     moveToMouse(x, y) {
         if (this.canMove) {
-            this._layout3d.model3d.sprayCan.position.x = x / 100000;
-            this._layout3d.model3d.sprayCan.position.y = -y / 10000;
-            console.log(this._layout3d.model3d.sprayCan.position.y);
+            this._layout3d._sculpt.putonTexture(() => { this.scene4Executed = true; });
+            this._layout3d.model3d.sprayCan.position.x = x / 10000;
+            this._layout3d.model3d.sprayCan.position.y = -y / 1000;
 
+        }
+        if (this.scene4Executed) {
+            this.scene4();
+            console.log(this.scene4Executed)
         }
     }
 
@@ -227,9 +224,10 @@ export default class SceneController extends Object3D {
         this._layout3d.model3d.show();
 
         this.setCam(0, null, null, true, () => {
-            this._layout2d.startHint();
             this.sceneNumber = 1;
             this.canMove = true;
+            this._layout2d.startHint();
+
         });
 
 
@@ -254,7 +252,6 @@ export default class SceneController extends Object3D {
         this._layout3d.model3d.hide(this._layout3d.model3d.group);
 
         this.canMove = false;
-        console.log("scene", this.sceneNumber, "sculpting scene");
     }
     sculptWithStick() {
         this.sculpting = true;
@@ -263,14 +260,14 @@ export default class SceneController extends Object3D {
 
     scene3() {
         this._layout3d.hideStick();
-        this._layout3d.model3d.sprayCan.visible = true;
         this._layout2d._cheers.show(2, Black.stage.centerX + 1, Black.stage.centerY - 1);
-        this._layout3d.model3d.placeMask();
-
-        setTimeout(() => {
+        this._layout3d.model3d.placeMask(() => {
+            this._layout3d.model3d.sprayCan.visible = true;
             this.canMove = true;
-            this.sceneNumber = 3;
-        }, 2300)
+        });
+
+
+        this.sceneNumber = 3;
 
         this._layout2d._initDockBG("spray", () => { });
     }
@@ -316,9 +313,8 @@ export default class SceneController extends Object3D {
     scene7() {
         console.log('7')
         this.sceneNumber = 7;
-        this._layout3d._initDock("body");
-        // this._layout3d.model3d.armature.children[0].visible = true;
-
+        // this._layout3d._initDock("body");
+        this._layout3d.model3d.armature.children[0].visible = true;
     }
 
     scene8() {

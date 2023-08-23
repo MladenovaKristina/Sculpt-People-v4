@@ -34,6 +34,7 @@ export default class Models3D extends Group {
     }
     init() {
         this._initAssets();
+        this._initSprayCan()
         this._initView();
     }
 
@@ -47,14 +48,14 @@ export default class Models3D extends Group {
         this.init()
     }
 
-    _initAssets() {
+    _initSprayCan() {
         this.sprayCanGroup = Cache.get("sprayCan").scene;
         this.sprayCanGroup.traverse((child) => {
             if (child.name === "spray_can_type4") {
                 child.visible = true;
                 this.sprayCan = child;
                 // this.sprayCan.scale.set(1, 1, 1);
-                this.sprayCan.position.set(0, 1, 0.9);
+                this.sprayCan.position.set(0, 1, 0.6);
                 this.sprayCan.rotation.set(Math.PI / 2, 0, Math.PI);
                 console.log(child)
                 this.sprayCan.visible = true;
@@ -67,7 +68,10 @@ export default class Models3D extends Group {
         });
 
         this.add(this.sprayCan);
-
+    }
+    _initAssets() {
+        // this._asset.scale.set(0.3, 0.3, 0.3)
+        this.add(this._asset)
         const selectedCharacter = ConfigurableParams.getData()['character']['select_character']['value'];
         const characterMappings = {
             Big: { bodyName: 'b_big1', headName: 'h_bride' },
@@ -88,18 +92,24 @@ export default class Models3D extends Group {
             if (child.material) child.material.side = DoubleSide;
 
             if (child.name === "Armature") {
+                child.visible = false;
                 this.armature = child;
+
             }
             if (child.name === "Heads") { this.heads = child; }
         })
-
+        const scaledown = new Vector3(0.8, 0.8, 0.8)
         this.armature.traverse((bodies) => {
-            bodies.visible = true;
-            bodies.position.y = 0;
+            bodies.position.set(0, -0.38, 0);
+            bodies.scale.multiply(scaledown)
+            bodies.rotation.set(0, 0, 0)
+            bodies.visible = false;
+
             if (bodies.name.includes("b_")) {
                 this.bodies3d.push(bodies)
             }
         })
+
         this.heads.traverse((head) => {
 
             if (head.name == "glasses" ||
@@ -108,12 +118,6 @@ export default class Models3D extends Group {
                 head.name == "moustache") {
                 head.visible = false;
                 head.rotation.set(Math.PI / 2, 0, 0);
-
-                // head.scale.set(0.1, 0.1, 0.1)
-                // head.position.y += 1;
-                // // if (head.name == "glasses" ||
-                // //     head.name == "moustache") head.position.z += 1;
-                // console.log(head.position)
                 this.accessories.push(head)
             }
             const mapping = characterMappings[selectedCharacter];
@@ -125,14 +129,13 @@ export default class Models3D extends Group {
                 this.head.traverse((child) => {
                     child.visible = false;
                     let childName = child.name.toLowerCase();
-                    console.log(childName)
 
                     if (childName.includes("mask")) {
-                        child.position.y += 0.1;
                         const childmat = new MeshPhysicalMaterial({ color: 0xffffff });
                         child.material = childmat;
-                        child.scale.set(0.75, 0.75, 0.75);
+                        // child.scale.set(0.75, 0.75, 0.75);
                         this.mask = child;
+                        this.add(this.mask)
                     }
                     if (!childName.includes("h_") && !childName.includes("mask")) {
                         if (childName.includes("ear") || childName.includes("eye")) {
@@ -152,13 +155,12 @@ export default class Models3D extends Group {
                             this.headParts.push(child);
                     }
                 })
-            }
+            } else if (head.name.includes("h_"))
+                head.visible = false;
         })
-        console.log(this.headParts)
+
         this.head.children = [...this.headParts, ...this.accessories];
-        this.head.traverse((child) => {
-        })
-        this.head.scale.set(1, 1, 1)
+
     }
 
 
@@ -395,25 +397,28 @@ export default class Models3D extends Group {
         this.playAnim(newAnimName);
     }
 
-    placeMask() {
+    placeMask(callback) {
         this.mask.visible = true;
-        const targetpos = new Vector3(this.head.position.x, this.head.position.y, this.head.position.z + 0.3);
+        const targetpos = new Vector3(0, 0, 0.01);
         const targetrotation = new Vector3(Math.PI / 2, 0, 0);
-        this.mask.position.set(-7, 4, 4);
+        this.mask.position.set(-1, 1, 1);
         this.mask.rotation.z += 0.3;
         const tween = new TWEEN.Tween(this.mask.position)
             .to({ x: targetpos.x, y: targetpos.y, z: targetpos.z }, 1000)
             .easing(TWEEN.Easing.Sinusoidal.InOut)
+
             .delay(200)
             .start();
         const rotatetween = new TWEEN.Tween(this.mask.rotation)
             .to({ x: targetrotation.x, y: targetrotation.y, z: targetrotation.z }, 1000)
             .easing(TWEEN.Easing.Sinusoidal.InOut)
             .delay(800)
-            .onComplete(() => {
-                if (this.mask.rotation === targetrotation) callback()
-
+            .onUpdate(() => {
+                if (this.mask.rotation === targetrotation) {
+                    callback();
+                }
             })
+
             .start();
     }
 

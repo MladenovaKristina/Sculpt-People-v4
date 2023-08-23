@@ -1,5 +1,4 @@
-import { call } from "file-loader";
-import { Group, Cache, Sphere, NormalBlending, Raycaster, MeshPhysicalMaterial, Vector3, SphereGeometry, Mesh, CylinderGeometry } from "three";
+import { Group, Cache, Raycaster, MeshPhysicalMaterial, Vector3, SphereGeometry, Mesh, CylinderGeometry } from "three";
 
 export default class Head extends Group {
     constructor(clayMaterial, head, sphere, stand) {
@@ -25,7 +24,6 @@ export default class Head extends Group {
         // this.head.position.set(this.stand.position.x, this.stand.position.y - radius / 2, 0);
         this.head.visible = false;
         this.head.material = this.clayMaterial;
-        this.add(this.head);
         let headMap;
         if (this.head.name === "h_harley") {
             headMap = Cache.get("harleyhead")

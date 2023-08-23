@@ -1,6 +1,5 @@
 import TWEEN from "@tweenjs/tween.js";
 import { Object3D, PlaneGeometry, MeshPhysicalMaterial, Mesh, CylinderGeometry, Cache, DoubleSide, Group } from 'three';
-import { Black } from "../../../utils/black-engine.module";
 import Head from '../components-3d/head'
 import Models3D from "./3d-models";
 import ConfigurableParams from "../../../data/configurable_params";
