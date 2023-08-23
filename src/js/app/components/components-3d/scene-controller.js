@@ -317,7 +317,7 @@ export default class SceneController extends Object3D {
         console.log('7')
         this.sceneNumber = 7;
         this._layout3d._initDock("body");
-        this._layout3d.model3d.armature.children[0].visible = true;
+        // this._layout3d.model3d.armature.children[0].visible = true;
 
     }
 
