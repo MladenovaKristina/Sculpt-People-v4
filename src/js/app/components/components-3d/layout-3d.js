@@ -156,8 +156,8 @@ export default class Layout3D extends Object3D {
 
 
   _initSculpt(clayMaterial) {
-    this.model3d._initTexture(clayMaterial);
     this._sculpt = new Head(clayMaterial, this.model3d.head, this.model3d.sphere, this.stand);
+    this.model3d._initTexture(clayMaterial);
     this.add(this._sculpt)
   }
 

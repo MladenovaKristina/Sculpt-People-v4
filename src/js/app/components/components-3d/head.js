@@ -21,7 +21,6 @@ export default class Head extends Group {
 
         const radius = 1.2;
 
-        // this.head.position.set(this.stand.position.x, this.stand.position.y - radius / 2, 0);
         this.head.visible = false;
         this.head.material = this.clayMaterial;
         let headMap;
@@ -42,6 +41,10 @@ export default class Head extends Group {
         this.headWithMap.rotation.copy(this.head.rotation)
         this.headWithMap.scale.copy(this.head.scale)
         // this.headWithMap.visible = false;
+        this.headWithMap.castShadow = true;
+        this.headWithMap.receiveShadow = true;
+
+
         this.add(this.headWithMap)
 
         // Create a new geometry based on the head's geometry
@@ -54,6 +57,9 @@ export default class Head extends Group {
         this.halfSculptedHead.position.copy(this.head.position);
         this.halfSculptedHead.scale.copy(this.head.scale);
         this.halfSculptedHead.rotation.copy(this.head.rotation);
+        this.halfSculptedHead.castShadow = true;
+        this.halfSculptedHead.receiveShadow = true;
+
 
         this.add(this.halfSculptedHead);
 
