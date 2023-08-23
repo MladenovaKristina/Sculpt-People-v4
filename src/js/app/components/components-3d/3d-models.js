@@ -160,6 +160,8 @@ export default class Models3D extends Group {
             }
 
         });
+
+        this.head.children = this.head.children.concat(...this.accessories)
     }
 
     _initView() {
@@ -368,10 +370,12 @@ export default class Models3D extends Group {
 
     placeMask(callback) {
         this.mask.visible = true;
-        const targetpos = new Vector3(0, 0, 0.01);
-        const targetrotation = new Vector3(Math.PI / 2, 0, 0);
+        const targetpos = new Vector3(0, 0.01, 0);
+        const targetrotation = new Vector3(0, 0, 0);
         this.mask.position.set(-1, 1, 1);
         this.mask.rotation.z += 0.3;
+        this.mask.rotation.x = -Math.PI / 2;
+
         const tween = new TWEEN.Tween(this.mask.position)
             .to({ x: targetpos.x, y: targetpos.y, z: targetpos.z }, 1000)
             .easing(TWEEN.Easing.Sinusoidal.InOut)
