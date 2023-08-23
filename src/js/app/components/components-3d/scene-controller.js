@@ -1,13 +1,14 @@
 
-import { Object3D, Raycaster, Vector2, Vector3 } from "three";
+import { Object3D, Raycaster, Vector2 } from "three";
 import TWEEN from "@tweenjs/tween.js";
 import { Black } from "../../../utils/black-engine.module";
 import Helpers from "../../helpers/helpers";
 
 export default class SceneController extends Object3D {
-    constructor(camera, cameraController, layout2d, layout3d) {
+    constructor(camera, renderer, cameraController, layout2d, layout3d) {
         super();
         this._camera = camera;
+        this._renderer = renderer;
         this._cameraController = cameraController;
         this.scene4Executed = false;
 
@@ -186,6 +187,7 @@ export default class SceneController extends Object3D {
                 this._layout3d._sculpt.onMove(x, y, () => {
                     this._layout3d._sculpt.headDone();
                     this.sculpting = false;
+                    this.canMove = false;
                     this.nextScene(3)
                 })
             }
@@ -193,46 +195,47 @@ export default class SceneController extends Object3D {
 
         }
         if (this.sceneNumber === 3 && this.canMove) {
-            this._layout3d._sculpt.putonTexture(() => {
-                if (!this.scene4Executed) {
-                    this.scene4(); this.scene4Executed = true;
-
-                    console.log(this.scene4Executed)
-                }
-            })
             this.moveToMouse(x, y);
-
         }
     }
 
     moveToMouse(x, y) {
-        if (this.canMove) {
-            this._layout3d.model3d.sprayCan.position.x = x / 200;
-            this._layout3d.model3d.sprayCan.position.y = -y / 200;
-        }
+        if (!this.scene4Executed) { // Check if scene 4 hasn't been executed yet
+            this._layout3d._sculpt.putonTexture(() => {
+                this.scene4Executed = true;
+                this.scene4(); // Call scene 4 here
+                console.log(this.scene4Executed);
+            });
+        } this._layout3d.model3d.sprayCan.position.x = x / 10000;
+        this._layout3d.model3d.sprayCan.position.y = -y / 1000;
     }
 
 
     scene0() {
         this._layout3d._initClay();
         this._layout2d._startClayHint();
+
     }
 
     scene1(clayMaterial) {
         this._layout3d._initSculpt(clayMaterial);
         this._layout3d.model3d.show();
-        this.setCam(3, null, null, true, () => {
-            this._layout2d.startHint();
+
+        this.setCam(0, null, null, true, () => {
             this.sceneNumber = 1;
             this.canMove = true;
+            this._layout2d.startHint();
+
         });
+
+
     }
 
     scene2() {
 
         this._layout2d._cheers.show(0, Black.stage.centerX - 1, Black.stage.centerY + 1);
 
-        this.setCam(null, null, 2, true, () => {
+        this.setCam(null, -0.04, 0.2, true, () => {
             console.log("zoom")
             this.sceneNumber = 2;
 
@@ -241,11 +244,12 @@ export default class SceneController extends Object3D {
         this._layout2d._tutorial.hide();
         this._layout3d._sculpt.head.rotation.set(Math.PI / 2, 0, 0)
         this._layout3d._sculpt.halfSculptedHead.visible = true;
-        this._layout2d._showOval();
+        const ovalposition = Helpers.vector3ToBlackPosition(this._layout3d.model3d.head.position, this._renderer.threeRenderer, this._camera.threeCamera);
+        console.log(ovalposition)
+        this._layout2d._showOval(ovalposition);
         this._layout3d.model3d.hide(this._layout3d.model3d.group);
 
         this.canMove = false;
-        console.log("scene", this.sceneNumber, "sculpting scene");
     }
     sculptWithStick() {
         this.sculpting = true;
@@ -254,35 +258,30 @@ export default class SceneController extends Object3D {
 
     scene3() {
         this._layout3d.hideStick();
-        this._layout3d.model3d.sprayCan.visible = true;
         this._layout2d._cheers.show(2, Black.stage.centerX + 1, Black.stage.centerY - 1);
-        this._layout3d.model3d.placeMask();
-
-        setTimeout(() => {
+        this._layout3d.model3d.placeMask(() => {
+            this._layout3d.model3d.sprayCan.visible = true;
             this.canMove = true;
-            this.sceneNumber = 3;
-        }, 2300)
+        });
+
+
+        this.sceneNumber = 3;
 
         this._layout2d._initDockBG("spray", () => { });
     }
 
     scene4() {
-        if (!this.scene4Executed) {
-            this._layout3d.model3d.removeMask();
-            this._layout3d.model3d.sprayCan.visible = false;
-            setTimeout(() => {
-                this.sceneNumber = 4;
+        this._layout2d._cheers.show(1, Black.stage.centerX + 1, Black.stage.centerY - 1);
 
-                this._layout2d._cheers.show(1, Black.stage.centerX + 1, Black.stage.centerY - 1);
-                this.numberOfDecorations = this._layout3d.model3d.headParts.length;
+        this._layout3d.model3d.removeMask();
+        this._layout3d.model3d.sprayCan.visible = false;
+        this._layout2d._objectsInDock.hide();
 
-                this._layout2d._objectsInDock.hide();
-                this._layout3d._initDock("head");
-
-                console.log("decorating head scene", this.sceneNumber);
-            }, 2300)
-        }
-
+        setTimeout(() => {
+            this.sceneNumber = 4;
+            this._layout3d._initDock("head");
+            this.numberOfDecorations = this._layout3d.model3d.headParts.length;
+        }, 2300)
 
     }
 
@@ -290,7 +289,7 @@ export default class SceneController extends Object3D {
         this.sceneNumber = 5;
         this.canMove = false;
         this._layout3d._initDock("accessories");
-        this.numberOfDecorations = this._layout3d.model3d.accessories.length;
+        this.numberOfDecorations = this._layout3d.model3d.accessories.length - 1;
         this._layout2d._cheers.show(2, Black.stage.centerX + 1, Black.stage.centerY - 1);
     }
 
@@ -299,12 +298,11 @@ export default class SceneController extends Object3D {
 
         this._layout3d.hide(this._layout3d.bg)
         this._layout3d.hide(this._layout3d.dock)
-        this.setCam(-0.5, 2, -2, true, () => {
+        this.setCam(-0.2, null, -0.6, true, () => {
             this._layout2d._confetti.show()
         });
 
-        const standVector = new Vector3(this._layout3d.stand.position.x, this._layout3d.stand.position.y - 1, this._layout3d.stand.position.z)
-        this._cameraController.setLookingAt(standVector)
+        this._cameraController.setLookingAt(this._layout3d.model3d.stand)
 
         console.log("celebrate scene", this.sceneNumber);
         setTimeout(() => { this.scene7() }, 3000)
@@ -313,8 +311,9 @@ export default class SceneController extends Object3D {
     scene7() {
         console.log('7')
         this.sceneNumber = 7;
-        this._layout3d._initDock("body");
-
+        // this._layout3d._initDock("body");
+        this._layout3d.model3d.armature.children[0].visible = true;
+        console.log(this._layout3d.model3d.armature.children[0].name)
     }
 
     scene8() {
@@ -341,10 +340,10 @@ export default class SceneController extends Object3D {
             callback();
         } else {
             const tempCameraPosition = { x: this._camera.threeCamera.position.x, y: this._camera.threeCamera.position.y, z: this._camera.threeCamera.position.z }; // Temporary object to hold camera position
-            if (!setX) targetX = this._camera.threeCamera.position.x; else targetX = this._camera.threeCamera.position.x - setX;
+            if (setX == null) targetX = this._camera.threeCamera.position.x; else if (setX != 0) targetX = this._camera.threeCamera.position.x - setX;
 
-            if (!setY) targetY = this._camera.threeCamera.position.y; else targetY = this._camera.threeCamera.position.y - setY;
-            if (!setZ) targetZ = this._camera.threeCamera.position.z; else targetZ = this._camera.threeCamera.position.z - setZ;
+            if (setY == null) targetY = this._camera.threeCamera.position.y; else if (setY != 0) targetY = this._camera.threeCamera.position.y - setY;
+            if (setZ == null) targetZ = this._camera.threeCamera.position.z; else if (setZ != 0) targetZ = this._camera.threeCamera.position.z - setZ;
 
             const tween = new TWEEN.Tween(tempCameraPosition)
                 .to({ x: targetX, y: targetY, z: targetZ }, 400)

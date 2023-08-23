@@ -1,14 +1,13 @@
-import { Group, Cache, Mesh, MeshPhysicalMaterial, PlaneGeometry, DoubleSide, SphereGeometry, Vector3, NormalBlending, AnimationMixer } from 'three';
+import { Group, Box3, Cache, Mesh, MeshPhysicalMaterial, PlaneGeometry, DoubleSide, SphereGeometry, Vector3, NormalBlending, AnimationMixer } from 'three';
 import TWEEN from '@tweenjs/tween.js';
 import ConfigurableParams from '../../../data/configurable_params';
+import { MeshPhongMaterial } from 'three';
 
 export default class Models3D extends Group {
     constructor(stand) {
         super();
-        this._asset = Cache.get('assets').scene.children[0];
         this.flipX = new Vector3(-1, 1, 1);
         this.stand = stand;
-        // this.add(this._asset)
         this._animations = {
             sculpt: {
                 tween: null,
@@ -32,42 +31,51 @@ export default class Models3D extends Group {
                 yoyo: true
             }
         }
+        this.init()
     }
     init() {
         this._initAssets();
+        this._initSprayCan()
         this._initView();
     }
 
     _initTexture(clayMaterial) {
         this.clayMaterial = clayMaterial;
-        this._asset.traverse((child) => {
+
+        this.head.traverse((child) => {
             if (child.name === "ears" || child.name === "EARS" || child.name === "ear_l" || child.name === "ear_r") {
-                child.material = clayMaterial;
+                child.material = this.clayMaterial;
             }
+
         })
-        this.init()
+
+        this.sphere.material = this.clayMaterial;
+
     }
 
-    _initAssets() {
+    _initSprayCan() {
         this.sprayCanGroup = Cache.get("sprayCan").scene;
         this.sprayCanGroup.traverse((child) => {
             if (child.name === "spray_can_type4") {
-                this.sprayCan = child; child.visible = true;
-                this.sprayCan.position.set(0, 0, 1);
-                this.sprayCan.rotation.set(Math.PI / 1.5, 0, 0);
-                console.log(child)
-                this.sprayCan.visible = false;
+                child.visible = true;
+                this.sprayCan = child;
+                // this.sprayCan.scale.set(1, 1, 1);
+                this.sprayCan.position.set(0, 1, 0.5);
+                this.sprayCan.rotation.set(Math.PI / 2, 0, Math.PI);
+                this.sprayCan.visible = true;
                 this.sprayCan.traverse((cap) => {
                     if (child.name === "can_tip_whole") {
                         this.canTip = cap; this.paintEmitter()
-
                     }
                 })
             }
         });
 
-        this.sprayCan.scale.set(0.5, 0.5, 0.5)
         this.add(this.sprayCan);
+    }
+    _initAssets() {
+        this._asset = Cache.get('assets').scene.children[0];
+        this.add(this._asset)
 
         const selectedCharacter = ConfigurableParams.getData()['character']['select_character']['value'];
         const characterMappings = {
@@ -85,38 +93,42 @@ export default class Models3D extends Group {
         this._asset.traverse((child) => {
             child.receiveShadow = true;
             child.castShadow = true;
+            child.material = new MeshPhongMaterial({ color: 0x555555 });
+            child.material.side = DoubleSide;
 
-            if (child.material) child.material.side = DoubleSide;
-
-            if (child.name === "Armature") this.armature = child;
-            if (child.name === "Heads") this.heads = child;
+            if (child.name === "Armature") {
+                this.armature = child;
+            }
+            if (child.name === "Heads") { this.heads = child; }
         })
 
+        const scaledown = new Vector3(0.8, 0.8, 0.8)
         this.armature.traverse((bodies) => {
-            //             const mapping = characterMappings[selectedCharacter];
-            //             if (mapping && head.name === mapping.bodyName) {
-            //                 this.body = head;
-            // 
-            //             }
+            bodies.position.set(0, -0.38, 0);
+            bodies.scale.multiply(scaledown);
+            bodies.rotation.set(0, 0, 0);
+            bodies.visible = false;
+
             if (bodies.name.includes("b_")) {
                 this.bodies3d.push(bodies)
             }
         })
+        this.armature.visible = true;
 
         this.heads.traverse((head) => {
-
             if (head.name == "glasses" ||
                 head.name == "veil" ||
                 head.name == "spiderman" ||
                 head.name == "moustache") {
+                if (head.name === "veil") {
+
+                    head.material = new MeshPhysicalMaterial({ color: 0xffffff });
+                } if (head.name === "spiderman")
+                    head.material = new MeshPhongMaterial({ color: 0xff0000 });
+                head.material.side = DoubleSide;
+
                 head.visible = false;
                 head.rotation.set(Math.PI / 2, 0, 0);
-
-                head.scale.set(0.1, 0.1, 0.1)
-                // head.position.y += 1;
-                // // if (head.name == "glasses" ||
-                // //     head.name == "moustache") head.position.z += 1;
-                // console.log(head.position)
                 this.accessories.push(head)
             }
             const mapping = characterMappings[selectedCharacter];
@@ -124,51 +136,52 @@ export default class Models3D extends Group {
             if (mapping && head.name === mapping.headName) {
                 this.head = head;
 
-
-                this.head.traverse((child) => {
-                    child.visible = false;
-                    let childName = child.name.toLowerCase();
-                    if (childName.includes("mask")) { child.position.y += 0.3; child.scale.set(10, 10, 10); const childmat = new MeshPhysicalMaterial({ color: 0xffffff }); child.material = childmat; this.mask = child; this.add(this.mask) }
-                    if (!childName.includes("h_") && !childName.includes("mask")) {
-
-                        if (childName.includes("ear") || childName.includes("eye")) {
-                            const child_l = child.clone();
-                            child_l.name += "_l";
-                            const child_r = child.clone();
-                            child_r.name += "_r";
-                            child_r.scale.multiply(this.flipX);
-                            child_r.position.multiply(this.flipX);
-
-                            this.head.add(child_l)
-                            this.head.add(child_r)
-
-                            this.headParts.push(child_l);
-                            this.headParts.push(child_r);
-                        } else
-                            this.headParts.push(child);
-                    }
-                })
-            }
+            } else if (head.name.includes("h_"))
+                head.visible = false;
         })
-        this.head.children = [...this.headParts, ...this.accessories];
-        this.head.traverse((child) => {
-        })
-        this.head.scale.set(10, 10, 10)
+
+
+        this.initHeadParts()
     }
 
+    initHeadParts() {
+        this.head.traverse((child) => {
+            const childName = child.name.toLowerCase();
+            child.visible = false;
+            if (!childName.includes("mask") && childName != this.head.name) {
+                if (childName.includes("ring") || childName.includes("ear") || childName.includes("eye")) {
+                    if (childName.includes("eye")) {
+                        // child.children[0] = new MeshPhongMaterial({ color: 0xffffff }); child.children[1] = new MeshPhongMaterial({ color: 0x000000 })
+                        // console.log(child)
+                    }
+                    if (childName.includes("ear")) {
+                        child.material = this.head.material;
+                    }
+                    if (childName.includes("ring")) {
+                        child.material = new MeshPhongMaterial({ color: 0xFFFF00, metalness: 10, reflectivity: 10 });
+                    }
 
-    pushtoStand() {
-        //         for (let i = 0; i < this.bodies3d.length; i++) {
-        //             const child = this.bodies3d[i];
-        //             const geometry = new PlaneGeometry(1, 1);
-        //             const material = new MeshPhysicalMaterial({ color: 0xffff00, side: DoubleSide });
-        //             const plane = new Mesh(geometry, material);
-        //             plane.position.set(0, 0, 0);
-        // 
-        //             plane.name = child.name;
-        //             this.bodies2d.push(plane);
-        //             child.visible = false;
-        //             this.head.add(child);
+
+                    const child_r = child.clone();
+                    child_r.name += "_r";
+                    child_r.scale.multiply(this.flipX);
+                    child_r.position.multiply(this.flipX);
+                    this.head.add(child_r)
+
+                    child.name += "_l";
+                    this.headParts.push(child);
+                    this.headParts.push(child_r);
+                }
+                else
+                    this.headParts.push(child);
+            } else if (childName.includes("mask")) {
+                this.mask = child;
+                this.mask.material = new MeshPhysicalMaterial({ color: 0xffffff })
+            }
+
+        });
+
+        this.head.children = this.head.children.concat(...this.accessories)
     }
 
     _initView() {
@@ -176,35 +189,35 @@ export default class Models3D extends Group {
         this.add(this.group);
 
         this.arm = Cache.get("arm").scene;
-        this.arm.scale.set(15, 15, 15);
-        this.arm.rotation.set(0.7, 4.8, 0);
+        this.arm.scale.set(1, 1, 1);
+        this.arm.rotation.set(0, -Math.PI / 2, -0.5);
         this.arm.traverse((child) => {
             child.material = new MeshPhysicalMaterial({ color: 0xe5c59a, metalness: 0.2, reflectivity: 1 })
 
             if (child.name === "ref_position") {
-                this.armposition = child;
-                this.arm.position.x = 1;
-                this.arm.position.z = 6;
-                this.arm.position.y = -4.5;
-                this.armposition.visible = false;
+                child.visible = false;
             }
         });
+        this.group.position.set(0, -0.22, 0.65)
 
         this.group.add(this.arm);
 
         this.rightArm = Cache.get('rightArm').scene;
-        this.rightArm.scale.set(15, 15, 15);
+        this.rightArm.scale.set(1, 1, 1);
         const scale = new Vector3(1, 1, -1)
         this.rightArm.scale.multiply(scale);
 
-        this.rightArm.rotation.set(this.arm.rotation.x, this.arm.rotation.y - 0.3, this.arm.rotation.z);
+        this.rightArm.rotation.copy(this.arm.rotation);
         this.rightArm.traverse((child) => {
             child.material = new MeshPhysicalMaterial({ color: 0xe5c59a, metalness: 0.2, reflectivity: 1 })
             if (child.name === "ref_position") {
-                child.visible = false;
+                child.visible = true;
+                this.sphere = child;
+                this.fingerprintSphere = new Mesh(this.sphere.geometry, this.customMaterial)
+
             }
         })
-        this.rightArm.position.set(-1.5, this.arm.position.y, this.arm.position.z)
+        this.rightArm.position.copy(this.arm.position)
 
         this.group.add(this.rightArm);
 
@@ -220,19 +233,6 @@ export default class Models3D extends Group {
             opacity: 0.4
         });
 
-        this.sphere = new Mesh(geometry, this.clayMaterial)
-
-        this.sphere.position.set(this.stand.position.x, this.stand.position.y + radius / 2, 0)
-        this.group.add(this.sphere);
-        this.fingerprintSphere = new Mesh(geometry, this.customMaterial);
-        this.fingerprintSphere.position.set(this.sphere.position.x, this.sphere.position.y, this.sphere.position.z);
-
-        this.group.add(this.fingerprintSphere);
-
-
-        //=============================================
-        // INIT ANIMATIONs
-        //=============================================
         const animationsNames = ["sculpt"];
 
         for (let index = 0; index < animationsNames.length; index++) {
@@ -270,8 +270,6 @@ export default class Models3D extends Group {
             })
             .onComplete(() => {
                 this.idle();
-
-
             })
 
             .start();
@@ -279,7 +277,7 @@ export default class Models3D extends Group {
 
     idle() {
         const duration = 1000;
-        const amplitude = 0.1;
+        const amplitude = 0.01;
         const frequency = 2;
         this.groupTweenRotation = new TWEEN.Tween(this.group.rotation)
             .to(
@@ -390,25 +388,30 @@ export default class Models3D extends Group {
         this.playAnim(newAnimName);
     }
 
-    placeMask() {
+    placeMask(callback) {
         this.mask.visible = true;
-        const targetpos = new Vector3(this.head.position.x, this.head.position.y, this.head.position.z + 0.3);
-        const targetrotation = new Vector3(Math.PI / 2, 0, 0);
-        this.mask.position.set(-7, 4, 4);
+        const targetpos = new Vector3(0, 0.01, 0);
+        const targetrotation = new Vector3(0, 0, 0);
+        this.mask.position.set(-1, 1, 1);
         this.mask.rotation.z += 0.3;
+        this.mask.rotation.x = -Math.PI / 2;
+
         const tween = new TWEEN.Tween(this.mask.position)
             .to({ x: targetpos.x, y: targetpos.y, z: targetpos.z }, 1000)
             .easing(TWEEN.Easing.Sinusoidal.InOut)
+
             .delay(200)
             .start();
         const rotatetween = new TWEEN.Tween(this.mask.rotation)
             .to({ x: targetrotation.x, y: targetrotation.y, z: targetrotation.z }, 1000)
             .easing(TWEEN.Easing.Sinusoidal.InOut)
             .delay(800)
-            .onComplete(() => {
-                if (this.mask.rotation === targetrotation) callback()
-
+            .onUpdate(() => {
+                if (this.mask.rotation === targetrotation) {
+                    callback();
+                }
             })
+
             .start();
     }
 

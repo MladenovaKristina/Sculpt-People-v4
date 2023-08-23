@@ -1,5 +1,4 @@
-import { call } from "file-loader";
-import { Group, Cache, Sphere, NormalBlending, Raycaster, MeshPhysicalMaterial, Vector3, SphereGeometry, Mesh, CylinderGeometry } from "three";
+import { Group, Cache, Raycaster, MeshPhysicalMaterial, Vector3, SphereGeometry, Mesh, CylinderGeometry } from "three";
 
 export default class Head extends Group {
     constructor(clayMaterial, head, sphere, stand) {
@@ -22,10 +21,8 @@ export default class Head extends Group {
 
         const radius = 1.2;
 
-        // this.head.position.set(this.stand.position.x, this.stand.position.y - radius / 2, 0);
         this.head.visible = false;
         this.head.material = this.clayMaterial;
-        this.add(this.head);
         let headMap;
         if (this.head.name === "h_harley") {
             headMap = Cache.get("harleyhead")
@@ -44,6 +41,10 @@ export default class Head extends Group {
         this.headWithMap.rotation.copy(this.head.rotation)
         this.headWithMap.scale.copy(this.head.scale)
         // this.headWithMap.visible = false;
+        this.headWithMap.castShadow = true;
+        this.headWithMap.receiveShadow = true;
+
+
         this.add(this.headWithMap)
 
         // Create a new geometry based on the head's geometry
@@ -56,6 +57,9 @@ export default class Head extends Group {
         this.halfSculptedHead.position.copy(this.head.position);
         this.halfSculptedHead.scale.copy(this.head.scale);
         this.halfSculptedHead.rotation.copy(this.head.rotation);
+        this.halfSculptedHead.castShadow = true;
+        this.halfSculptedHead.receiveShadow = true;
+
 
         this.add(this.halfSculptedHead);
 
@@ -72,14 +76,14 @@ export default class Head extends Group {
 
     _createAimPoints() {
         const aimPointsData = {
-            rEye: new Vector3(this.stand.position.x - 0.37, 0.3, 1.3),
-            lEye: new Vector3(this.stand.position.x + 0.34, 0.3, 1.3),
-            nose: new Vector3(this.stand.position.x, 0, 1.6),
-            mouth: new Vector3(this.stand.position.x, -0.4, 1.35),
-            face: new Vector3(this.stand.position.x, 0.7, 1.3)
+            rEye: new Vector3(this.stand.position.x - 0.037, 0.1, 0.13),
+            lEye: new Vector3(this.stand.position.x + 0.034, 0.1, 0.13),
+            nose: new Vector3(this.stand.position.x, 0.06, 0.16),//
+            mouth: new Vector3(this.stand.position.x, 0.03, 0.14),
+            // face: new Vector3(this.stand.position.x, 0, 0)
         };
         this.points = new Group();
-        const geo = new SphereGeometry(0.3, 32, 32);
+        const geo = new SphereGeometry(0.03, 32, 32);
 
         for (let key in aimPointsData) {
             const p = aimPointsData[key];
@@ -89,10 +93,11 @@ export default class Head extends Group {
             point.position.y = p.y;
             point.position.z = p.z;
             point.visible = false;
-            this.points.add(point)
-        }
-        this.add(this.points)
 
+            this.points.add(point);
+        }
+
+        this.add(this.points);
         this._aimPoints = aimPointsData;
 
     }
@@ -148,6 +153,8 @@ export default class Head extends Group {
         this.stick.rotation.set(0, 0, 0)
         this.stick.visible = false;
         this.add(this.stick);
+        this.stick.scale.set(0.1, 0.1, 0.1)
+
     }
 
     headDone() {

@@ -1,6 +1,5 @@
 import TWEEN from "@tweenjs/tween.js";
 import { Object3D, PlaneGeometry, MeshPhysicalMaterial, Mesh, CylinderGeometry, Cache, DoubleSide, Group } from 'three';
-import { Black } from "../../../utils/black-engine.module";
 import Head from '../components-3d/head'
 import Models3D from "./3d-models";
 import ConfigurableParams from "../../../data/configurable_params";
@@ -31,11 +30,11 @@ export default class Layout3D extends Object3D {
 
     this.add(backgroundMesh);
 
-    const geo = new PlaneGeometry(6, 1);
+    const geo = new PlaneGeometry(8, 1);
     const mat = new MeshPhysicalMaterial({ transparent: true, opacity: 0.9, color: 0x000000 });
     this.bg = new Mesh(geo, mat);
     this.bg.visible = false;
-
+    this.bg.scale.set(0.1, 0.1, 0.1)
     this.add(this.bg);
   }
 
@@ -56,7 +55,7 @@ export default class Layout3D extends Object3D {
     base.position.y = -4.5;
 
     this.stand.add(base);
-
+    this.stand.scale.set(0.1, 0.1, 0.1)
     this.add(this.stand);
   }
 
@@ -69,9 +68,9 @@ export default class Layout3D extends Object3D {
     const numberOfClay = 3;
     this.clay = new Group();
     this.add(this.clay);
-    this.clay.position.set(3 - numberOfClay / numberOfClay, 0);
+    this.clay.position.set(1.4 - numberOfClay / numberOfClay, 0);
 
-    const offset = Black.stage.bounds.width / 2 / (numberOfClay + 2) / 100;
+    const offset = 1;
     const colors = [
       ConfigurableParams.getData()['clay']['clay1']['value'],
       ConfigurableParams.getData()['clay']['clay2']['value'],
@@ -85,6 +84,8 @@ export default class Layout3D extends Object3D {
       plane.position.set(offset * i, 0, 4);
       this.clay.add(plane);
     }
+    this.clay.scale.set(0.1, 0.1, 0.1)
+
   }
 
   body() {
@@ -98,7 +99,7 @@ export default class Layout3D extends Object3D {
     let scale, dockelements;
     if (bodyPart === "head") {
       dockelements = this.model3d.headParts;
-      scale = 4 / (dockelements.length + 2) * 10;
+      scale = 3.5 / (dockelements.length + 2) * 10;
     }
     else if (bodyPart === "body") {
       dockelements = this.model3d.bodies2d;
@@ -112,14 +113,15 @@ export default class Layout3D extends Object3D {
 
     const width = 8;
 
-    this.bg.position.set(0, this._camera.position.y - 1.5, 3);
+    this.bg.position.set(this._camera.position.x, this._camera.position.y - 0.1, this._camera.position.z / 2);
     this.bg.visible = true;
     this.dock = new Group();
     this.dock.position.copy(this.bg.position);
     this.add(this.dock);
 
-    const numberOfElements = dockelements.length;
-    const rowStartPosition = -1.5 + (1 / numberOfElements);
+    const numberOfElements = dockelements.length + 2;
+    const rowStartPosition = this._camera.position.x - numberOfElements / numberOfElements;
+    console.log(rowStartPosition)
     let element;
 
     const distanceBetweenElements = (width / 2) / (numberOfElements + 2); // Adjust this for spacing.
@@ -129,15 +131,14 @@ export default class Layout3D extends Object3D {
       else element = dockelements[i];
       element.visible = true;
       element.scale.set(scale, scale, scale);
-      element.rotation.x += 1;
+      element.rotation.x = Math.PI / 2;
       let elementName = element.name.toLowerCase();
       if (elementName.includes("_r")) {
         element.scale.multiply(this.model3d.flipX)
       }
       if (element.name === "hair") {
-        element.scale.set(scale / 2, scale / 2, scale / 2);
-        element.rotation.x += 1;
-        element.rotation.y += Math.PI / 2;
+        element.scale.set(scale / 3, scale / 3, scale / 3);
+        element.rotation.z = Math.PI / 2;
 
       }
 
@@ -149,12 +150,13 @@ export default class Layout3D extends Object3D {
       this.dock.add(element)
 
     }
+    this.dock.scale.set(0.1, 0.1, 0.1)
   }
 
 
   _initSculpt(clayMaterial) {
-    this.model3d._initTexture(clayMaterial);
     this._sculpt = new Head(clayMaterial, this.model3d.head, this.model3d.sphere, this.stand);
+    this.model3d._initTexture(clayMaterial);
     this.add(this._sculpt)
   }
 
