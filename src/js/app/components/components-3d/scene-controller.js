@@ -289,7 +289,7 @@ export default class SceneController extends Object3D {
         this.sceneNumber = 5;
         this.canMove = false;
         this._layout3d._initDock("accessories");
-        this.numberOfDecorations = this._layout3d.model3d.accessories.length;
+        this.numberOfDecorations = this._layout3d.model3d.accessories.length - 1;
         this._layout2d._cheers.show(2, Black.stage.centerX + 1, Black.stage.centerY - 1);
     }
 
@@ -313,6 +313,7 @@ export default class SceneController extends Object3D {
         this.sceneNumber = 7;
         // this._layout3d._initDock("body");
         this._layout3d.model3d.armature.children[0].visible = true;
+        console.log(this._layout3d.model3d.armature.children[0].name)
     }
 
     scene8() {
