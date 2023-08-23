@@ -131,37 +131,35 @@ export default class Models3D extends Group {
                 head.visible = false;
         })
 
+
+        this.initHeadParts()
+    }
+
+    initHeadParts() {
         this.head.traverse((child) => {
-            console.log(child.name)
             const childName = child.name.toLowerCase();
+            child.visible = false;
+            if (!childName.includes("mask") && childName != this.head.name) {
+                if (childName.includes("ring") || childName.includes("ear") || childName.includes("eye")) {
 
+                    const child_r = child.clone();
+                    child_r.name += "_r";
+                    child_r.scale.multiply(this.flipX);
+                    child_r.position.multiply(this.flipX);
+                    this.head.add(child_r)
 
-            if (childName.includes("hair") || childName === "hair") {
-                this.headParts.push(child);
-                console.log("hair")
-            } else if (childName.includes("ring") || childName.includes("ear") || childName.includes("eye")) {
-                const child_l = child.clone();
-                child_l.name += "_l";
-                const child_r = child.clone();
-                child_r.name += "_r";
-                child_r.scale.multiply(this.flipX);
-                child_r.position.multiply(this.flipX);
-                this.head.add(child_l)
-                this.head.add(child_r)
-                this.headParts.push(child_l);
-                this.headParts.push(child_r);
+                    child.name += "_l";
+                    this.headParts.push(child);
+                    this.headParts.push(child_r);
+                }
+                else
+                    this.headParts.push(child);
             } else if (childName.includes("mask")) {
-                const childmat = new MeshPhysicalMaterial({ color: 0xffffff });
-                child.material = childmat;
                 this.mask = child;
-                this.add(this.mask)
+                this.mask.material = new MeshPhysicalMaterial({ color: 0xffffff })
             }
-            else {
-                console.log(childName)
-            }
-        });
 
-        // this.head.children = this.headParts;
+        });
     }
 
     _initView() {
