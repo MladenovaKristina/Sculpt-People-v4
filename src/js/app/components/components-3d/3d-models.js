@@ -62,7 +62,6 @@ export default class Models3D extends Group {
                 // this.sprayCan.scale.set(1, 1, 1);
                 this.sprayCan.position.set(0, 1, 0.5);
                 this.sprayCan.rotation.set(Math.PI / 2, 0, Math.PI);
-                console.log(child)
                 this.sprayCan.visible = true;
                 this.sprayCan.traverse((cap) => {
                     if (child.name === "can_tip_whole") {
@@ -75,7 +74,6 @@ export default class Models3D extends Group {
         this.add(this.sprayCan);
     }
     _initAssets() {
-        // this._asset.scale.set(0.3, 0.3, 0.3)
         this.add(this._asset)
         const selectedCharacter = ConfigurableParams.getData()['character']['select_character']['value'];
         const characterMappings = {
@@ -116,7 +114,6 @@ export default class Models3D extends Group {
         })
 
         this.heads.traverse((head) => {
-
             if (head.name == "glasses" ||
                 head.name == "veil" ||
                 head.name == "spiderman" ||
@@ -130,59 +127,41 @@ export default class Models3D extends Group {
             if (mapping && head.name === mapping.headName) {
                 this.head = head;
 
-
-
             } else if (head.name.includes("h_"))
                 head.visible = false;
         })
 
         this.head.traverse((child) => {
-            child.visible = false;
-            let childName = child.name.toLowerCase();
+            console.log(child.name)
+            const childName = child.name.toLowerCase();
 
-            if (childName.includes("mask")) {
+
+            if (childName.includes("hair") || childName === "hair") {
+                this.headParts.push(child);
+                console.log("hair")
+            } else if (childName.includes("ring") || childName.includes("ear") || childName.includes("eye")) {
+                const child_l = child.clone();
+                child_l.name += "_l";
+                const child_r = child.clone();
+                child_r.name += "_r";
+                child_r.scale.multiply(this.flipX);
+                child_r.position.multiply(this.flipX);
+                this.head.add(child_l)
+                this.head.add(child_r)
+                this.headParts.push(child_l);
+                this.headParts.push(child_r);
+            } else if (childName.includes("mask")) {
                 const childmat = new MeshPhysicalMaterial({ color: 0xffffff });
                 child.material = childmat;
-                // child.scale.set(0.75, 0.75, 0.75);
                 this.mask = child;
                 this.add(this.mask)
             }
-            if (!childName.includes("h_") && !childName.includes("mask")) {
-                if (childName.includes("ear") || childName.includes("eye")) {
-                    const child_l = child.clone();
-                    child_l.name += "_l";
-                    const child_r = child.clone();
-                    child_r.name += "_r";
-                    child_r.scale.multiply(this.flipX);
-                    child_r.position.multiply(this.flipX);
-
-                    this.head.add(child_l)
-                    this.head.add(child_r)
-
-                    this.headParts.push(child_l);
-                    this.headParts.push(child_r);
-                } else
-                    this.headParts.push(child);
+            else {
+                console.log(childName)
             }
-        })
+        });
 
-        this.head.children = [...this.headParts, ...this.accessories];
-
-    }
-
-
-    pushtoStand() {
-        //         for (let i = 0; i < this.bodies3d.length; i++) {
-        //             const child = this.bodies3d[i];
-        //             const geometry = new PlaneGeometry(1, 1);
-        //             const material = new MeshPhysicalMaterial({ color: 0xffff00, side: DoubleSide });
-        //             const plane = new Mesh(geometry, material);
-        //             plane.position.set(0, 0, 0);
-        // 
-        //             plane.name = child.name;
-        //             this.bodies2d.push(plane);
-        //             child.visible = false;
-        //             this.head.add(child);
+        // this.head.children = this.headParts;
     }
 
     _initView() {

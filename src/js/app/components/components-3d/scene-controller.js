@@ -200,16 +200,14 @@ export default class SceneController extends Object3D {
     }
 
     moveToMouse(x, y) {
-        if (this.canMove) {
-            this._layout3d._sculpt.putonTexture(() => { this.scene4Executed = true; });
-            this._layout3d.model3d.sprayCan.position.x = x / 10000;
-            this._layout3d.model3d.sprayCan.position.y = -y / 1000;
-
-        }
-        if (this.scene4Executed) {
-            this.scene4();
-            console.log(this.scene4Executed)
-        }
+        if (!this.scene4Executed) { // Check if scene 4 hasn't been executed yet
+            this._layout3d._sculpt.putonTexture(() => {
+                this.scene4Executed = true;
+                this.scene4(); // Call scene 4 here
+                console.log(this.scene4Executed);
+            });
+        } this._layout3d.model3d.sprayCan.position.x = x / 10000;
+        this._layout3d.model3d.sprayCan.position.y = -y / 1000;
     }
 
 
