@@ -69,7 +69,7 @@ export default class Layout3D extends Object3D {
     const numberOfClay = 3;
     this.clay = new Group();
     this.add(this.clay);
-    this.clay.position.set(1.5 - numberOfClay / numberOfClay, 0);
+    this.clay.position.set(1.4 - numberOfClay / numberOfClay, 0);
 
     const offset = 1;
     const colors = [
@@ -114,14 +114,15 @@ export default class Layout3D extends Object3D {
 
     const width = 8;
 
-    this.bg.position.set(this._camera.position.x, this._camera.position.y - 1, this._camera.position.z / 2);
+    this.bg.position.set(this._camera.position.x, this._camera.position.y - 0.1, this._camera.position.z / 2);
     this.bg.visible = true;
     this.dock = new Group();
     this.dock.position.copy(this.bg.position);
     this.add(this.dock);
 
-    const numberOfElements = dockelements.length;
-    const rowStartPosition = this._camera.position.x - (1 / dockelements.length + 1);
+    const numberOfElements = dockelements.length + 2;
+    const rowStartPosition = this._camera.position.x - numberOfElements / numberOfElements;
+    console.log(rowStartPosition)
     let element;
 
     const distanceBetweenElements = (width / 2) / (numberOfElements + 2); // Adjust this for spacing.
@@ -131,7 +132,7 @@ export default class Layout3D extends Object3D {
       else element = dockelements[i];
       element.visible = true;
       element.scale.set(scale, scale, scale);
-      element.rotation.x += 1;
+      element.rotation.x = Math.PI / 2;
       let elementName = element.name.toLowerCase();
       if (elementName.includes("_r")) {
         element.scale.multiply(this.model3d.flipX)

@@ -118,7 +118,8 @@ export default class Layout2D extends DisplayObject {
   startHint() {
     this._tutorial.show();
   }
-  _showOval() {
+  _showOval(position) {
+    this.ovalposition = position;
     const bb = Black.stage;
     if (this.ovalTarget) this.ovalTarget.clear();
     this.ovalTarget = new Graphics();
@@ -126,20 +127,20 @@ export default class Layout2D extends DisplayObject {
     this.ovalTarget.lineStyle(10, 0xf0f0f0);
     const width = bb.height * 0.4;
     const height = bb.height * 0.5;
-    this.ovalTarget.roundedRect(bb.centerX - width / 2, bb.centerY - height / 1.5, width, height, 200);
+    this.ovalTarget.roundedRect(this.ovalposition.x - width / 2, this.ovalposition.y - height * 0.8, width, height, 200);
     this.ovalTarget.stroke();
     this.ovalTarget.visible = true;
     this.add(this.ovalTarget);
   }
+
   _hideOval(callback) {
     const bb = Black.stage;
-
     this.ovalTarget.clear();
     this.ovalTarget.beginPath();
     this.ovalTarget.lineStyle(10, 0x00ff00);
     const width = bb.height * 0.4;
     const height = bb.height * 0.5;
-    this.ovalTarget.roundedRect(bb.centerX - width / 2, bb.centerY - height / 1.5, width, height, 200);
+    this.ovalTarget.roundedRect(this.ovalposition.x - width / 2, this.ovalposition.y - height * 0.8, width, height, 200);
     this.ovalTarget.stroke();
 
     setTimeout(() => {
@@ -148,7 +149,7 @@ export default class Layout2D extends DisplayObject {
       this.ovalTarget.lineStyle(10, 0xffffff);
       const width = bb.height * 0.4;
       const height = bb.height * 0.5;
-      this.ovalTarget.roundedRect(bb.centerX - width / 2, bb.centerY - height / 1.5, width, height, 200);
+      this.ovalTarget.roundedRect(this.ovalposition.x - width / 2, this.ovalposition.y - height * 0.8, width, height, 200);
       this.ovalTarget.stroke();
     }, 200)
 
@@ -158,10 +159,8 @@ export default class Layout2D extends DisplayObject {
       this.ovalTarget = null;
       callback()
     }, 600)
-
-
-
   }
+
   _initDockBG(object, callback) {
     this.initObjectInDock(object);
     callback()

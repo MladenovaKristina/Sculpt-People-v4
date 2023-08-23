@@ -1,13 +1,14 @@
 
-import { Object3D, Raycaster, Vector2, Vector3 } from "three";
+import { Object3D, Raycaster, Vector2, Vector3, Box3 } from "three";
 import TWEEN from "@tweenjs/tween.js";
 import { Black } from "../../../utils/black-engine.module";
 import Helpers from "../../helpers/helpers";
 
 export default class SceneController extends Object3D {
-    constructor(camera, cameraController, layout2d, layout3d) {
+    constructor(camera, renderer, cameraController, layout2d, layout3d) {
         super();
         this._camera = camera;
+        this._renderer = renderer;
         this._cameraController = cameraController;
         this.scene4Executed = false;
 
@@ -207,8 +208,10 @@ export default class SceneController extends Object3D {
 
     moveToMouse(x, y) {
         if (this.canMove) {
-            this._layout3d.model3d.sprayCan.position.x = x / 200;
-            this._layout3d.model3d.sprayCan.position.y = -y / 200;
+            this._layout3d.model3d.sprayCan.position.x = x / 100000;
+            this._layout3d.model3d.sprayCan.position.y = -y / 10000;
+            console.log(this._layout3d.model3d.sprayCan.position.y);
+
         }
     }
 
@@ -216,23 +219,27 @@ export default class SceneController extends Object3D {
     scene0() {
         this._layout3d._initClay();
         this._layout2d._startClayHint();
+
     }
 
     scene1(clayMaterial) {
         this._layout3d._initSculpt(clayMaterial);
         this._layout3d.model3d.show();
+
         this.setCam(0, null, null, true, () => {
             this._layout2d.startHint();
             this.sceneNumber = 1;
             this.canMove = true;
         });
+
+
     }
 
     scene2() {
 
         this._layout2d._cheers.show(0, Black.stage.centerX - 1, Black.stage.centerY + 1);
 
-        this.setCam(null, 0.001, null, true, () => {
+        this.setCam(null, -0.04, 0.2, true, () => {
             console.log("zoom")
             this.sceneNumber = 2;
 
@@ -241,7 +248,9 @@ export default class SceneController extends Object3D {
         this._layout2d._tutorial.hide();
         this._layout3d._sculpt.head.rotation.set(Math.PI / 2, 0, 0)
         this._layout3d._sculpt.halfSculptedHead.visible = true;
-        this._layout2d._showOval();
+        const ovalposition = Helpers.vector3ToBlackPosition(this._layout3d.model3d.head.position, this._renderer.threeRenderer, this._camera.threeCamera);
+        console.log(ovalposition)
+        this._layout2d._showOval(ovalposition);
         this._layout3d.model3d.hide(this._layout3d.model3d.group);
 
         this.canMove = false;
@@ -267,22 +276,17 @@ export default class SceneController extends Object3D {
     }
 
     scene4() {
-        if (!this.scene4Executed) {
-            this._layout3d.model3d.removeMask();
-            this._layout3d.model3d.sprayCan.visible = false;
-            setTimeout(() => {
-                this.sceneNumber = 4;
+        this._layout2d._cheers.show(1, Black.stage.centerX + 1, Black.stage.centerY - 1);
 
-                this._layout2d._cheers.show(1, Black.stage.centerX + 1, Black.stage.centerY - 1);
-                this.numberOfDecorations = this._layout3d.model3d.headParts.length;
+        this._layout3d.model3d.removeMask();
+        this._layout3d.model3d.sprayCan.visible = false;
+        this._layout2d._objectsInDock.hide();
 
-                this._layout2d._objectsInDock.hide();
-                this._layout3d._initDock("head");
-
-                console.log("decorating head scene", this.sceneNumber);
-            }, 2300)
-        }
-
+        setTimeout(() => {
+            this.sceneNumber = 4;
+            this._layout3d._initDock("head");
+            this.numberOfDecorations = this._layout3d.model3d.headParts.length;
+        }, 2300)
 
     }
 
@@ -299,12 +303,11 @@ export default class SceneController extends Object3D {
 
         this._layout3d.hide(this._layout3d.bg)
         this._layout3d.hide(this._layout3d.dock)
-        this.setCam(-0.5, 2, -2, true, () => {
+        this.setCam(-0.2, null, -0.6, true, () => {
             this._layout2d._confetti.show()
         });
 
-        const standVector = new Vector3(this._layout3d.stand.position.x, this._layout3d.stand.position.y - 1, this._layout3d.stand.position.z)
-        this._cameraController.setLookingAt(standVector)
+        this._cameraController.setLookingAt(this._layout3d.model3d.stand)
 
         console.log("celebrate scene", this.sceneNumber);
         setTimeout(() => { this.scene7() }, 3000)
@@ -314,6 +317,7 @@ export default class SceneController extends Object3D {
         console.log('7')
         this.sceneNumber = 7;
         this._layout3d._initDock("body");
+        this._layout3d.model3d.armature.children[0].visible = true;
 
     }
 

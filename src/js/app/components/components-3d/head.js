@@ -74,9 +74,9 @@ export default class Head extends Group {
         const aimPointsData = {
             rEye: new Vector3(this.stand.position.x - 0.037, 0.1, 0.13),
             lEye: new Vector3(this.stand.position.x + 0.034, 0.1, 0.13),
-            nose: new Vector3(this.stand.position.x, -0.1, 0.18),
-            mouth: new Vector3(this.stand.position.x, 0.1, 0.135),
-            face: new Vector3(this.stand.position.x, 0.15, 0.13)
+            nose: new Vector3(this.stand.position.x, 0.06, 0.16),//
+            mouth: new Vector3(this.stand.position.x, 0.03, 0.14),
+            // face: new Vector3(this.stand.position.x, 0, 0)
         };
         this.points = new Group();
         const geo = new SphereGeometry(0.03, 32, 32);
@@ -88,7 +88,7 @@ export default class Head extends Group {
             point.position.x = p.x;
             point.position.y = p.y;
             point.position.z = p.z;
-            point.visible = true;
+            point.visible = false;
 
             this.points.add(point);
         }
