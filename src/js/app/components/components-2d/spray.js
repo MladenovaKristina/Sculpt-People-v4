@@ -2,8 +2,9 @@ import config from '../../../data/config';
 import { GameObject, Sprite, Graphics, Black, Tween, Ease } from '../../../utils/black-engine.module';
 
 export default class SprayCan extends GameObject {
-    constructor() {
+    constructor(bg) {
         super();
+        this._bg = bg;
         this._text = null;
         this._container = null;
         this.numberOfCans = 4;
@@ -34,6 +35,7 @@ export default class SprayCan extends GameObject {
             const canOutline = new Sprite('spray');
             const canColor = new Sprite('sprayColorPart');
             canColor.color = colors[i];
+            can.name = colors[i]
             can.addChild(canSelect);
             can.addChild(canOutline);
             can.addChild(canColor);

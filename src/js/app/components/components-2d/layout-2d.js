@@ -1,5 +1,5 @@
 import { Black, DisplayObject, Sprite, Graphics } from '../../../utils/black-engine.module';
-import { Tween, Easing } from '@tweenjs/tween.js';
+
 import model from '../../../data/model';
 import Helpers from '../../helpers/helpers';
 import PlayButton from './play-button';
@@ -11,15 +11,16 @@ import ReferencePhoto from './ref-photo';
 import SelectHint from './select-hint';
 import CheersText from './cheers-text';
 import Confetti from './confetti';
-import { call } from 'file-loader';
 import SprayCan from './spray';
-// works as a main class in 2D playables
+import Bodies from './bodies';
+
 export default class Layout2D extends DisplayObject {
   constructor() {
     super();
 
     this.onPlayBtnClickEvent = 'onPlayBtnClickEvent';
     this.onActionClickEvent = 'onActionClickEvent';
+    this.onSelectFromDockClickEvent = 'onSelectFromDockClickEvent';
 
     this._platform = model.platform;
     this._downloadBtn = null;
@@ -165,10 +166,19 @@ export default class Layout2D extends DisplayObject {
     this.initObjectInDock(object);
     callback()
   }
+
   initObjectInDock(object) {
-    this._objectsInDock = new SprayCan(this._bg)
-    this.add(this._objectsInDock)
+    if (object === "spray") {
+      this._objectsInDock = new SprayCan(this._bg)
+      this.add(this._objectsInDock)
+      console.log(this._objectsInDock)
+    } else {
+      this._objectsInDock = null;
+      this._objectsInDock = new Bodies(this._bg)
+      this.add(this._objectsInDock)
+    }
   }
+
   _startClayHint() {
     this._selectHint.show();
   }
@@ -204,11 +214,29 @@ export default class Layout2D extends DisplayObject {
     if (ifDownloadButtonClicked) return true;
 
     this._endScreen.onDown(blackPos.x, blackPos.y);
+    this.selectObjecInDock(blackPos.x, blackPos.y);
   }
 
-  selectSpray(x, y, callback) {
-    console.log(x, y, "spray")
-    if (callback) callback();
+  selectObjecInDock(x, y) {
+    console.log(this._objectsInDock)
+    if (this._objectsInDock) {
+      const selectFrom = this._objectsInDock._bg.mChildren;
+
+      for (let i = 0; i < selectFrom.length; i++) {
+        const object = selectFrom[i];
+
+        if (x >= object.x - object.width && x <= object.x + object.width / 2 && y >= object.y && y <= object.y + object.height) {
+
+          if (object.mTextureName) this.selectedObject = object.mTextureName; else { this.selectedObject = i }
+          this.post('onSelectFromDockClickEvent', this.selectedObject)
+
+        }
+
+      }
+    }
+  }
+  resetSelected() {
+    this.selectedObject = null;
   }
 
   onMove(x, y) {
@@ -217,6 +245,7 @@ export default class Layout2D extends DisplayObject {
   }
 
   onUp() {
+    if (this.selectedObject) this.resetSelected();
   }
 
   enableStoreMode() {

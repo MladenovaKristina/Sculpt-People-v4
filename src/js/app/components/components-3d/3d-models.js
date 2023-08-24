@@ -48,19 +48,29 @@ export default class Models3D extends Group {
     _initTexture(clayMaterial) {
         this.clayMaterial = clayMaterial;
 
-        this._materialLoader._initClayMaterial(clayMaterial);
+        this._materialLoader._initClayMaterial(this.clayMaterial);
 
         this.sphere.material = this.clayMaterial;
-
+        console.log(this.clayMaterial.color, "clay")
     }
+    _setSprayCanColor(colorid) {
+        const colors = [0x00ff00, 0xff0000, 0x0000ff, 0x0f0f0f, 0x000000];
 
+        this.canBody.material.color = colors[colorid]
+        console.log(this.canBody.material.color, colors[colorid])
+    }
     _initSprayCan() {
+        const material = new MeshPhysicalMaterial({ color: 0x555555, metalness: 10, reflectivity: 0.5 })
         this.sprayCanGroup = Cache.get("sprayCan").scene;
         this.sprayCanGroup.traverse((child) => {
+            if (child.name === "can_body003") {
+                this.canBody = child;
+                this.canBody.material = material
+            }
             if (child.name === "spray_can_type4") {
                 child.visible = true;
                 this.sprayCan = child;
-                this.sprayCan.scale.set(1, 1, 1);
+                this.sprayCan.scale.set(0.1, 0.1, 0.1);
                 this.sprayCan.position.set(0, 1, 0.1);
                 this.sprayCan.rotation.set(Math.PI / 2, 0, Math.PI);
                 this.sprayCan.visible = true;
@@ -81,7 +91,7 @@ export default class Models3D extends Group {
 
         const selectedCharacter = ConfigurableParams.getData()['character']['select_character']['value'];
         const characterMappings = {
-            Big: { bodyName: 'b_big1', headName: 'h_bride' },
+            Big: { bodyName: 'b_big1', headName: 'h_rock' },
             Bride: { bodyName: 'b_bride1', headName: 'h_bride' },
             Harley: { bodyName: 'b_harley1', headName: 'h_harley' },
             Tuxedo: { bodyName: 'b_tuxedo2', headName: 'h_tuxedo' }
@@ -109,7 +119,7 @@ export default class Models3D extends Group {
             bodies.position.set(0, -0.38, 0);
             bodies.scale.multiply(scaledown);
             bodies.rotation.set(0, 0, 0);
-            bodies.visible = true;
+            bodies.visible = false;
 
             if (bodies.name.includes("b_")) {
                 this.bodies3d.push(bodies)
@@ -122,13 +132,6 @@ export default class Models3D extends Group {
                 head.name == "veil" ||
                 head.name == "spiderman" ||
                 head.name == "moustache") {
-                if (head.name === "veil") {
-
-                    head.material = new MeshPhysicalMaterial({ color: 0xffffff });
-                } if (head.name === "spiderman")
-                    head.material = new MeshPhongMaterial({ color: 0xff0000 });
-                head.material.side = DoubleSide;
-
                 head.visible = false;
                 head.rotation.set(Math.PI / 2, 0, 0);
                 this.accessories.push(head)
@@ -148,7 +151,7 @@ export default class Models3D extends Group {
     initHeadParts() {
         this.head.traverse((child) => {
             const childName = child.name.toLowerCase();
-            child.visible = true;
+            child.visible = false;
             if (!childName.includes("mask") && childName != this.head.name) {
                 if (childName.includes("ring") || childName.includes("ear") || childName.includes("eye")) {
 
@@ -382,9 +385,9 @@ export default class Models3D extends Group {
 
     placeMask(callback) {
         this.mask.visible = true;
-        const targetpos = new Vector3(0, 0.01, 0);
+        const targetpos = new Vector3(0, 0, 0.02);
         const targetrotation = new Vector3(0, 0, 0);
-        this.mask.position.set(-1, 1, 1);
+        this.mask.position.set(-5, 5, 3);
         this.mask.rotation.z += 0.3;
         this.mask.rotation.x = -Math.PI / 2;
 
@@ -408,7 +411,7 @@ export default class Models3D extends Group {
     }
 
     removeMask() {
-        const targetpos = new Vector3(-4, 4, 10);
+        const targetpos = new Vector3(-10, 10, 10);
         const targetrotation = new Vector3(0, 0, 0);
 
 
@@ -416,7 +419,9 @@ export default class Models3D extends Group {
             .to({ x: targetpos.x, y: targetpos.y, z: targetpos.z }, 1000)
             .easing(TWEEN.Easing.Sinusoidal.InOut)
             .delay(800)
-
+            .onComplete(() => {
+                this.mask.visible = false;
+            })
             .start();
 
         const rotatetween = new TWEEN.Tween(this.mask.rotation)

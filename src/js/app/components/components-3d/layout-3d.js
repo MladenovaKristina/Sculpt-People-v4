@@ -1,5 +1,5 @@
 import TWEEN from "@tweenjs/tween.js";
-import { Object3D, PlaneGeometry, MeshPhysicalMaterial, Mesh, CylinderGeometry, Cache, DoubleSide, Group } from 'three';
+import { Object3D, MathUtils, PlaneGeometry, MeshPhysicalMaterial, Mesh, CylinderGeometry, Cache, DoubleSide, Group } from 'three';
 import Head from '../components-3d/head'
 import Models3D from "./3d-models";
 import ConfigurableParams from "../../../data/configurable_params";
@@ -10,6 +10,12 @@ export default class Layout3D extends Object3D {
     this._camera = camera;
     this.positionInDock = [];
     this._init();
+
+    var vFOV = MathUtils.degToRad(this._camera.fov); // convert vertical fov to radians
+    var height = 2 * Math.tan(vFOV / 2) * this._camera.position.z; // visible height
+
+    this.screenWidth = height * this._camera.aspect;
+    console.log(this.screenWidth)
   }
 
   _init() {
@@ -99,11 +105,11 @@ export default class Layout3D extends Object3D {
     let scale, dockelements;
     if (bodyPart === "head") {
       dockelements = this.model3d.headParts;
-      scale = 3.5 / (dockelements.length + 2) * 10;
+      scale = 0.03;
     }
     else if (bodyPart === "body") {
       dockelements = this.model3d.bodies2d;
-      // scale = 0.3;
+      scale = 0.03;
 
     }
     else if (bodyPart === "accessories") {

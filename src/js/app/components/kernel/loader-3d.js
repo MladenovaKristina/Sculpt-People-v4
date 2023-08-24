@@ -9,7 +9,7 @@ import arm from '../../../data/textures/3d/hand_Sculpting.glb';
 
 import arianagrandehead from '../../../data/textures/3d/ArianaG.png';
 import harleybody from '../../../data/textures/3d/Harley_Body_D.png';
-import harleyhead from '../../../data/textures/3d/Harley_Head_D.png';
+import harleyhead from '../../../data/textures/3d/Harley_texture.png';
 import mrbeanhead from '../../../data/textures/3d/MrBean.png';
 import rockhead from '../../../data/textures/3d/RockPaintMask.png';
 import fingerprint from '../../../data/textures/3d/fingerprints.png';

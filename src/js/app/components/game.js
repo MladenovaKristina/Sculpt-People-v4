@@ -60,6 +60,9 @@ export default class Game {
       this._state = STATES.FINAL;
       this.messageDispatcher.post(this.onFinishEvent);
     });
+    this._layout2d.on(this._layout2d.onSelectFromDockClickEvent, (msg, elementSelected) => {
+      this._sceneController._setDockElement(elementSelected);
+    });
   }
 
   _initLayout3D() {

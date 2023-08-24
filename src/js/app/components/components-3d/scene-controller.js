@@ -1,7 +1,7 @@
 
 import { Object3D, Raycaster, Vector2 } from "three";
 import TWEEN from "@tweenjs/tween.js";
-import { Black } from "../../../utils/black-engine.module";
+import { Black, MessageDispatcher } from "../../../utils/black-engine.module";
 import Helpers from "../../helpers/helpers";
 export default class SceneController extends Object3D {
     constructor(camera, renderer, cameraController, layout2d, layout3d) {
@@ -18,8 +18,15 @@ export default class SceneController extends Object3D {
         this.canMove = false;
         this.animating = false;
 
+        this.messageDispatcher = new MessageDispatcher();
+
 
         this.scene0();
+    }
+
+    _setDockElement(elementSelected) {
+        this.selectedDockElement = elementSelected;
+        console.log(this.selectedDockElement);
     }
 
     onDown(x, y) {
@@ -194,15 +201,19 @@ export default class SceneController extends Object3D {
 
         }
         if (this.sceneNumber === 3 && this.canMove) {
+            if (this.selectedDockElement) {
+                this._layout3d.model3d._setSprayCanColor(this.selectedDockElement)
+
+            }
             this.moveToMouse(x, y);
         }
     }
 
     moveToMouse(x, y) {
-        if (!this.scene4Executed) { // Check if scene 4 hasn't been executed yet
+        if (!this.scene4Executed) {
             this._layout3d._sculpt.putonTexture(() => {
                 this.scene4Executed = true;
-                this.scene4(); // Call scene 4 here
+                this.scene4();
                 console.log(this.scene4Executed);
             });
         } this._layout3d.model3d.sprayCan.position.x = x / 10000;
@@ -266,7 +277,7 @@ export default class SceneController extends Object3D {
 
         this.sceneNumber = 3;
 
-        this._layout2d._initDockBG("spray", () => { });
+        this._layout2d._initDockBG("spray");
     }
 
     scene4() {

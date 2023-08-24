@@ -11,16 +11,19 @@ export default class MaterialLoader {
     _initClayMaterial(clayMaterial) {
         this._asset.traverse((child) => {
             const childName = child.name.toLowerCase();
-            if (childName.includes("ear") && !childName.includes("ring") || childName.includes("leg") || childName.includes("arm") || childName.startsWith("h_") && !childName.includes("hair")) { child.material = clayMaterial }
-
+            if (childName.includes("ear") && !childName.includes("ring") || childName.startsWith("h_") && !childName.includes("hair") && !childName === "h_mask") { child.material = clayMaterial }
+            if (child.material === this.skinMaterial && child.material.color !== clayMaterial.color) {
+                child.material.color.copy(clayMaterial.color);
+            }
         })
     }
+
     _init() {
         const whiteMaterial = new MeshPhongMaterial({
             color: 0xffffff, side: DoubleSide,
         })
         const blackMaterial = new MeshPhongMaterial({ color: 0x000000 })
-        const skinMaterial = new MeshPhongMaterial({
+        this.skinMaterial = new MeshPhongMaterial({
             color: 0xF5F5DC, blending: NormalBlending, side: DoubleSide,
 
         })
@@ -31,19 +34,19 @@ export default class MaterialLoader {
             child.material.side = DoubleSide;
             if (childName === "b_big") {
                 child.children[0].material = blackMaterial;
-                child.children[1].material = skinMaterial;
+                child.children[1].material = this.skinMaterial;
                 child.children[2].material = whiteMaterial;
             }
             if (childName === "b_bride") {
 
-                child.children[0].material = skinMaterial;
+                child.children[0].material = this.skinMaterial;
                 child.children[1].material = whiteMaterial;
 
             }
             if (childName === "b_harley") { child.material = new MeshPhongMaterial({ map: Cache.get("harleybody") }) }
             if (childName === "b_tuxedo") {
                 child.children[0].material = blackMaterial;
-                child.children[1].material = skinMaterial;
+                child.children[1].material = this.skinMaterial;
                 child.children[2].material = whiteMaterial;
 
             }
@@ -60,10 +63,10 @@ export default class MaterialLoader {
                 child.material.map = Cache.get("arianagrandehead");
             }
 
-            if (childName.includes("mask") || childName === "hair_clip") { child.material = whiteMaterial; }
+            if (childName.includes("mask") || childName === "hair_clip" || childName === "h_mask") { child.material = whiteMaterial; }
             if (childName.includes("ring")) { child.material = goldMaterial }
 
-            if (childName === "hair" || childName === "moustache") { child.material = new MeshPhongMaterial({ color: 0x664238 }) }
+            if (childName.includes("hair") || childName === "moustache") { child.material = new MeshPhongMaterial({ color: 0x664238 }) }
 
             if (childName === "glasses") { child.material = blackMaterial }
 
