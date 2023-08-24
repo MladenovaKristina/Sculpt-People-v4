@@ -3,7 +3,6 @@ import { Object3D, Raycaster, Vector2 } from "three";
 import TWEEN from "@tweenjs/tween.js";
 import { Black } from "../../../utils/black-engine.module";
 import Helpers from "../../helpers/helpers";
-
 export default class SceneController extends Object3D {
     constructor(camera, renderer, cameraController, layout2d, layout3d) {
         super();

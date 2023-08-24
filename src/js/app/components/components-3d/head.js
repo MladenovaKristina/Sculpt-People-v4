@@ -22,22 +22,11 @@ export default class Head extends Group {
         const radius = 1.2;
 
         this.head.visible = false;
-        this.head.material = this.clayMaterial;
-        let headMap;
-        if (this.head.name === "h_harley") {
-            headMap = Cache.get("harleyhead")
-        } if (this.head.name === "h_bride") {
-            headMap = Cache.get("arianagrandehead")
-        } if (this.head.name === "h_rock") {
-            headMap = Cache.get("rockhead")
-        }
-        if (this.head.name === "h_tuxedo") {
-            headMap = Cache.get("mrbeanhead")
-        }
-
-        const headmaterial = new MeshPhysicalMaterial({ map: headMap, transparent: true, opacity: 0 })
+        const headmaterial = this.head.material;
         this.headWithMap = new Mesh(this.head.geometry, headmaterial);
-        this.headWithMap.position.copy(this.head.position)
+        this.headWithMap.position.copy(this.head.position);
+        this.head.material = this.clayMaterial;
+
         this.headWithMap.rotation.copy(this.head.rotation)
         this.headWithMap.scale.copy(this.head.scale)
         // this.headWithMap.visible = false;
@@ -158,9 +147,12 @@ export default class Head extends Group {
     }
 
     headDone() {
+        this.head.rotation.set(0, 0, 0)
+
         this.head.visible = true;
         this.modifiedMesh.visible = false;
         this.halfSculptedHead.visible = false;
+        console.log(this.head.rotation)
     }
 
     onMove(x, y, callback) {

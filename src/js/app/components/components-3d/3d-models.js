@@ -1,7 +1,7 @@
-import { Group, Box3, Cache, Mesh, MeshPhysicalMaterial, PlaneGeometry, DoubleSide, SphereGeometry, Vector3, NormalBlending, AnimationMixer } from 'three';
+import { Group, MeshPhongMaterial, Cache, Mesh, MeshPhysicalMaterial, PlaneGeometry, DoubleSide, SphereGeometry, Vector3, NormalBlending, AnimationMixer } from 'three';
 import TWEEN from '@tweenjs/tween.js';
 import ConfigurableParams from '../../../data/configurable_params';
-import { MeshPhongMaterial } from 'three';
+import MaterialLoader from "./material-loader";
 
 export default class Models3D extends Group {
     constructor(stand) {
@@ -33,21 +33,22 @@ export default class Models3D extends Group {
         }
         this.init()
     }
+
     init() {
         this._initAssets();
         this._initSprayCan()
         this._initView();
+        this._initMaterials()
+    }
+
+    _initMaterials() {
+        this._materialLoader = new MaterialLoader(this._asset);
     }
 
     _initTexture(clayMaterial) {
         this.clayMaterial = clayMaterial;
 
-        this.head.traverse((child) => {
-            if (child.name === "ears" || child.name === "EARS" || child.name === "ear_l" || child.name === "ear_r") {
-                child.material = this.clayMaterial;
-            }
-
-        })
+        this._materialLoader._initClayMaterial(clayMaterial);
 
         this.sphere.material = this.clayMaterial;
 
@@ -59,8 +60,8 @@ export default class Models3D extends Group {
             if (child.name === "spray_can_type4") {
                 child.visible = true;
                 this.sprayCan = child;
-                // this.sprayCan.scale.set(1, 1, 1);
-                this.sprayCan.position.set(0, 1, 0.5);
+                this.sprayCan.scale.set(1, 1, 1);
+                this.sprayCan.position.set(0, 1, 0.1);
                 this.sprayCan.rotation.set(Math.PI / 2, 0, Math.PI);
                 this.sprayCan.visible = true;
                 this.sprayCan.traverse((cap) => {
@@ -73,6 +74,7 @@ export default class Models3D extends Group {
 
         this.add(this.sprayCan);
     }
+
     _initAssets() {
         this._asset = Cache.get('assets').scene.children[0];
         this.add(this._asset)
@@ -107,7 +109,7 @@ export default class Models3D extends Group {
             bodies.position.set(0, -0.38, 0);
             bodies.scale.multiply(scaledown);
             bodies.rotation.set(0, 0, 0);
-            bodies.visible = false;
+            bodies.visible = true;
 
             if (bodies.name.includes("b_")) {
                 this.bodies3d.push(bodies)
@@ -140,27 +142,15 @@ export default class Models3D extends Group {
                 head.visible = false;
         })
 
-
         this.initHeadParts()
     }
 
     initHeadParts() {
         this.head.traverse((child) => {
             const childName = child.name.toLowerCase();
-            child.visible = false;
+            child.visible = true;
             if (!childName.includes("mask") && childName != this.head.name) {
                 if (childName.includes("ring") || childName.includes("ear") || childName.includes("eye")) {
-                    if (childName.includes("eye")) {
-                        // child.children[0] = new MeshPhongMaterial({ color: 0xffffff }); child.children[1] = new MeshPhongMaterial({ color: 0x000000 })
-                        // console.log(child)
-                    }
-                    if (childName.includes("ear")) {
-                        child.material = this.head.material;
-                    }
-                    if (childName.includes("ring")) {
-                        child.material = new MeshPhongMaterial({ color: 0xFFFF00, metalness: 10, reflectivity: 10 });
-                    }
-
 
                     const child_r = child.clone();
                     child_r.name += "_r";
@@ -248,6 +238,8 @@ export default class Models3D extends Group {
         }
 
     }
+
+
 
     show() {
         this.visible = true;
