@@ -139,15 +139,15 @@ export default class Layout3D extends Object3D {
       if (elementName.includes("_r")) {
         element.scale.multiply(this.model3d.flipX)
       }
-      if (elementName.includes("hair")) {
-        element.scale.set(scale / 4, scale / 4, scale / 4);
+      if (elementName.includes("hair") && !elementName.includes("clip")) {
+        element.scale.set(scale / 10, scale / 10, scale / 10);
         element.rotation.z = Math.PI / 2;
-
       }
-
+      if (elementName.includes("veil")) element.scale.set(scale / 5, scale / 5, scale / 5);
+      if (elementName.includes("spiderman")) element.scale.set(scale, scale, scale);
 
       const pos = rowStartPosition + (distanceBetweenElements * i);
-      element.position.set(pos, 0, 0);
+      element.position.set(pos, 0, 0.1);
 
       this.positionInDock.push(pos);
       this.dock.add(element)

@@ -63,10 +63,10 @@ export default class MaterialLoader {
                 child.material.map = Cache.get("arianagrandehead");
             }
 
-            if (childName.includes("mask") || childName === "hair_clip" || childName === "h_mask") { child.material = whiteMaterial; }
+            if (childName.includes("mask") || childName.includes("clip") || childName === "h_mask") { child.material = whiteMaterial; }
             if (childName.includes("ring")) { child.material = goldMaterial }
 
-            if (childName.includes("hair") || childName === "moustache") { child.material = new MeshPhongMaterial({ color: 0x664238 }) }
+            if (childName.includes("hair") && !childName.includes("clip") || childName === "moustache") { child.material = new MeshPhongMaterial({ color: 0x664238 }) }
 
             if (childName === "glasses") { child.material = blackMaterial }
 
@@ -76,7 +76,7 @@ export default class MaterialLoader {
 
             if (childName === "hair3") { child.material = new MeshPhongMaterial({ color: 0xfaf0be }) }
 
-            if (childName === "Teeth") { child.material = whiteMaterial.clone(); child.material.map = Cache.get("harleyhead") }
+            if (childName.includes("teeth")) { child.material = whiteMaterial; }
 
         })
     }

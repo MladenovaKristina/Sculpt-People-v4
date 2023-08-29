@@ -80,10 +80,11 @@ export default class Head extends Group {
             lEye: new Vector3(this.stand.position.x + 0.034, 0.1, 0.13),
             nose: new Vector3(this.stand.position.x, 0.06, 0.16),//
             mouth: new Vector3(this.stand.position.x, 0.03, 0.14),
-            // face: new Vector3(this.stand.position.x, 0, 0)
+            face: new Vector3(this.stand.position.x, 0, 0)
         };
         this.points = new Group();
-        const geo = new SphereGeometry(0.03, 32, 32);
+        const height = 0.02;
+        const geo = new SphereGeometry(height, 32, 32);
 
         for (let key in aimPointsData) {
             const p = aimPointsData[key];
@@ -91,7 +92,7 @@ export default class Head extends Group {
             const point = new Mesh(geo);
             point.position.x = p.x;
             point.position.y = p.y;
-            point.position.z = p.z;
+            point.position.z = p.z + height;
             point.visible = false;
 
             this.points.add(point);
@@ -146,7 +147,7 @@ export default class Head extends Group {
 
     _initStick() {
         const height = 7;
-        const geom = new CylinderGeometry(0.05, 0.13, height, 10, 10);
+        const geom = new CylinderGeometry(0.02, 0.13, height, 10, 10);
         const mat = new MeshPhysicalMaterial({ color: 0x964B00 });
         this.stick = new Mesh(geom, mat);
         this.stick.geometry.translate(0, -height / 2, 0)
@@ -175,15 +176,15 @@ export default class Head extends Group {
 
     rotateStick(x, y, callback) {
         this.states++;
-
         this.stick.rotation.x = x / 1000;
         this.stick.rotation.y = y / 1000;
         this.stick.rotation.z = -Math.PI / 2 - x / 1000;
-        if (this.states === 0 || this.states === 100 || this.states === 200 || this.states === 300) {
-            this.count++;
+        if (this.states % 100 === 0) {
             this.stick.position.copy(this.points.children[this.count].position);
+            this.count++;
             console.log(this.states)
-        } if (this.states >= 400) callback();
+        }
+        if (this.states >= this.points.children.length * 100) callback();
     }
 
 

@@ -78,7 +78,7 @@ export default class Models3D extends Group {
             }
             if (child.name === "spray_can_type4") {
                 this.sprayCan = child;
-                this.sprayCan.scale.set(0.1, 0.1, 0.1);
+                this.sprayCan.scale.set(0.07, 0.07, 0.07);
                 this.sprayCan.position.set(0, 1, 0.1);
                 this.sprayCan.rotation.set(Math.PI / 2, 0, Math.PI);
                 this.sprayCan.traverse((cap) => {

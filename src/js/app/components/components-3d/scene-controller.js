@@ -1,5 +1,5 @@
 
-import { Object3D, Raycaster, Vector2 } from "three";
+import { Object3D, Raycaster, Vector2, Vector3 } from "three";
 import TWEEN from "@tweenjs/tween.js";
 import { Black, MessageDispatcher } from "../../../utils/black-engine.module";
 import Helpers from "../../helpers/helpers";
@@ -223,7 +223,14 @@ export default class SceneController extends Object3D {
             });
         } this._layout3d.model3d.sprayCan.position.x = x / 10000;
         this._layout3d.model3d.sprayCan.position.y = -y / 1000;
-        this._layout3d.model3d.sprayCan.position.z = this._camera.threeCamera.position.z / 2;
+        const x1 = this._camera.threeCamera.position.z;
+        const x2 = this._layout3d._sculpt.head.position.z;
+        const y1 = this._camera.threeCamera.position.y;
+        const y2 = this._layout3d._sculpt.head.position.y;
+
+        const d = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+        console.log(d / 2)
+        this._layout3d.model3d.sprayCan.position.z = d / 2;
     }
 
 
@@ -329,8 +336,6 @@ export default class SceneController extends Object3D {
         this.sceneNumber = 7;
         this._layout2d._initDockBG("body");
         this.setCam(0, 0.4, -1.5, true, () => {
-            this._layout3d.stand.scale.set(0.2, 0.2, 0.2)
-
         })
 
         this._layout3d.model3d.armature.children[0].visible = true;
@@ -340,14 +345,14 @@ export default class SceneController extends Object3D {
     scene8() {
         this._layout2d._objectsInDock.hide();
 
-        this.setCam(0, 0.5, -1.5, true, () => {
-            this._layout2d._confetti.show()
-
+        this.setCam(0, 0.5, -0.3, true, () => {
+            this.sceneNumber = 8;
         });
-        this._cameraController.setLookingAt(this._layout3d._sculpt.head)
+        this._cameraController.setLookingAt(new Vector3(this._layout3d.stand.position.x, -0.3, this._layout3d.stand.position.z))
+
+        // this._cameraController.setLookingAt(this._layout3d.model3d.armature.position)
 
         console.log('8, moving body')
-        this.sceneNumber = 8;
     }
 
     scene9() {
