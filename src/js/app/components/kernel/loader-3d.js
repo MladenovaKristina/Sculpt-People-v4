@@ -1,7 +1,6 @@
 import { TextureLoader, Cache } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import assets from '../../../data/textures/3d/assets_v04.glb';
-// import assets from '../../../data/textures/3d/scene.glb';
+import assets from '../../../data/textures/3d/assets_v05.glb';
 import sprayCan from '../../../data/textures/3d/spray_can.glb';
 
 import bg_image from '../../../data/textures/bg_image.png';
