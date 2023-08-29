@@ -17,14 +17,6 @@ import cheers4 from '../../../data/textures/cheers/cheers4';
 import cheers5 from '../../../data/textures/cheers/cheers5';
 
 import confetti0 from '../../../data/textures/cheers/confetti/confetti0.png';
-import confetti1 from '../../../data/textures/cheers/confetti/confetti1.png';
-import confetti2 from '../../../data/textures/cheers/confetti/confetti2.png';
-import confetti3 from '../../../data/textures/cheers/confetti/confetti3.png';
-import confetti4 from '../../../data/textures/cheers/confetti/confetti4.png';
-import confetti5 from '../../../data/textures/cheers/confetti/confetti5.png';
-import confetti6 from '../../../data/textures/cheers/confetti/confetti6.png';
-import confetti7 from '../../../data/textures/cheers/confetti/confetti7.png';
-import confetti8 from '../../../data/textures/cheers/confetti/confetti8.png';
 
 import spray from '../../../data/textures/spray/Spray.png';
 import sprayColorPart from '../../../data/textures/spray/SprayColorPart.png';
@@ -59,15 +51,6 @@ export default class AssetsLoader2D extends GameObject {
     assets.enqueueImage('btn_back', btn_back);
 
     assets.enqueueImage('confetti0', confetti0);
-    assets.enqueueImage('confetti1', confetti1);
-    assets.enqueueImage('confetti2', confetti2);
-    assets.enqueueImage('confetti3', confetti3);
-    assets.enqueueImage('confetti4', confetti4);
-    assets.enqueueImage('confetti5', confetti5);
-    assets.enqueueImage('confetti6', confetti6);
-    assets.enqueueImage('confetti7', confetti7);
-    assets.enqueueImage('confetti8', confetti8);
-
 
     assets.enqueueImage('cheers1', cheers1.url);
     assets.enqueueImage('cheers2', cheers2.url);

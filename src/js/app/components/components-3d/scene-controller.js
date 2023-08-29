@@ -22,6 +22,8 @@ export default class SceneController extends Object3D {
 
 
         this.scene0();
+        this._layout2d._confetti.show();
+
     }
 
     _setDockElement(elementSelected) {
