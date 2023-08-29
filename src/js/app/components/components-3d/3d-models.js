@@ -65,7 +65,6 @@ export default class Models3D extends Group {
                 child.visible = true;
                 console.log("showing ", bodyname, " body")
             } if (childName === "bip") { child.visible = true; }
-            else { child.visible = false; }
         })
     }
 
