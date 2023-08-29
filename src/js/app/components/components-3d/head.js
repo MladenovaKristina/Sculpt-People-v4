@@ -223,13 +223,13 @@ export default class Head extends Group {
         let allPositionsAlmostSame = true;
 
         for (let i = 0; i < this.sphere.geometry.attributes.position.array.length; i += 3) {
-            const diffX = this.head.geometry.attributes.position.array[i] - this.sphere.geometry.attributes.position.array[i];
-            const diffY = this.head.geometry.attributes.position.array[i + 1] - this.sphere.geometry.attributes.position.array[i + 1];
-            const diffZ = this.head.geometry.attributes.position.array[i + 2] - this.sphere.geometry.attributes.position.array[i + 2];
+            const diffX = this.sphere.geometry.attributes.position.array[i] - this.head.geometry.attributes.position.array[i];
+            const diffY = this.sphere.geometry.attributes.position.array[i + 1] - this.head.geometry.attributes.position.array[i + 1];
+            const diffZ = this.sphere.geometry.attributes.position.array[i + 2] - this.head.geometry.attributes.position.array[i + 2];
 
-            this.sphere.geometry.attributes.position.array[i] += diffX * incrementAmount;
-            this.sphere.geometry.attributes.position.array[i + 1] += diffY * incrementAmount;
-            this.sphere.geometry.attributes.position.array[i + 2] += diffZ * incrementAmount;
+            this.head.geometry.attributes.position.array[i] += diffX * incrementAmount;
+            this.head.geometry.attributes.position.array[i + 1] += diffY * incrementAmount;
+            this.head.geometry.attributes.position.array[i + 2] += diffZ * incrementAmount;
 
             if (Math.abs(diffX) > threshold || Math.abs(diffY) > threshold || Math.abs(diffZ) > threshold) {
                 allPositionsAlmostSame = false;

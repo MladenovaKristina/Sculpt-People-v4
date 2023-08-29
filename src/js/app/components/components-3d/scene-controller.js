@@ -26,7 +26,11 @@ export default class SceneController extends Object3D {
 
     _setDockElement(elementSelected) {
         this.selectedDockElement = elementSelected;
-        console.log(this.selectedDockElement);
+        if (this.sceneNumber === 3) this._layout3d.model3d._setSprayCanColor(this.selectedDockElement)
+        else {
+            this._layout3d.model3d._setBody(elementSelected)
+            this._layout2d._objectsInDock.hide();
+        }
     }
 
     onDown(x, y) {
@@ -201,10 +205,6 @@ export default class SceneController extends Object3D {
 
         }
         if (this.sceneNumber === 3 && this.canMove) {
-            if (this.selectedDockElement) {
-                this._layout3d.model3d._setSprayCanColor(this.selectedDockElement)
-
-            }
             this.moveToMouse(x, y);
         }
     }
@@ -270,10 +270,8 @@ export default class SceneController extends Object3D {
         this._layout3d.hideStick();
         this._layout2d._cheers.show(2, Black.stage.centerX + 1, Black.stage.centerY - 1);
         this._layout3d.model3d.placeMask(() => {
-            this._layout3d.model3d.sprayCan.visible = true;
             this.canMove = true;
         });
-
 
         this.sceneNumber = 3;
 
@@ -321,6 +319,8 @@ export default class SceneController extends Object3D {
     scene7() {
         console.log('7')
         this.sceneNumber = 7;
+        this._layout2d._initDockBG("body");
+
         // this._layout3d._initDock("body");
         this._layout3d.model3d.armature.children[0].visible = true;
         console.log(this._layout3d.model3d.armature.children[0].name)

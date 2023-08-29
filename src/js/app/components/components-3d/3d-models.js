@@ -55,34 +55,43 @@ export default class Models3D extends Group {
     }
     _setSprayCanColor(colorid) {
         const colors = [0x00ff00, 0xff0000, 0x0000ff, 0x0f0f0f, 0x000000];
-
-        this.canBody.material.color = colors[colorid]
-        console.log(this.canBody.material.color, colors[colorid])
+        let colormaterial = new MeshPhysicalMaterial({ color: colors[colorid - 1], side: DoubleSide })
+        this.canBody.material = colormaterial;
     }
+    _setBody(bodyname) {
+        this.armature.traverse((child) => {
+            const childName = child.name.toLowerCase();
+            if (childName.includes(bodyname)) {
+                child.visible = true;
+                console.log("showing ", bodyname, " body")
+            } if (childName === "bip") { child.visible = true; }
+            else { child.visible = false; }
+        })
+    }
+
     _initSprayCan() {
-        const material = new MeshPhysicalMaterial({ color: 0x555555, metalness: 10, reflectivity: 0.5 })
+
         this.sprayCanGroup = Cache.get("sprayCan").scene;
         this.sprayCanGroup.traverse((child) => {
+            child.visible = true;
             if (child.name === "can_body003") {
                 this.canBody = child;
-                this.canBody.material = material
             }
             if (child.name === "spray_can_type4") {
-                child.visible = true;
                 this.sprayCan = child;
                 this.sprayCan.scale.set(0.1, 0.1, 0.1);
                 this.sprayCan.position.set(0, 1, 0.1);
                 this.sprayCan.rotation.set(Math.PI / 2, 0, Math.PI);
-                this.sprayCan.visible = true;
                 this.sprayCan.traverse((cap) => {
                     if (child.name === "can_tip_whole") {
-                        this.canTip = cap; this.paintEmitter()
+                        this.canTip = cap;
                     }
                 })
             }
         });
-
+        this.sprayCanGroup.visible = false;
         this.add(this.sprayCan);
+        this._setSprayCanColor(0);
     }
 
     _initAssets() {
@@ -113,17 +122,19 @@ export default class Models3D extends Group {
             }
             if (child.name === "Heads") { this.heads = child; }
         })
+        this.armature.position.set(0, -0.4, 0.75);
 
-        const scaledown = new Vector3(0.8, 0.8, 0.8)
+        const scaledown = new Vector3(0.6, 0.6, 0.6)
+        this.armature.scale.multiply(scaledown);
+
         this.armature.traverse((bodies) => {
-            bodies.position.set(0, -0.38, 0);
-            bodies.scale.multiply(scaledown);
             bodies.rotation.set(0, 0, 0);
             bodies.visible = false;
 
             if (bodies.name.includes("b_")) {
                 this.bodies3d.push(bodies)
             }
+
         })
         this.armature.visible = true;
 
@@ -244,7 +255,7 @@ export default class Models3D extends Group {
 
 
 
-    show() {
+    show(object) {
         this.visible = true;
 
         const targetPosition = 0;
@@ -406,6 +417,12 @@ export default class Models3D extends Group {
                     callback();
                 }
             })
+            .onComplete(() => {
+                this.sprayCanGroup.visible = true;
+                this.sprayCanGroup.position.set(0, 0, 0)
+                console.log(this.sprayCanGroup.visible)
+
+            })
 
             .start();
     }
@@ -428,7 +445,6 @@ export default class Models3D extends Group {
             .to({ x: targetrotation.x, y: targetrotation.y, z: targetrotation.z }, 1000)
             .easing(TWEEN.Easing.Sinusoidal.InOut)
             .delay(200)
-
             .start();
     }
 

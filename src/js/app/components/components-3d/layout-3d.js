@@ -105,16 +105,13 @@ export default class Layout3D extends Object3D {
     let scale, dockelements;
     if (bodyPart === "head") {
       dockelements = this.model3d.headParts;
-      scale = 0.03;
-    }
-    else if (bodyPart === "body") {
-      dockelements = this.model3d.bodies2d;
-      scale = 0.03;
+      scale = 0.1;
+
 
     }
     else if (bodyPart === "accessories") {
       dockelements = this.model3d.accessories;
-      scale = 0.02;
+      scale = 0.03;
     }
 
     const width = 8;
@@ -142,8 +139,8 @@ export default class Layout3D extends Object3D {
       if (elementName.includes("_r")) {
         element.scale.multiply(this.model3d.flipX)
       }
-      if (element.name === "hair") {
-        element.scale.set(scale / 3, scale / 3, scale / 3);
+      if (elementName.includes("hair")) {
+        element.scale.set(scale / 4, scale / 4, scale / 4);
         element.rotation.z = Math.PI / 2;
 
       }
