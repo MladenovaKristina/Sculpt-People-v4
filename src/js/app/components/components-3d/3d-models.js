@@ -64,7 +64,7 @@ export default class Models3D extends Group {
             if (childName.includes(bodyname)) {
                 child.visible = true;
                 console.log("showing ", bodyname, " body")
-            } if (childName === "bip") { child.visible = true; }
+            }
         })
     }
 
@@ -416,13 +416,6 @@ export default class Models3D extends Group {
                     callback();
                 }
             })
-            .onComplete(() => {
-                this.sprayCanGroup.visible = true;
-                this.sprayCanGroup.position.set(0, 0, 0)
-                console.log(this.sprayCanGroup.visible)
-
-            })
-
             .start();
     }
 
